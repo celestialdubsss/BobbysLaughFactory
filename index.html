@@ -381,7 +381,10 @@ textarea.lines{font-family:var(--f-body);font-size:14px;min-height:96px}
       </div>
       <div class="players-head">
         <h2>Who's here</h2>
-        <span class="count" id="count">0 / 10 players</span>
+        <div class="row" style="gap:12px">
+          <span class="count" id="count">0 / 10 players</span>
+          <button class="btn small" id="addBot" hidden>Add a bot</button>
+        </div>
       </div>
       <div class="adult-banner" id="adultBanner" hidden><span class="age">18+</span><span>Bobby Style is on. This game is for adults only.</span></div>
       <ul class="players" id="players"></ul>
@@ -391,7 +394,7 @@ textarea.lines{font-family:var(--f-body);font-size:14px;min-height:96px}
           <h2 id="topicTitle">Deck topics</h2>
           <span class="count" id="topicCount">0 / 50</span>
         </div>
-        <p class="note">Suggest up to 5 topics each, and keep them general: "camping" works better than "the time Jake fell in the lake." The host turns them into a custom deck with the Deck Maker.</p>
+        <p class="note">Suggest up to <span id="topicsEach">5</span> topics each, and keep them general: "camping" works better than "the time Jake fell in the lake." The host turns them into a custom deck with the Deck Maker.</p>
         <div class="row" style="flex-wrap:nowrap">
           <input type="text" id="topicIn" class="small-in" maxlength="40" placeholder="e.g. camping trips" aria-label="Topic" style="flex:1;min-width:0">
           <button class="btn teal small" id="topicAdd">Add</button>
@@ -807,7 +810,7 @@ const BUILTIN_PACKS = {
   const MAX = 10, MIN = 3, HAND = 7;
   const TEST_MODE = /*TEST_MODE*/false;   // true only in the private test copy on claude.ai: solo games with bots
   const HEARTBEAT_MS = 4000, TIMEOUT_MS = 15000, REVEAL_MS = 6000;
-  const TOPICS_EACH = 5, MAX_TOPICS = TOPICS_EACH * 10;
+  const TOPICS_EACH = TEST_MODE ? 15 : 5, MAX_TOPICS = 50;   // the solo test copy lets one player add up to 15
   const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   const BLANK = "____";
   const $ = id => document.getElementById(id);
@@ -965,7 +968,7 @@ const BUILTIN_PACKS = {
       net(true,"Hosting");
       timers.push(setInterval(() => { sweep(); broadcast(); }, HEARTBEAT_MS));
       timers.push(setInterval(hostTick, 1000));
-      if(TEST_MODE) timers.push(setInterval(botTick, 500));
+      timers.push(setInterval(botTick, 500));   // bots the host adds play on their own
       setBusy(false); showView();
   }
 
@@ -975,12 +978,24 @@ const BUILTIN_PACKS = {
   function startSoloTest(){
     setupHost({destroy(){}, destroyed:false}, "local-host", "TEST");
     net(true, "Solo test");
-    BOTS.forEach((b, i) => game.players.push({id:"bot-" + i, nick:b.nick, color:b.color, ready:true, adult:true, joinedAt:Date.now() + i + 1, host:false, bot:true}));
+    BOTS.forEach(() => addBot(true));
     broadcast(); toast("Solo test game: two bots joined. Ready up and press Start.");
+  }
+  // ---------- bots (host only) ----------
+  const BOT_NAMES = ["Bot Bea", "Bot Bo", "Bot Pickle", "Bot Ziggy", "Bot Nova", "Bot Sprout", "Bot Gus", "Bot Lulu", "Bot Waffles"];
+  function addBot(quiet){
+    if(!isHost || !game || game.phase !== "lobby") return;
+    if(game.players.length >= MAX){ toast("The room is full (10 players)."); return; }
+    const taken = new Set(game.players.map(p => p.nick));
+    const nick = BOT_NAMES.find(n => !taken.has(n)) || `Bot ${game.players.length + 1}`;
+    const color = COLORS[(game.players.filter(p => p.bot).length + 3) % COLORS.length];
+    game.players.push({id:"bot-" + rid(), nick, color, ready:true, adult:true, joinedAt:Date.now(), host:false, bot:true});
+    if(!quiet) toast(`${nick} joined. Remove it with the × on its card.`);
+    broadcast();
   }
   const botWait = new Map();   // bot id -> when it will act
   function botTick(){
-    if(!TEST_MODE || !game) return;
+    if(!isHost || !game) return;
     const r = game.round, now = Date.now();
     game.players.filter(p => p.bot).forEach(b => {
       if(game.phase === "lobby"){ if(!b.ready || !b.adult){ b.ready = true; b.adult = true; broadcast(); } return; }
@@ -1330,7 +1345,7 @@ const BUILTIN_PACKS = {
     ps.forEach(p => {
       const li = document.createElement("li"); li.className = "pcard" + (lobbySeen.has(p.id) ? "" : " deal"); lobbySeen.add(p.id);
       li.innerHTML = `<div class="who"><span class="dot" style="background:${safeColor(p.color)}">${esc((p.nick[0]||"?").toUpperCase())}</span><span class="nm">${esc(p.nick)}</span></div>
-        <div class="tags">${p.host?'<span class="tag host">Host</span>':''}${p.id===myId?'<span class="tag you">You</span>':''}</div>
+        <div class="tags">${p.host?'<span class="tag host">Host</span>':''}${p.id===myId?'<span class="tag you">You</span>':''}${p.bot?'<span class="tag you">Bot</span>':''}</div>
         <span class="state ${p.ready?'ready':'wait'}"><i></i>${p.ready?'Ready':'Picking a snack…'}</span>`;
       if(isHost && !p.host){
         const k = document.createElement("button"); k.className="kick"; k.type="button"; k.textContent="×";
@@ -1342,6 +1357,7 @@ const BUILTIN_PACKS = {
     const slots = Math.min(MAX, Math.max(MIN, ps.length + 1));
     for(let i=ps.length;i<slots;i++){ const li=document.createElement("li"); li.className="pcard empty"; li.textContent="Waiting for a friend"; ul.appendChild(li); }
     $("count").textContent = `${ps.length} / ${MAX} players`;
+    $("addBot").hidden = !isHost; $("addBot").disabled = ps.length >= MAX;
 
     // topics
     const tl = $("topics"); tl.innerHTML = "";
@@ -1578,6 +1594,7 @@ const BUILTIN_PACKS = {
 
   // ---------- actions ----------
   if(TEST_MODE){
+    $("topicsEach").textContent = TOPICS_EACH;
     // the test copy can't reach the internet, so it only offers solo games
     $("soloBtn").hidden = false; $("hostBtn").hidden = true;
     document.querySelector(".or").hidden = true; $("code").closest(".row").hidden = true; $("homeBobby").hidden = false;
@@ -1592,6 +1609,7 @@ const BUILTIN_PACKS = {
   });
   $("code").addEventListener("keydown", e => { if(e.key==="Enter") $("joinBtn").click(); });
   $("leaveBtn").addEventListener("click", () => backHome(""));
+  $("addBot").addEventListener("click", () => addBot(false));
   $("leaveTable").addEventListener("click", () => backHome(""));
 
   function setReady(next){
