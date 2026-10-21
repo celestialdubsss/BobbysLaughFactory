@@ -1,0 +1,2800 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bobby's Laugh Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Mono:wght@500&display=swap">
+<style>
+/* Layout: a factory-floor stage — wordmark banner up top, then two lanes (you / the room) that stack on phones. */
+:root{
+  --bg:#FFF3D1; --bg2:#FFE6A8; --ink:#2A1540; --muted:#6E5A80; --card:#FFFFFF; --line:#2A154022;
+  --pink:#FF3D8B; --teal:#0FB9A8; --tang:#FF8A1F; --violet:#7556FF; --sun:#FFC92E;
+  --on-bright:#FFFFFF; --shadow:#2A1540;
+  --f-display:"Bagel Fat One","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Bricolage Grotesque",ui-rounded,"Segoe UI",system-ui,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#1C0F2E; --bg2:#2A1745; --ink:#FFF1DE; --muted:#C2AEDB; --card:#2E1B4A; --line:#FFF1DE26;
+  --shadow:#0A0414; color-scheme:dark }}
+
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.5;
+  background-image:
+    radial-gradient(circle at 8% 12%, color-mix(in srgb,var(--pink) 22%,transparent) 0 120px, transparent 121px),
+    radial-gradient(circle at 92% 8%, color-mix(in srgb,var(--teal) 22%,transparent) 0 150px, transparent 151px),
+    radial-gradient(circle at 85% 88%, color-mix(in srgb,var(--violet) 18%,transparent) 0 170px, transparent 171px),
+    radial-gradient(circle at 4% 92%, color-mix(in srgb,var(--sun) 40%,transparent) 0 130px, transparent 131px);
+  background-attachment:fixed;
+}
+[hidden]{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(48px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:28px}
+
+.banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:12px}
+.mark-cards{position:relative;width:52px;height:52px;flex:none}
+.mark-cards span{position:absolute;inset:4px 10px;border-radius:7px;border:3px solid var(--ink)}
+.mark-cards span:nth-child(1){background:var(--teal);transform:rotate(-16deg) translateX(-6px)}
+.mark-cards span:nth-child(2){background:var(--sun);transform:rotate(4deg)}
+.mark-cards span:nth-child(3){background:var(--pink);transform:rotate(20deg) translateX(7px)}
+.wordmark{font-family:var(--f-display);font-size:clamp(28px,5vw,40px);line-height:1;letter-spacing:.5px;margin:0}
+.wordmark b{color:var(--pink);font-weight:400}
+.status-pill{font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--card);border:2px solid var(--line)}
+.status-pill i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.status-pill.on i{background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 30%,transparent)}
+.streamer{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--pink) 0 20%,var(--tang) 20% 40%,var(--sun) 40% 60%,var(--teal) 60% 80%,var(--violet) 80%)}
+
+h2{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.1;margin:0;text-wrap:balance}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:22px;box-shadow:6px 6px 0 var(--shadow);display:flex;flex-direction:column;gap:18px;min-width:0}
+label.field{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
+input[type=text]{font:inherit;font-size:18px;font-weight:600;color:var(--ink);background:var(--bg);border:3px solid var(--ink);border-radius:14px;padding:12px 14px;width:100%}
+input[type=text]::placeholder{color:var(--muted);font-weight:400}
+input:focus-visible,button:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+.btn{font:inherit;font-weight:800;font-size:17px;border:3px solid var(--ink);border-radius:16px;padding:13px 20px;cursor:pointer;
+  color:var(--ink);background:var(--card);box-shadow:4px 4px 0 var(--shadow);transition:transform .12s, box-shadow .12s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--shadow)}
+.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.pink{background:var(--pink);color:var(--on-bright)}
+.btn.teal{background:var(--teal);color:var(--on-bright)}
+.btn.sun{background:var(--sun);color:#2A1540}
+.btn.small{font-size:14px;padding:8px 12px;border-radius:12px;box-shadow:3px 3px 0 var(--shadow)}
+.btn.big{font-size:20px;padding:16px 26px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.note{font-size:14px;color:var(--muted);margin:0}
+.err{font-size:14px;font-weight:600;color:var(--pink);margin:0;min-height:1.5em}
+
+.home{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:start}
+.hero{display:flex;flex-direction:column;gap:18px;min-width:0}
+.hero h1{font-family:var(--f-display);font-weight:400;font-size:clamp(36px,6.4vw,62px);line-height:1.02;margin:0;text-wrap:balance}
+.hero h1 .hl{background:var(--sun);color:#2A1540;padding:0 .18em;border-radius:12px;display:inline-block;transform:rotate(-2deg)}
+.hero p.lede{font-size:19px;max-width:34ch;margin:0}
+.demo-cards{display:flex;gap:14px;flex-wrap:wrap;padding-top:6px}
+.gcard{width:180px;min-height:200px;border-radius:16px;border:3px solid var(--ink);padding:14px;display:flex;flex-direction:column;justify-content:space-between;font-weight:800;font-size:17px;line-height:1.25;box-shadow:5px 5px 0 var(--shadow)}
+.gcard small{font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.gcard.prompt{background:var(--violet);color:#fff;transform:rotate(-4deg)}
+.gcard.answer{background:var(--card);transform:rotate(3deg)}
+.gcard.answer.two{transform:rotate(-1deg) translateY(10px)}
+.blank{display:inline-block;width:64px;border-bottom:3px solid currentColor;transform:translateY(-4px)}
+
+.avatars{display:flex;gap:10px;flex-wrap:wrap}
+.av{width:44px;height:44px;border-radius:50%;border:3px solid var(--ink);cursor:pointer;display:grid;place-items:center;font-family:var(--f-display);color:#fff;font-size:18px;padding:0}
+.av[aria-pressed="true"]{box-shadow:0 0 0 4px var(--card),0 0 0 7px var(--ink);transform:scale(1.06)}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.1em}
+.or::before,.or::after{content:"";flex:1;height:2px;background:var(--line)}
+.code-input{font-family:var(--f-mono)!important;text-transform:uppercase;letter-spacing:.35em;text-align:center;font-size:24px!important}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:6px}
+.steps li::before{content:counter(s);font-family:var(--f-display);font-size:22px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;border:3px solid var(--ink)}
+.steps li:nth-child(1)::before{background:var(--pink)}
+.steps li:nth-child(2)::before{background:var(--tang)}
+.steps li:nth-child(3)::before{background:var(--teal)}
+.steps b{font-size:17px}
+.steps span{color:var(--muted);font-size:15px}
+
+.lobby{display:grid;grid-template-columns:1.6fr 1fr;gap:28px;align-items:start}
+.lobby-main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.codebox{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--sun);color:#2A1540;border:3px solid var(--ink);border-radius:22px;padding:18px 22px;box-shadow:6px 6px 0 var(--shadow)}
+.codebox .eyebrow{color:#2A1540b3}
+.codebox .btn{color:#2A1540;background:#fff;border-color:#2A1540}
+.code{font-family:var(--f-mono);font-size:clamp(36px,7vw,54px);letter-spacing:.22em;line-height:1;margin:4px 0 0}
+.players-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.count{font-family:var(--f-mono);font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;list-style:none;margin:0;padding:0}
+.pcard{position:relative;background:var(--card);border:3px solid var(--ink);border-radius:16px;padding:14px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;box-shadow:4px 4px 0 var(--shadow)}
+.pcard.deal{animation:deal .35s cubic-bezier(.2,1.4,.4,1) both}
+.pcard:nth-child(odd){transform:rotate(-1.2deg)} .pcard:nth-child(even){transform:rotate(1.2deg)}
+@keyframes deal{from{transform:translateY(-14px) rotate(-8deg) scale(.9)}}
+.pcard .who{display:flex;align-items:center;gap:10px;min-width:0}
+.pcard .dot{flex:none;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--f-display);color:#fff;font-size:16px}
+.pcard .nm{font-weight:800;font-size:17px;overflow-wrap:anywhere;min-width:0}
+.pcard .kick{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-weight:800;line-height:1;padding:0}
+.pcard .kick:hover{border-color:var(--pink);color:var(--pink)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:2px solid var(--ink)}
+.tag.host{background:var(--violet);color:#fff}
+.tag.you{background:var(--bg2);color:var(--ink)}
+.state{font-weight:800;font-size:14px;display:flex;align-items:center;gap:6px}
+.state.ready{color:var(--teal)}
+.state.wait{color:var(--muted)}
+.state i{width:10px;height:10px;border-radius:50%;background:currentColor}
+.pcard.empty{background:transparent;border-style:dashed;border-color:var(--line);box-shadow:none;color:var(--muted);justify-content:center;align-items:center;text-align:center;font-weight:600;font-size:14px;animation:none}
+
+.settings h3{margin:0;font-size:15px;font-weight:800}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{font:inherit;font-weight:700;font-size:15px;padding:8px 14px;border-radius:12px;border:3px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed="true"]{background:var(--teal);color:#fff}
+.seg button:disabled{cursor:default}
+.packs{display:flex;flex-direction:column;gap:8px}
+.pack{display:flex;align-items:center;gap:12px;padding:10px 12px;border:3px solid var(--ink);border-radius:14px;background:var(--bg);cursor:pointer;font:inherit;color:var(--ink);text-align:left;width:100%}
+.pack .sw{flex:none;width:26px;height:34px;border-radius:6px;border:2.5px solid var(--ink)}
+.pack .txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.pack .txt b{font-size:15px}
+.pack .txt span{font-size:13px;color:var(--muted)}
+.pack .chk{flex:none;width:26px;height:26px;border-radius:8px;border:3px solid var(--ink);display:grid;place-items:center;font-weight:800}
+.pack[aria-pressed="true"] .chk{background:var(--pink);color:#fff}
+.pack[aria-pressed="true"] .chk::after{content:"✓"}
+.pack:disabled{cursor:default}
+.start-wrap{display:flex;flex-direction:column;gap:10px}
+
+/* Bobby Style (18+) */
+.bobby{display:flex;align-items:center;gap:14px;padding:14px;border:3px solid var(--ink);border-radius:16px;background:var(--bg);cursor:pointer;font:inherit;color:var(--ink);text-align:left;width:100%}
+.bobby:disabled{cursor:default}
+.bobby .txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.bobby .txt b{font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bobby .txt span{font-size:13px;color:var(--muted)}
+.age{font-family:var(--f-mono);font-size:12px;padding:2px 7px;border-radius:8px;background:var(--ink);color:var(--bg)}
+.switch{flex:none;width:52px;height:30px;border-radius:999px;border:3px solid var(--ink);background:var(--card);position:relative;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--ink);transition:transform .15s}
+.bobby[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.bobby[aria-pressed="true"] .txt span{color:color-mix(in srgb,var(--bg) 75%,transparent)}
+.bobby[aria-pressed="true"] .age{background:var(--pink);color:#fff}
+.bobby[aria-pressed="true"] .switch{background:var(--pink);border-color:var(--bg)}
+.bobby[aria-pressed="true"] .switch::after{transform:translateX(22px);background:#fff}
+.adult-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--ink);color:var(--bg);border-radius:16px;padding:12px 16px;font-weight:700}
+.adult-banner .age{background:var(--pink);color:#fff;font-size:14px}
+.agebox{border:3px solid var(--pink);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.agebox p{margin:0;font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(140px);background:var(--ink);color:var(--bg);font-weight:700;padding:12px 18px;border-radius:14px;transition:transform .25s;z-index:20;max-width:calc(100% - 32px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.overlay{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 85%,transparent);display:grid;place-items:center;z-index:30;padding:24px}
+.overlay .panel{max-width:440px;text-align:center;align-items:center}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:31}
+
+@media (max-width:820px){
+  .home,.lobby{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .gcard{width:150px;min-height:170px;font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- lobby: topics + custom deck ---------- */
+.topics{display:flex;flex-direction:column;gap:12px;background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:20px;box-shadow:6px 6px 0 var(--shadow)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:999px;border:2.5px solid var(--ink);background:var(--bg);font-weight:700;font-size:15px;max-width:100%}
+.chip .cdot{width:12px;height:12px;border-radius:50%;flex:none;border:2px solid var(--ink)}
+.chip span.t{overflow-wrap:anywhere;min-width:0}
+.chip button{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-weight:800;line-height:1;padding:0}
+.chip button:hover{border-color:var(--pink);color:var(--pink)}
+.chips .none{color:var(--muted);font-size:14px}
+input.small-in{font-size:16px;padding:10px 12px}
+textarea{font:inherit;font-family:var(--f-mono);font-size:12px;color:var(--ink);background:var(--bg);border:3px solid var(--ink);border-radius:14px;padding:10px 12px;width:100%;min-height:76px;resize:vertical}
+textarea:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+.deckinfo{display:flex;align-items:center;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:14px;background:var(--bg2)}
+.deckinfo .txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.deckinfo b{font-size:15px;overflow-wrap:anywhere}
+.deckinfo span{font-size:13px;color:var(--muted)}
+
+/* ---------- card table ---------- */
+.table{display:flex;flex-direction:column;gap:22px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;list-style:none;margin:0;padding:0}
+.score{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;border:2.5px solid var(--ink);background:var(--card);font-weight:700;font-size:14px}
+.score .dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-size:13px;flex:none}
+.score .pts{font-family:var(--f-mono);font-variant-numeric:tabular-nums;background:var(--bg2);border-radius:8px;padding:0 6px}
+.score.judge{background:var(--violet);color:#fff}
+.score.judge .pts{background:#ffffff33;color:#fff}
+.score .flag{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.score.done .flag{color:var(--teal)}
+.score.judge .flag{color:#fff}
+.score.me{box-shadow:0 0 0 3px var(--sun)}
+
+.stage{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:24px;align-items:center}
+.prompt-card{background:var(--violet);color:#fff;border:3px solid var(--ink);border-radius:22px;padding:22px;min-height:240px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;box-shadow:7px 7px 0 var(--shadow);transform:rotate(-1.5deg)}
+.prompt-card p{margin:0;font-weight:800;font-size:clamp(20px,3.2vw,27px);line-height:1.25;text-wrap:balance}
+.prompt-card .bl{display:inline-block;min-width:80px;border-bottom:4px solid currentColor;transform:translateY(-5px)}
+.prompt-card .fill{background:var(--sun);color:#2A1540;padding:0 .2em;border-radius:8px}
+.prompt-card small{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.side h2{font-size:clamp(24px,3.6vw,34px)}
+.timer{align-self:flex-start;font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums;padding:6px 14px;border-radius:12px;border:3px solid var(--ink);background:var(--card)}
+.timer.low{background:var(--pink);color:#fff}
+.winline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:20px;font-weight:800}
+
+.hand-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hand{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;list-style:none;margin:0;padding:0}
+.acard{font:inherit;text-align:left;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:16px;padding:16px;min-height:180px;height:100%;width:100%;display:flex;flex-direction:column;justify-content:space-between;gap:12px;box-shadow:4px 4px 0 var(--shadow);font-weight:800;font-size:17px;line-height:1.35;cursor:pointer;transition:transform .12s, box-shadow .12s;overflow-wrap:anywhere}
+.acard.deal{animation:deal .35s cubic-bezier(.2,1.4,.4,1) both}
+.acard .foot{display:flex;flex-direction:column;gap:2px}
+.acard small.who{font-size:12px;letter-spacing:.04em;text-transform:none;font-weight:800;color:inherit;opacity:.9}
+.hand.hurry .acard:not(:disabled){animation:hurry 1.1s ease-in-out infinite}
+.hand.hurry li:nth-child(2n) .acard:not(:disabled){animation-delay:.15s}
+.hand.hurry li:nth-child(3n) .acard:not(:disabled){animation-delay:.3s}
+@keyframes hurry{0%,100%{transform:rotate(0)}20%{transform:rotate(-2.5deg) translateY(-2px)}40%{transform:rotate(2deg)}60%{transform:rotate(-1deg)}}
+.prompt-card small.src{opacity:1;font-size:11px;align-self:flex-start;padding:2px 8px;border-radius:999px;background:#ffffff26}
+.prompt-card small.src:empty{display:none}
+.acard small{font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.acard:hover:not(:disabled){transform:translateY(-4px) rotate(-1deg);box-shadow:6px 8px 0 var(--shadow)}
+.acard[aria-pressed="true"]{background:var(--sun);color:#2A1540;transform:translateY(-8px) rotate(-2deg);box-shadow:6px 10px 0 var(--shadow)}
+.acard[aria-pressed="true"] small{color:#2A1540b3}
+.acard:disabled{cursor:default}
+.acard.win{background:var(--teal);color:#fff;transform:scale(1.04) rotate(-1deg)}
+.acard.win small{color:#ffffffcc}
+.acard.dim{opacity:.55}
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+.standings{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;width:100%}
+.standings li{display:flex;align-items:center;gap:10px;padding:8px 12px;border:2.5px solid var(--ink);border-radius:14px;background:var(--bg);font-weight:700;text-align:left}
+.standings li:first-child{background:var(--sun);color:#2A1540}
+.standings .pts{margin-left:auto;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.overlay .panel{max-width:460px}
+
+@media (max-width:820px){
+  .stage{grid-template-columns:1fr}
+  .prompt-card{min-height:180px}
+  .hand{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .acard{min-height:160px;font-size:16px}
+}
+
+/* ---------- sound toggles ---------- */
+.sound-btn{font:inherit;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+.sound-btn .ico{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--line);color:var(--muted);font-size:11px;font-weight:800}
+.sound-btn{color:var(--ink);border-color:var(--ink)}
+.sound-btn .ico{background:var(--teal);color:#fff}
+
+
+/* ---------- timer voice lines ---------- */
+.voicebox{display:flex;flex-direction:column;gap:8px}
+.voicebox h3{margin:0}
+.vlabel{font-size:13px;font-weight:700}
+textarea.lines{font-family:var(--f-body);font-size:14px;min-height:96px}
+
+/* ---------- Bobby's intro ---------- */
+.intro{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:var(--violet);color:#fff;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.intro-stage{position:relative;flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  background:radial-gradient(ellipse 60% 70% at 50% 75%, #FFF3D1 0 30%, #FFC92E 55%, transparent 75%), var(--violet)}
+.intro-rays{position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 60%, #ffffff14 0 8deg, transparent 8deg 16deg);animation:rays 30s linear infinite}
+@keyframes rays{to{transform:rotate(360deg)}}
+.intro-title{position:absolute;top:18px;left:0;right:0;text-align:center;margin:0;font-family:var(--f-display);font-size:clamp(26px,5vw,44px);color:#fff;text-shadow:3px 3px 0 #2A1540;padding:0 16px}
+.intro-bobby{position:relative;z-index:2;width:min(46vw,250px);margin-bottom:5vh;transform-origin:50% 100%;
+  transform:translateY(var(--lift,0px)) scale(var(--st,1),var(--sq,1));opacity:0;translate:0 60vh;transition:translate .7s cubic-bezier(.2,1.5,.4,1),opacity .3s}
+.intro-bobby.in{opacity:1;translate:0 0}
+.intro-bobby svg{display:block;width:100%;height:auto;overflow:visible}
+.intro-bobby .b-mouth-open{display:none;transform-box:fill-box;transform-origin:50% 0;transform:scaleY(var(--mo,1))}
+.intro-bobby:not([data-mouth="0"]) .b-mouth-open{display:inline}
+.intro-bobby:not([data-mouth="0"]) .b-mouth-closed{display:none}
+.intro-bobby[data-mouth="1"]{--mo:.42}
+.intro-bobby[data-mouth="2"]{--mo:.72}
+.intro-bobby[data-mouth="3"]{--mo:1}
+.intro-bobby .b-arm{transform-box:fill-box}
+.intro-bobby .b-arm-l{transform-origin:100% 100%}
+.intro-bobby .b-arm-r{transform-origin:0% 100%}
+.intro-bobby.waving .b-arm-l{animation:waveL .5s ease-in-out infinite alternate}
+.intro-bobby.waving .b-arm-r{animation:waveR .5s ease-in-out infinite alternate}
+@keyframes waveL{to{transform:rotate(-14deg)}}
+@keyframes waveR{to{transform:rotate(14deg)}}
+.intro-floor{position:absolute;left:0;right:0;bottom:0;height:7vh;background:#2A1540;z-index:1}
+.intro-bubble{position:relative;z-index:3;max-width:min(560px,calc(100% - 32px));margin:0 16px 14px;background:#fff;color:#2A1540;border:4px solid #2A1540;border-radius:22px;
+  padding:14px 18px;font-weight:800;font-size:clamp(18px,3.4vw,26px);line-height:1.25;text-align:center;box-shadow:6px 6px 0 #2A1540;text-wrap:balance}
+.intro-bubble::after{content:"";position:absolute;left:50%;bottom:-18px;width:26px;height:26px;background:#fff;border-right:4px solid #2A1540;border-bottom:4px solid #2A1540;transform:translateX(-50%) rotate(45deg)}
+.intro-bubble.pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.intro-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px max(16px,env(safe-area-inset-left,0px)) 14px max(16px,env(safe-area-inset-right,0px));background:#2A1540}
+.intro-bar{flex:1 1 160px;height:10px;border-radius:999px;background:#ffffff26;overflow:hidden}
+.intro-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--sun),var(--teal))}
+.intro-caption{font-weight:700;font-size:14px;color:#FFF3D1}
+.intro .btn.small{background:#fff;color:#2A1540;border-color:#fff;box-shadow:none}
+@media (prefers-reduced-motion:reduce){.intro-rays{animation:none}.intro-bobby{transition:opacity .3s}}
+
+/* ---------- reactions and votes ---------- */
+.react-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.react-bar .btn[aria-pressed="true"]{background:var(--sun);color:#2A1540}
+.votes{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.vote{font:inherit;font-size:13px;font-weight:800;width:40px;height:28px;border-radius:999px;border:2.5px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer}
+.vote.up[aria-pressed="true"]{background:var(--teal);color:#fff}
+.vote.down[aria-pressed="true"]{background:var(--pink);color:#fff}
+.prompt-card .votes{justify-content:flex-start;margin-top:0}
+.prompt-card .vote{background:#ffffff26;color:#fff;border-color:#fff}
+.react-pops{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:35;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none}
+.react-pop{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;border-radius:999px;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:15px;box-shadow:4px 4px 0 var(--shadow);animation:popIn .3s cubic-bezier(.2,1.6,.4,1), popOut .4s ease-in 2.2s forwards}
+.react-pop.clap{background:var(--sun);color:#2A1540}
+.react-pop.boo{background:var(--pink);color:#fff}
+.react-pop .dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-size:12px}
+@keyframes popIn{from{transform:translateX(40px) scale(.8);opacity:0}}
+@keyframes popOut{to{transform:translateX(40px);opacity:0}}
+
+/* ---------- sound panel ---------- */
+.sound-wrap{position:relative}
+.sound-btn.muted .ico{background:var(--line);color:var(--muted)}
+.sound-btn.muted span:last-child{text-decoration:line-through}
+.sound-btn[aria-expanded="true"]{border-color:var(--ink);color:var(--ink)}
+.sound-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(260px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:16px;
+  padding:14px;box-shadow:5px 5px 0 var(--shadow);display:flex;flex-direction:column;gap:12px}
+.slider{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:700}
+.slider span{display:flex;justify-content:space-between}
+.slider b{font-family:var(--f-mono);font-weight:500;font-variant-numeric:tabular-nums;color:var(--muted)}
+.slider input{width:100%;accent-color:var(--pink);cursor:pointer}
+
+/* ---------- make a deck with Bobby ---------- */
+input[type=password]{font:inherit;font-size:16px;font-weight:600;color:var(--ink);background:var(--bg);border:3px solid var(--ink);border-radius:14px;padding:10px 12px;width:100%}
+input[type=password]:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+.makebox{display:flex;flex-direction:column;gap:10px;padding:14px;border:3px solid var(--ink);border-radius:16px;background:var(--bg2)}
+.maketitle{font-size:16px}
+.makebox .seg button{font-size:13px;padding:6px 10px}
+.linkbtn{font:inherit;font-size:14px;font-weight:700;color:var(--pink);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.cooking{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--violet);color:#fff;border:3px solid var(--ink);border-radius:18px;padding:14px 16px;box-shadow:5px 5px 0 var(--shadow)}
+.cooking .spin{flex:none;width:26px;height:26px;border-radius:50%;border:4px solid #ffffff55;border-top-color:#fff;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cook-txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.cook-txt b{font-size:17px}
+.cook-txt span{font-size:14px;opacity:.85}
+.cook-bar{flex:1 1 100%;height:10px;border-radius:999px;background:#ffffff33;overflow:hidden}
+.cook-bar span{display:block;height:100%;width:3%;background:linear-gradient(90deg,var(--pink),var(--sun),var(--teal));transition:width .5s}
+
+/* ---------- renaming bots ---------- */
+.bot-name{font:inherit;font-weight:800;font-size:17px;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left;overflow-wrap:anywhere;min-width:0}
+.bot-name span{font-size:13px;opacity:.55}
+.bot-name:hover span{opacity:1}
+input.bot-rename{font-size:15px;font-weight:800;padding:4px 8px;border-width:2.5px;border-radius:10px;min-width:0;width:100%}
+
+.check{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--pink);flex:none;cursor:pointer}
+
+.hand li{display:flex;flex-direction:column}
+.acard .foot small{overflow-wrap:anywhere}
+
+/* ---------- deck server test ---------- */
+.checks{list-style:none;margin:0;padding:10px 12px;border:2.5px solid var(--ink);border-radius:12px;background:var(--card);display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.checks .good{color:var(--teal)}
+.checks .bad{color:var(--pink)}
+.checks .wait{color:var(--muted)}
+.version{font-family:var(--f-mono);font-size:12px;margin:0;opacity:.7}
+
+/* ---------- home screen: name, then join, then host ---------- */
+.step-block{display:flex;gap:12px;align-items:flex-start}
+.step-body{display:flex;flex-direction:column;gap:14px;flex:1;min-width:0}
+.step-num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-family:var(--f-display);font-size:15px}
+.join-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:6px}
+.sign{display:flex;flex-direction:column;align-items:center;transform:rotate(-4deg);animation:signBob 1.6s ease-in-out infinite}
+.sign span{font-family:var(--f-display);font-size:clamp(16px,4vw,20px);letter-spacing:.04em;color:#fff;background:var(--pink);border:3px solid var(--ink);border-radius:12px;padding:6px 14px;box-shadow:4px 4px 0 var(--shadow);white-space:nowrap}
+.sign i{font-style:normal;font-size:28px;line-height:1;color:var(--pink);text-shadow:2px 2px 0 var(--shadow)}
+@keyframes signBob{0%,100%{translate:0 0}50%{translate:0 5px}}
+.join-box{width:100%;display:flex;flex-direction:column;gap:12px;padding:16px;border:4px solid var(--ink);border-radius:18px;background:var(--sun);color:#2A1540;box-shadow:6px 6px 0 var(--shadow)}
+.join-head{display:flex;gap:12px;align-items:center}
+.join-head .step-num{background:#2A1540;color:var(--sun)}
+.join-head b{display:block;font-size:18px}
+.join-head span{font-size:14px;color:#2A1540c0}
+.join-box .code-input{background:#fff;color:#2A1540;border-color:#2A1540;font-size:30px!important;padding:12px}
+.join-box .btn{width:100%}
+.join-wrap.invited .join-box{outline:4px solid var(--teal);outline-offset:4px}
+.host-box{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.host-box .note{margin:0}
+.host-box #hostBtn{align-self:stretch}
+@media (prefers-reduced-motion:reduce){.sign{animation:none}}
+
+/* ---------- home: the three example cards sit in one row ---------- */
+.demo-cards{flex-wrap:nowrap;gap:12px}
+.gcard{width:168px;flex:none;font-size:16px}
+@media (max-width:820px){
+  .demo-cards{gap:8px}
+  .gcard{width:calc((100% - 16px) / 3);min-width:0;min-height:150px;padding:10px;font-size:13px;border-radius:12px;overflow-wrap:anywhere}
+  .gcard small{font-size:9px}
+  .gcard .blank{width:34px}
+}
+
+/* ---------- collapsible settings sections ---------- */
+.drop{border:3px solid var(--ink);border-radius:16px;background:var(--bg);overflow:hidden}
+.drop summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 14px;font-weight:800;font-size:15px;user-select:none}
+.drop summary::-webkit-details-marker{display:none}
+.drop summary::after{content:"";flex:none;width:10px;height:10px;border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg);margin:-4px 4px 0 auto;transition:transform .15s}
+.drop[open] summary::after{transform:rotate(225deg);margin-top:4px}
+.drop summary:focus-visible{outline:3px solid var(--violet);outline-offset:-3px}
+.drop-title{flex:none}
+.drop-sum{min-width:0;font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drop[open] summary{border-bottom:2px solid var(--line)}
+.drop-body{display:flex;flex-direction:column;gap:10px;padding:12px 14px 14px;background:var(--card)}
+.drop.needs:not([open]){border-color:var(--pink)}
+.drop.needs:not([open]) .drop-sum{color:var(--pink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="banner">
+    <div class="mark">
+      <div class="mark-cards" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="wordmark">Bobby's Laugh <b>Factory</b></p>
+    </div>
+    <div class="row" style="gap:8px">
+      <div class="sound-wrap">
+        <button type="button" class="sound-btn" id="soundBtn" aria-expanded="false" aria-controls="soundPanel"><span class="ico" aria-hidden="true">♪</span><span>Sound</span></button>
+        <div class="sound-panel" id="soundPanel" hidden>
+          <label class="slider" for="musicVol"><span>Music <b id="musicVolTxt"></b></span><input type="range" id="musicVol" min="0" max="100" step="5"></label>
+          <label class="slider" for="sfxVol"><span>Alerts &amp; voices <b id="sfxVolTxt"></b></span><input type="range" id="sfxVol" min="0" max="100" step="5"></label>
+          <p class="note">Only changes the sound on this device.</p>
+        </div>
+      </div>
+      <span class="status-pill" id="net"><i></i><span id="netText">Not connected</span></span>
+    </div>
+  </header>
+  <div class="streamer" aria-hidden="true"></div>
+
+  <!-- HOME -->
+  <main id="homeView" class="home">
+    <section class="hero">
+      <p class="eyebrow">Fill-in-the-blank chaos · 3–10 players · No apps, no accounts</p>
+      <h1>Fill the blank. <span class="hl">Lose your dignity.</span></h1>
+      <p class="lede">The party card game, rebuilt for your group chat. Bobby, a talking butternut squash, writes a fresh deck from your inside jokes and roasts every one of you by name.</p>
+      <div class="demo-cards" aria-label="Example cards">
+        <div class="gcard prompt"><span>Squid Game's deadliest new challenge: <span class="blank"></span>.</span><small>Prompt · Squid Game</small></div>
+        <div class="gcard answer"><span>A full-body dip in swamp gravy.</span><small>Shrek</small></div>
+        <div class="gcard answer two"><span>Teemo's tiny toxic butt-mushrooms.</span><small>League of Legends</small></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="joinTitle">
+      <h2 id="joinTitle">Clock in for laughs</h2>
+      <div class="step-block">
+        <span class="step-num" aria-hidden="true">1</span>
+        <div class="step-body">
+          <label class="field" for="nick">Your name
+            <input type="text" id="nick" maxlength="16" placeholder="e.g. Taco Tuesday" autocomplete="nickname">
+          </label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <span style="font-weight:600;font-size:14px">Your color</span>
+            <div class="avatars" id="avatars" role="group" aria-label="Pick a color"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="join-wrap" id="joinWrap">
+        <div class="sign" aria-hidden="true"><span>JOIN HERE, DUMBASS</span><i>⬇</i></div>
+        <div class="join-box">
+          <div class="join-head"><span class="step-num">2</span><div><b>Joining a friend's game?</b><span>Type the 4-letter room code your host gave you.</span></div></div>
+          <input type="text" id="code" class="code-input" maxlength="4" placeholder="CODE" aria-label="Room code" autocomplete="off">
+          <button class="btn teal big" id="joinBtn">Join game</button>
+        </div>
+      </div>
+
+      <div class="host-box" id="hostWrap">
+        <div class="or">only one person hosts</div>
+        <p class="note">Starting a new game for everyone? Host it here, then share the code.</p>
+        <button type="button" class="bobby" id="homeBobby" aria-pressed="false">
+          <span class="txt"><b>Host in Bobby Style <span class="age">18+</span></b><span>Players must be 18 or older. You can change this in the lobby.</span></span>
+          <span class="switch" aria-hidden="true"></span>
+        </button>
+        <button class="btn" id="hostBtn">Host a new game</button>
+        <button class="btn sun big" id="soloBtn" hidden>Start a solo test game</button>
+      </div>
+      <p class="err" id="homeErr" role="alert"></p>
+      <p class="note version" id="versionTag">Version Oct 20, 7:51 PM</p>
+    </section>
+
+    <ol class="steps" style="grid-column:1/-1">
+      <li><b>Spin up a room</b><span>The host gets a 4-letter code. Drop it in the group chat and everyone joins from any phone or laptop.</span></li>
+      <li><b>Bobby cooks the deck</b><span>Everyone throws in topics. Bobby turns them into a custom deck nobody's ever played before.</span></li>
+      <li><b>Cook or get cooked</b><span>Take turns judging. Clap the bangers, boo the flops, and whoever hits the score first gets to bounce on it, Bobby Style.</span></li>
+    </ol>
+  </main>
+
+  <!-- LOBBY -->
+  <main id="lobbyView" class="lobby" hidden>
+    <section class="lobby-main">
+      <div class="codebox">
+        <div>
+          <p class="eyebrow">Room code</p>
+          <p class="code" id="roomCode">----</p>
+        </div>
+        <div class="row">
+          <button class="btn small" id="copyBtn">Copy invite link</button>
+          <button class="btn small" id="leaveBtn">Leave</button>
+        </div>
+      </div>
+      <div class="players-head">
+        <h2>Who's here</h2>
+        <div class="row" style="gap:12px">
+          <span class="count" id="count">0 / 10 players</span>
+          <button class="btn small" id="addBot" hidden>Add a bot</button>
+        </div>
+      </div>
+      <div class="cooking" id="cooking" hidden aria-live="polite">
+        <span class="spin" aria-hidden="true"></span>
+        <div class="cook-txt"><b>Bobby is cooking up your deck…</b><span id="cookStep"></span></div>
+        <div class="cook-bar"><span id="cookBar"></span></div>
+      </div>
+      <div class="adult-banner" id="adultBanner" hidden><span class="age">18+</span><span>Bobby Style is on. This game is for adults only.</span></div>
+      <ul class="players" id="players"></ul>
+
+      <section class="topics" aria-labelledby="topicTitle">
+        <div class="players-head">
+          <h2 id="topicTitle">Deck topics</h2>
+          <span class="count" id="topicCount">0 / 50</span>
+        </div>
+        <p class="note">Suggest up to <span id="topicsEach">5</span> topics each, and keep them general: "camping" works better than "the time Jake fell in the lake." The host has Bobby turn them into a custom deck.</p>
+        <div class="row" style="flex-wrap:nowrap">
+          <input type="text" id="topicIn" class="small-in" maxlength="40" placeholder="e.g. camping trips" aria-label="Topic" style="flex:1;min-width:0">
+          <button class="btn teal small" id="topicAdd">Add</button>
+        </div>
+        <ul class="chips" id="topics"></ul>
+        <div class="row">
+          <button class="btn small" id="copyTopics" hidden>Copy topics &amp; names for Deck Maker</button>
+        </div>
+      </section>
+      <p class="note" id="hostNote" hidden>You're hosting from this tab. Keep it open: closing it ends the game for everyone.</p>
+    </section>
+
+    <aside class="panel settings" aria-labelledby="setTitle">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <h2 id="setTitle">Game settings</h2>
+        <p class="note" id="setNote">The host picks these.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <h3>Points to win</h3>
+        <div class="seg" id="segPoints"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <h3>Time to pick a card</h3>
+        <div class="seg" id="segTimer"></div>
+      </div>
+      <details class="drop" id="dropPacks">
+        <summary><span class="drop-title">Card packs</span><span class="drop-sum" id="packsSum"></span></summary>
+        <div class="drop-body">
+        <p class="note" id="packNote" hidden>Bobby Style uses only your generated deck, so the built-in packs are off.</p>
+        <div class="packs" id="packs"></div>
+        </div>
+      </details>
+      <details class="drop" id="dropDeck">
+        <summary><span class="drop-title">Custom deck</span><span class="drop-sum" id="deckSum"></span></summary>
+        <div class="drop-body">
+        <div class="makebox" id="makeBox" hidden>
+          <b class="maketitle">Make a deck with Bobby</b>
+          <p class="note" id="makeNote">Uses the deck topics and player names in this lobby.</p>
+          <div class="seg" id="segSize"></div>
+          <label class="check" for="useNames"><input type="checkbox" id="useNames"><span>Roast players by name in some cards</span></label>
+          <label class="field" for="deckNameIn"><span class="vlabel">Deck name</span>
+            <input type="text" id="deckNameIn" class="small-in" maxlength="40" placeholder="Friday Night Deck" autocomplete="off"></label>
+          <label class="field" for="serverIn" id="serverRow" hidden><span class="vlabel">Deck server link</span>
+            <input type="text" id="serverIn" class="small-in" placeholder="https://bobby-decks.yourname.workers.dev" autocomplete="off" spellcheck="false"></label>
+          <label class="field" for="passIn"><span class="vlabel">Host passcode</span>
+            <input type="password" id="passIn" class="small-in" autocomplete="off"></label>
+          <div class="row" style="gap:10px">
+            <button class="btn pink small" id="makeBtn">Make deck</button>
+            <button class="btn small" id="testServer">Test deck server</button>
+          </div>
+          <ul class="checks" id="serverChecks" hidden></ul>
+        </div>
+        <div class="deckinfo" id="deckInfo" hidden>
+          <span class="txt"><b id="deckName"></b><span id="deckMeta"></span></span>
+          <div class="row" style="gap:8px">
+            <button class="btn small" id="deckCopy" hidden>Copy deck code</button>
+            <button class="btn small" id="deckRemove" hidden>Remove</button>
+          </div>
+        </div>
+        <div id="deckLoad" style="display:flex;flex-direction:column;gap:8px">
+          <textarea id="deckCode" placeholder="Or paste a deck code" aria-label="Deck code" spellcheck="false"></textarea>
+          <div class="row" style="gap:12px">
+            <button class="btn small" id="deckBtn">Load deck</button>
+            <button type="button" class="linkbtn" id="deckLast" hidden>Load my last deck</button>
+          </div>
+        </div>
+        <p class="note" id="deckNone" hidden>No custom deck. Only the host can add one.</p>
+        </div>
+      </details>
+      <details class="drop" id="ratingsBox" hidden>
+        <summary><span class="drop-title">Card ratings</span><span class="drop-sum" id="ratingsSum"></span></summary>
+        <div class="drop-body">
+        <p class="note" id="ratingsNote"></p>
+        <button class="btn small" id="copyRatings">Copy ratings for Deck Maker</button>
+        </div>
+      </details>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <h3>Content</h3>
+        <button type="button" class="bobby" id="bobbyBtn" aria-pressed="false">
+          <span class="txt"><b>Bobby Style <span class="age">18+</span></b><span>Players must be 18 or older.</span></span>
+          <span class="switch" aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="start-wrap">
+        <div class="agebox" id="ageBox" hidden>
+          <p>This game is in Bobby Style, an adults-only mode. Are you 18 or older?</p>
+          <div class="row">
+            <button class="btn small pink" id="ageYes">Yes, I'm 18+</button>
+            <button class="btn small" id="ageNo">No, leave game</button>
+          </div>
+        </div>
+        <button class="btn sun big" id="readyBtn">I'm ready!</button>
+        <button class="btn pink big" id="startBtn" hidden>Start the game</button>
+        <p class="note" id="startNote"></p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- CARD TABLE -->
+  <main id="tableView" class="table" hidden>
+    <ul class="scorebar" id="scorebar" aria-label="Scores"></ul>
+    <section class="stage">
+      <div class="prompt-card" aria-live="polite">
+        <p id="promptText"></p>
+        <small id="promptMeta"></small>
+        <small class="src" id="promptSrc"></small>
+        <div id="promptVote"></div>
+      </div>
+      <div class="side">
+        <span class="timer" id="timer" hidden></span>
+        <h2 id="stageTitle"></h2>
+        <p class="note" id="stageNote" style="font-size:16px"></p>
+        <div class="winline" id="winLine" hidden></div>
+      </div>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <div class="hand-head">
+        <h2 id="handTitle">Your hand</h2>
+        <div class="actions">
+          <button class="btn pink" id="playBtn" hidden disabled>Play this card</button>
+          <button class="btn pink" id="pickBtn" hidden disabled>Pick the winner</button>
+          <button class="btn small" id="refreshBtn" hidden>New hand (1 per game)</button>
+          <button class="btn small" id="leaveTable">Leave game</button>
+        </div>
+      </div>
+      <div class="react-bar" id="reactBar" hidden>
+        <span class="note">How'd the judge do?</span>
+        <button class="btn small" id="clapBtn" aria-pressed="false">👏 Clap</button>
+        <button class="btn small" id="booBtn" aria-pressed="false">👎 Boo</button>
+        <span class="note">Rate the cards with ▲ ▼ to help the Deck Maker learn what your group likes.</span>
+      </div>
+      <ul class="hand" id="hand"></ul>
+      <div class="agebox" id="tableAge" hidden>
+        <p>This game is in Bobby Style, an adults-only mode. Are you 18 or older? You'll be dealt in next round.</p>
+        <div class="row">
+          <button class="btn small pink" id="tAgeYes">Yes, I'm 18+</button>
+          <button class="btn small" id="tAgeNo">No, leave game</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<div class="react-pops" id="reactPops" aria-live="polite"></div>
+<div class="intro" id="intro" hidden aria-live="polite">
+  <div class="intro-stage">
+    <div class="intro-rays" aria-hidden="true"></div>
+    <p class="intro-title" id="introTitle">Bobby's Laugh Factory</p>
+    <div class="intro-bobby" id="introBobby" data-mouth="0">
+      <svg class="bobby-svg" viewBox="0 0 220 320" aria-hidden="true">
+  <defs>
+    <linearGradient id="bSkin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FAC985"/><stop offset=".55" stop-color="#F0A957"/><stop offset="1" stop-color="#D98838"/>
+    </linearGradient>
+    <radialGradient id="bShine" cx=".35" cy=".3" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  </defs>
+  <!-- arms (behind the body) -->
+  <g class="b-arm b-arm-l"><path d="M52 200 Q22 188 14 158" fill="none" stroke="#2A1540" stroke-width="7" stroke-linecap="round"/><circle cx="14" cy="154" r="10" fill="#FAC985" stroke="#2A1540" stroke-width="5"/></g>
+  <g class="b-arm b-arm-r"><path d="M168 200 Q198 188 206 158" fill="none" stroke="#2A1540" stroke-width="7" stroke-linecap="round"/><circle cx="206" cy="154" r="10" fill="#FAC985" stroke="#2A1540" stroke-width="5"/></g>
+  <!-- stem -->
+  <path d="M101 58 C99 40 102 26 112 16 C116 13 121 17 118 22 C112 30 111 42 113 58 Z" fill="#7A8B3C" stroke="#2A1540" stroke-width="5" stroke-linejoin="round"/>
+  <!-- body: narrow neck, round bulb -->
+  <path d="M86 58 C76 60 74 92 76 122 C78 148 36 162 36 222 C36 272 72 302 110 302 C148 302 184 272 184 222 C184 162 142 148 144 122 C146 92 144 60 134 58 C122 52 98 52 86 58 Z"
+        fill="url(#bSkin)" stroke="#2A1540" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M86 58 C76 60 74 92 76 122 C78 148 36 162 36 222 C36 272 72 302 110 302 C148 302 184 272 184 222 C184 162 142 148 144 122 C146 92 144 60 134 58 C122 52 98 52 86 58 Z" fill="url(#bShine)"/>
+  <!-- ridges -->
+  <path d="M110 196 C104 240 106 276 110 300" fill="none" stroke="#C97A2E" stroke-width="3" opacity=".45"/>
+  <path d="M72 200 C64 236 74 270 92 292" fill="none" stroke="#C97A2E" stroke-width="3" opacity=".35"/>
+  <path d="M148 200 C156 236 146 270 128 292" fill="none" stroke="#C97A2E" stroke-width="3" opacity=".35"/>
+  <!-- face -->
+  <g class="b-brows">
+    <path d="M84 96 Q94 88 104 95" fill="none" stroke="#2A1540" stroke-width="5" stroke-linecap="round"/>
+    <path d="M116 95 Q126 88 136 96" fill="none" stroke="#2A1540" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g class="b-eyes">
+    <ellipse cx="94" cy="112" rx="10" ry="12" fill="#fff" stroke="#2A1540" stroke-width="4"/>
+    <ellipse cx="126" cy="112" rx="10" ry="12" fill="#fff" stroke="#2A1540" stroke-width="4"/>
+    <circle class="b-pupil" cx="96" cy="114" r="5" fill="#2A1540"/>
+    <circle class="b-pupil" cx="128" cy="114" r="5" fill="#2A1540"/>
+  </g>
+  <circle cx="80" cy="140" r="8" fill="#FF3D8B" opacity=".35"/>
+  <circle cx="140" cy="140" r="8" fill="#FF3D8B" opacity=".35"/>
+  <path class="b-mouth-closed" d="M94 142 Q110 156 126 142" fill="none" stroke="#2A1540" stroke-width="5" stroke-linecap="round"/>
+  <g class="b-mouth-open">
+    <path d="M92 138 Q110 136 128 138 Q126 166 110 168 Q94 166 92 138 Z" fill="#5A1E3A" stroke="#2A1540" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M100 160 Q110 152 120 160 Q116 167 110 167 Q104 167 100 160 Z" fill="#FF6FA3"/>
+  </g>
+  <!-- bow tie -->
+  <g transform="translate(110 186)">
+    <path d="M0 0 L-20 -11 L-20 11 Z M0 0 L20 -11 L20 11 Z" fill="#7556FF" stroke="#2A1540" stroke-width="4" stroke-linejoin="round"/>
+    <circle r="6" fill="#FFC92E" stroke="#2A1540" stroke-width="4"/>
+  </g>
+</svg>
+    </div>
+    <div class="intro-floor" aria-hidden="true"></div>
+  </div>
+  <div class="intro-foot">
+    <div class="intro-bar"><span id="introBar"></span></div>
+    <span class="intro-caption" id="introCaption">Get ready…</span>
+    <button class="btn small" id="skipIntro" hidden>Skip intro</button>
+  </div>
+</div>
+<div class="overlay" id="overOverlay" hidden>
+  <div class="panel">
+    <p class="eyebrow">Game over</p>
+    <h2 id="overTitle"></h2>
+    <ol class="standings" id="standings"></ol>
+    <button class="btn pink" id="overLobby" hidden>Back to lobby</button>
+    <p class="note" id="overNote"></p>
+  </div>
+</div>
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+<script>
+// Built-in decks. "____" marks the blank on a prompt card.
+const BUILTIN_PACKS = {
+  classic: {
+    prompts: [
+      "The secret ingredient in Grandma's famous lasagna is ____.",
+      "My therapist says I need to stop talking about ____.",
+      "Breaking news: local man arrested for ____.",
+      "What's really inside the Bermuda Triangle? ____.",
+      "Nobody warned me that adulthood would be mostly ____.",
+      "My dating profile says I enjoy long walks and ____.",
+      "The museum's newest exhibit: ____.",
+      "I would've gotten away with it if it weren't for ____.",
+      "Scientists are baffled by ____.",
+      "The real reason dinosaurs went extinct: ____.",
+      "My superpower is ____, which is mostly useless.",
+      "What ruined the family reunion this year? ____.",
+      "Coming soon to a theater near you: ____: The Musical.",
+      "The ghost haunting my apartment just wants ____.",
+      "Step 1: ____. Step 2: Profit.",
+      "My last brain cell is dedicated entirely to ____.",
+      "The wedding was perfect until ____.",
+      "I'm not saying it was aliens, but it was definitely ____.",
+      "What's that smell coming from the attic? ____.",
+      "My New Year's resolution lasted three days because of ____.",
+      "The fortune cookie simply said: ____.",
+      "Tonight's nature documentary follows ____ in the wild.",
+      "What did I find at the bottom of my purse? ____.",
+      "The group chat went silent after someone sent ____.",
+      "My autobiography will be titled 'Me, Myself, and ____.'",
+    ],
+    answers: [
+      "A suspicious amount of glitter.", "Three raccoons in a trench coat.", "A haunted kazoo.",
+      "Aggressive interpretive dance.", "My ex's playlist.", "An emotional support goose.",
+      "Forty pounds of shredded cheese.", "A pirate with a fear of water.", "Unsolicited life advice.",
+      "A very confident pigeon.", "The world's slowest getaway car.", "Yelling at clouds professionally.",
+      "A disappointing magic trick.", "Socks with sandals.", "A llama in a business suit.",
+      "Crying in the cereal aisle.", "One single grape.", "A medieval jousting tournament.",
+      "Accidentally liking a photo from 2014.", "Ten thousand bees.", "A mime who won't stop talking.",
+      "Grandpa's mysterious past.", "A sourdough starter with feelings.", "Competitive napping.",
+      "Mall-walking at dawn.", "A trampoline park lawsuit.", "My inner monologue on speakerphone.",
+      "A wizard who only knows one spell.", "A goat named Kevin.", "Unexplained wet spots.",
+      "The sheer audacity.", "Interpretive yodeling.", "A cursed garden gnome.", "Spray-on hair.",
+      "A raccoon with a law degree.", "Forgetting why I walked into the room.", "A dramatic slow clap.",
+      "An aggressively loud sneeze.", "The Wi-Fi password.", "Fake confidence and real panic.",
+      "A sentient sandwich.", "Bigfoot's dating app profile.", "Kazoo-based conflict resolution.",
+      "A lifetime supply of ketchup packets.", "Napping in a ball pit.", "A ferret in a tiny hat.",
+      "Smugglers' hot sauce.", "The neighbor's suspiciously large shed.", "A goldfish with ambition.",
+      "Microwave fish in the break room.", "My fourth cup of coffee.", "A bagpipe solo.",
+      "Pretending to be busy.", "The disco era coming back for revenge.", "An unsupervised toddler with a marker.",
+      "A swan with anger issues.", "Overcommitting to an accent.", "Several pounds of bubble wrap.",
+      "A secret third cousin.", "Adorable tax fraud.",
+    ],
+  },
+  office: {
+    prompts: [
+      "This meeting could have been ____.",
+      "HR has asked us to stop bringing ____ to work.",
+      "My boss's new leadership strategy: ____.",
+      "My out-of-office reply just says: ____.",
+      "The new employee onboarding video is just ____.",
+      "Our company's core value is ____.",
+      "What's in the mystery container in the office fridge? ____.",
+      "I put ____ on my résumé and somehow got the job.",
+      "The quarterly team-building retreat featured ____.",
+      "The printer is jammed again because of ____.",
+      "I can't make the meeting because I'm dealing with ____.",
+      "The real reason Dave got promoted: ____.",
+      "My performance review said I need to work on ____.",
+      "Today's Zoom call was derailed by ____.",
+      "Employee of the month: ____.",
+      "The CEO's big announcement turned out to be ____.",
+      "Synergy is just a fancy word for ____.",
+      "The office holiday party will feature ____.",
+      "I was late to work because of ____.",
+      "Our new open-concept office mostly offers ____.",
+    ],
+    answers: [
+      "A 45-minute meeting about meetings.", "Reply-all chaos.", "Passive-aggressive sticky notes.",
+      "Pizza instead of a raise.", "Circling back.", "A spreadsheet that achieved sentience.",
+      "The forbidden stapler.", "Forgetting to unmute.", "A ring light and pure fear.",
+      "Synergizing the deliverables.", "Hiding in the supply closet.", "Pretending the Wi-Fi dropped.",
+      "A trust fall gone wrong.", "Stolen yogurt.", "The CEO's motivational ukulele.",
+      "A desk plant I've killed three times.", "Mandatory fun.", "An email with no subject line.",
+      "Microwaved salmon.", "A standing desk I never stand at.", "The intern who knows too much.",
+      "Twelve tabs of solitaire.", "Corporate-approved joy.", "A PowerPoint with 80 slides.",
+      "Leaving at 4:59 exactly.", "A lanyard of shame.", "Unlimited PTO that nobody takes.",
+      "The vending machine's revenge.", "My cat walking across the keyboard.", "A company-branded fleece vest.",
+      "Leveraging our core competencies.", "Fake typing noises.", "A fire drill during lunch.",
+      "Accidentally screen-sharing my search history.", "One more quick thing.", "The broken coffee machine.",
+      "A raise in the form of exposure.", "Ten people cc'd for no reason.", "Pivoting.",
+      "A LinkedIn post about crying.", "Hot-desking with a stranger's crumbs.", "An all-hands about morale.",
+    ],
+  },
+  food: {
+    prompts: [
+      "The chef's special tonight is ____ with a side of regret.",
+      "My grandma's secret recipe calls for one cup of ____.",
+      "Thanksgiving was ruined by ____.",
+      "The new pizza topping everyone's talking about: ____.",
+      "What's that crunch in my soup? ____.",
+      "The worst thing to bring to a potluck: ____.",
+      "Gordon Ramsay just yelled at me because of ____.",
+      "Today's smoothie is made with kale, banana, and ____.",
+      "The food truck that's taking over the city sells ____.",
+      "At the all-you-can-eat buffet, I lost control and ate ____.",
+      "The cereal box prize this year is ____.",
+      "My diet ended the moment I saw ____.",
+      "Tonight's cooking show challenge: make dessert out of ____.",
+      "I'm not allowed back at the Olive Garden because of ____.",
+      "Pair this fine wine with ____.",
+      "The gas station sushi tastes suspiciously like ____.",
+      "My food blog went viral for ____.",
+      "Hot new restaurant concept: ____, but fancy.",
+    ],
+    answers: [
+      "Mayonnaise-flavored ice cream.", "A rotisserie chicken eaten in the car.", "Pineapple on everything.",
+      "Spaghetti with ketchup.", "A suspicious gas-station burrito.", "Cheese that's been through things.",
+      "Pickle juice shots.", "A pumpkin spice everything.", "Expired yogurt.", "Glitter frosting.",
+      "A tofu that knows my secrets.", "Microwave-exploded eggs.", "Avocado toast for one hundred dollars.",
+      "The last slice of pizza.", "Candy corn's evil cousin.", "A charcuterie board for raccoons.",
+      "Deep-fried butter.", "Instant ramen at a wedding.", "Sprinkles as a food group.",
+      "A gravy fountain.", "Cold french fries at 3 a.m.", "A cake that's actually a shoe.",
+      "Artisanal Spam.", "Licking the spoon aggressively.", "A smoothie that fights back.",
+      "Ranch dressing in a wine glass.", "Kale nobody asked for.", "A beef jerky bouquet.",
+      "Sad desk salad.", "Fourteen hot sauces at once.", "A haunted soufflé.", "Hot dog water.",
+      "Unsupervised cheese fondue.", "The wrong kind of brownies.", "A burnt marshmallow massacre.",
+      "Bread that's mostly air.", "A cooking show meltdown.", "Mystery meat Monday.",
+    ],
+  },
+  family: {
+    prompts: [
+      "The new class pet is ____.",
+      "The principal canceled recess because of ____.",
+      "What did the dog bury in the backyard? ____.",
+      "My summer vacation was ruined by ____.",
+      "The science fair winner built ____.",
+      "Grandpa's favorite story is about ____.",
+      "The tooth fairy left me ____ instead of a dollar.",
+      "The newest theme park ride is ____.",
+      "Our family road trip got weird when we found ____.",
+      "My robot butler malfunctioned and now only does ____.",
+      "The secret to winning the talent show: ____.",
+      "Breaking news from the zoo: ____ escaped!",
+      "The wizard's spell went wrong and turned me into ____.",
+      "My little brother's imaginary friend is ____.",
+      "The best birthday present ever: ____.",
+      "On the field trip, we learned all about ____.",
+      "What's hiding under my bed? ____.",
+      "The superhero's sidekick is ____.",
+    ],
+    answers: [
+      "A penguin in sunglasses.", "A dancing broccoli.", "Bubble-wrap pajamas.", "A grumpy unicorn.",
+      "An endless sock drawer.", "A trampoline made of jelly.", "A dragon who loves knitting.",
+      "Grandma's mega-sneeze.", "A dinosaur who's afraid of mice.", "A whoopee cushion orchestra.",
+      "A dog that can talk but only about squirrels.", "Pancakes as tall as a house.", "A pirate parrot named Steve.",
+      "A spaceship made of cardboard.", "A sloth on roller skates.", "Bath-time bubbles gone wild.",
+      "A secret tunnel to the candy store.", "A llama that sneezes glitter.", "A very polite tornado.",
+      "Mismatched socks.", "A volcano made of pudding.", "Dad's terrible jokes.", "A cat that thinks it's a dog.",
+      "A treehouse with a hot tub.", "A homework-eating monster.", "Silly string everywhere.",
+      "An octopus giving hugs.", "A kangaroo mail carrier.", "A bouncy castle in space.",
+      "The world's biggest booger.", "A singing toothbrush.", "Robot dance moves.", "A marshmallow cannon.",
+      "A goldfish who wants to be a shark.", "A snowball fight in July.", "Burping the alphabet.",
+    ],
+  },
+  trolling: {
+    prompts: [
+      "My doctor asked how much I drink, so I told him about ____.",
+      "The rave was going great until ____.",
+      "Tonight's frat party theme: ____.",
+      "Grandma just discovered TikTok and now she won't stop talking about ____.",
+      "Back in 2010, the entire internet was obsessed with ____.",
+      "The final boss of this game is just ____.",
+      "My dealer now also sells ____.",
+      "Beer pong is cancelled because of ____.",
+      "The new energy drink flavor tastes exactly like ____.",
+      "Gen Z just made ____ a whole personality.",
+      "Day three of the music festival, and all I have left is ____.",
+      "The patch notes say they finally nerfed ____.",
+      "I peaked in 2010 when I discovered ____.",
+      "My For You page is nothing but ____ now.",
+      "The secret ingredient in this jungle juice is ____.",
+      "Speedrunners discovered you can skip the whole game with ____.",
+      "The edibles kicked in right as ____ walked in.",
+      "My Roman Empire is ____.",
+      "Nobody at the bar was ready for ____.",
+      "The DJ dropped the bass and released ____.",
+      "Achievement unlocked: ____.",
+      "The group chat's official mascot is now ____.",
+      "Rage quitting was justified because of ____.",
+      "My villain origin story involves ____.",
+      "This brewery's new IPA has notes of pine, citrus, and ____.",
+      "Scientists finally explain the appeal of ____.",
+      "Ten out of ten gamers agree the worst thing ever is ____.",
+      "Officer, I can explain ____.",
+      "The afterparty got weird when someone brought ____.",
+      "The new Twitch streamer's whole gimmick is ____.",
+    ],
+    answers: [
+      "A warm Natty Light.", "Shotgunning a beer in a Walmart parking lot.", "A guy explaining IPAs at a funeral.",
+      "Beer before liquor.", "A keg stand gone wrong.", "Jungle juice of unknown origin.",
+      "The edibles that never kicked in.", "The edibles that kicked in all at once.", "A guy named Shrooms Steve.",
+      "A drug dealer who only takes Venmo.", "Talking to a houseplant for three hours.", "Discovering the meaning of life in a gas station bathroom.",
+      "A fourteen-dollar bottle of water.", "Kandi bracelets up to the elbow.", "Losing all my friends at the main stage.",
+      "A totem pole with a Shrek face on it.", "The porta-potty at hour nine.", "A bass drop that rearranged my organs.",
+      "A rave grandpa in light-up shoes.", "Hugging a stranger for twenty minutes.", "Glow sticks in places glow sticks shouldn't go.",
+      "Very demure, very mindful behavior.", "Rizz.", "The Grimace Shake.", "Girl dinner.", "A sigma male grindset.",
+      "Skibidi Toilet.", "Mewing in a job interview.", "Aura points.", "Brainrot.", "Looksmaxxing.",
+      "The ick.", "An NPC livestream.", "Gatekeeping, gaslighting, and girlbossing.", "A forty-dollar Stanley cup.",
+      "Being chronically online.", "Ohio.", "Rage comics.", "Trollface.", "Nyan Cat.", "Planking on a stranger's car.",
+      "Getting Rickrolled at a funeral.", "A double rainbow all the way across the sky.", "Forever alone.",
+      "An arrow to the knee.", "Leeroy Jenkins.", "The cake, which is a lie.", "Pressing F to pay respects.",
+      "A 360 no-scope.", "Teabagging the final boss.", "Getting carried by a twelve-year-old.", "A creeper behind me.",
+      "Lag.", "Spawn camping.", "Mom saying it's her turn on the Xbox.", "Rushing B.", "A gamer chair with lumbar support.",
+      "Git gud.", "Respawning with no pants.", "A sweaty tryhard.", "An emergency meeting in Among Us.",
+      "A suspicious amount of sus.", "Touching grass.", "Ratio plus L plus you fell off.", "No cap.",
+      "Getting cooked.", "Main character energy.", "A Discord mod with too much power.", "Pregaming at a Taco Bell.",
+      "A beer bong made from a leaf blower.", "Waking up in a bounce house.", "Reply guys.", "The lore.",
+      "Trolling my own mother.", "Calling in sick to finish a raid.", "Hydrating with tequila.",
+    ],
+  },
+};
+
+
+</script>
+<script>
+(() => {
+  // ---------- constants ----------
+  const ID_PREFIX = "bobbys-laugh-factory-v1-";   // keeps our room ids apart from other PeerJS apps
+  const COLORS = ["#FF3D8B","#FF8A1F","#E5A800","#0FB9A8","#38A7FF","#7556FF","#C23BD4","#3FB84A"];
+  const POINTS = [5,7,10];
+  const TIMERS = [{v:0,l:"No limit"},{v:60,l:"60 s"},{v:90,l:"90 s"}];
+  const PACKS = [
+    {id:"classic", name:"Classic Chaos", desc:"The everyday absurd", c:"#FF3D8B"},
+    {id:"office",  name:"Office Hours",  desc:"Meetings, memos, mayhem", c:"#38A7FF"},
+    {id:"food",    name:"Food Fight",    desc:"Snacks gone sideways", c:"#FF8A1F"},
+    {id:"family",  name:"Family Night",  desc:"Kid-friendly and clean", c:"#0FB9A8"},
+    {id:"trolling", name:"We Do Some Trolling", desc:"Beer, raves, TikTok, old memes, gamer stuff", c:"#3FB84A"},
+  ];
+  const DEFAULT_SETTINGS = {points:7, timer:60, packs:["classic","food","family"], bobby:false, custom:null};
+  const MAX = 10, MIN = 3, HAND = 7;
+  const TEST_MODE = /*TEST_MODE*/false;   // true only in the private test copy on claude.ai: solo games with bots
+  const HEARTBEAT_MS = 4000, TIMEOUT_MS = 15000, REVEAL_MS = 10000;
+  const TOPICS_EACH = TEST_MODE ? 15 : 5, MAX_TOPICS = 50;   // the solo test copy lets one player add up to 15
+  const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const BLANK = "____";
+  const $ = id => document.getElementById(id);
+
+  // ---------- local prefs ----------
+  const store = {
+    get(k,d){ try{ const v = localStorage.getItem("pp."+k); return v==null?d:JSON.parse(v);}catch{ return d; } },
+    set(k,v){ try{ localStorage.setItem("pp."+k, JSON.stringify(v)); }catch{} },
+    trySet(k,v){ try{ localStorage.setItem("pp."+k, JSON.stringify(v)); return true; }catch{ return false; } }
+  };
+  // Card memory has a size limit. When a list gets close to it, the oldest quarter is cleared out in one go,
+  // so it never goes over. If the browser's storage is full anyway, it keeps halving until the save works.
+  const refresh = (list, cap) => list.length > cap ? list.slice(-Math.floor(cap * 0.75)) : list;
+  function saveCapped(key, shrink){
+    for(let i = 0; i < 6; i++){ const v = shrink(i); if(store.trySet(key, v)) return true; }
+    return false;
+  }
+  let myColor = store.get("color", COLORS[Math.floor(Math.random()*COLORS.length)]);
+  if(!COLORS.includes(myColor)) myColor = COLORS[0];
+  $("nick").value = store.get("nick","");
+  const params = new URLSearchParams(location.search);
+  const inviteCode = (params.get("join")||"").toUpperCase().replace(/[^A-Z]/g,"").slice(0,4);
+  if(inviteCode){ $("code").value = inviteCode; }
+  let hostBobby = !!store.get("hostBobby", false);
+  const syncHomeBobby = () => { $("homeBobby").setAttribute("aria-pressed", String(hostBobby)); $("hostBtn").textContent = hostBobby ? "Host a Bobby Style game" : "Host a new game"; };
+  $("homeBobby").addEventListener("click", () => { hostBobby = !hostBobby; store.set("hostBobby", hostBobby); syncHomeBobby(); });
+  syncHomeBobby();
+
+  const avWrap = $("avatars");
+  COLORS.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "av"; b.type="button"; b.style.background = c;
+    b.setAttribute("aria-label","Color "+c); b.setAttribute("aria-pressed", String(c===myColor));
+    b.addEventListener("click", () => { myColor = c; store.set("color",c);
+      avWrap.querySelectorAll(".av").forEach(x => x.setAttribute("aria-pressed", String(x===b))); updateAvLetters(); });
+    avWrap.appendChild(b);
+  });
+  function updateAvLetters(){ const n=($("nick").value.trim()[0]||"?").toUpperCase();
+    avWrap.querySelectorAll(".av").forEach(x => x.textContent = x.getAttribute("aria-pressed")==="true"? n : ""); }
+  $("nick").addEventListener("input", () => { store.set("nick",$("nick").value); updateAvLetters(); });
+  updateAvLetters();
+  $("code").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g,""); });
+  if(inviteCode){ $("joinWrap").classList.add("invited"); }
+  if(inviteCode && $("nick").value.trim()) $("joinBtn").focus(); else if(inviteCode) $("nick").focus();
+
+  let tt; function toast(msg, ms = 2800){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"), ms); }
+  const net = (on, txt) => { $("net").classList.toggle("on", on); $("netText").textContent = txt; };
+
+  // ---------- load PeerJS (browser-to-browser connections) ----------
+  // Tries a copy next to this page first, then three public CDNs, so one blocked site doesn't break the game.
+  const PEER_SOURCES = [
+    "peerjs.min.js",
+    "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js",
+    "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js",
+  ];
+  const peerReady = (async () => {
+    for(const src of PEER_SOURCES){
+      if(typeof Peer !== "undefined") return true;
+      const ok = await new Promise(res => {
+        const s = document.createElement("script");
+        s.src = src; s.async = true;
+        const t = setTimeout(() => res(false), 8000);
+        s.onload = () => { clearTimeout(t); res(typeof Peer !== "undefined"); };
+        s.onerror = () => { clearTimeout(t); s.remove(); res(false); };
+        document.head.appendChild(s);
+      });
+      if(ok) return true;
+    }
+    return false;
+  })();
+  net(false,"Loading…"); $("hostBtn").disabled = true; $("joinBtn").disabled = true;
+  peerReady.then(ok => {
+    $("hostBtn").disabled = !ok; $("joinBtn").disabled = !ok;
+    net(false, ok ? "Not connected" : "Can't connect");
+    if(!ok) $("homeErr").textContent = "The connection library was blocked. Try turning off your ad blocker or privacy shield for this site, or switch networks, then refresh.";
+  });
+
+  // ---------- helpers ----------
+  const clean = (s, n=16) => String(s||"").replace(/[\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim().slice(0,n);
+  const safeColor = c => COLORS.includes(c) ? c : "#7556FF";
+  const newCode = () => Array.from({length:4},()=>ALPHA[Math.floor(Math.random()*ALPHA.length)]).join("");
+  const nick = () => $("nick").value.trim().slice(0,16);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const rnd = n => { try{ const u = new Uint32Array(1); crypto.getRandomValues(u); return u[0] % n; }catch{ return Math.floor(Math.random()*n); } };
+  const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const rid = () => Math.random().toString(36).slice(2,8);
+  function needName(){ if(!nick()){ $("homeErr").textContent="Type a name first so your friends know who you are."; $("nick").focus(); return true;} return false; }
+  const setBusy = b => { $("hostBtn").disabled = b; $("joinBtn").disabled = b; };
+  const sortedPlayers = () => game ? [...game.players].sort((a,b)=>a.joinedAt-b.joinedAt) : [];
+  const playerById = id => game?.players.find(p => p.id === id);
+
+  // ---------- deck codes ----------
+  // BLF1.<base64url of deflate-raw JSON>  (BLF0. = uncompressed JSON, for older browsers)
+  const b64urlToBytes = s => { s = s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; const bin = atob(s); return Uint8Array.from(bin, c => c.charCodeAt(0)); };
+  async function inflate(bytes){
+    const ds = new DecompressionStream("deflate-raw");
+    const out = new Response(new Blob([bytes]).stream().pipeThrough(ds));
+    return new TextDecoder().decode(await out.arrayBuffer());
+  }
+  async function decodeDeck(code){
+    code = String(code||"").replace(/\s+/g,"");
+    const m = code.match(/^BLF([01])\.([A-Za-z0-9_-]+)$/);
+    if(!m) throw new Error("That doesn't look like a deck code. Copy the whole code from the Deck Maker, starting with BLF.");
+    let json;
+    try{
+      const bytes = b64urlToBytes(m[2]);
+      json = m[1]==="1" ? await inflate(bytes) : new TextDecoder().decode(bytes);
+    }catch{ throw new Error("That deck code is incomplete or damaged. Copy it again from the Deck Maker."); }
+    let d; try{ d = JSON.parse(json); }catch{ throw new Error("That deck code is incomplete or damaged. Copy it again from the Deck Maker."); }
+    const name = clean(d.n||"Custom deck", 40) || "Custom deck";
+    const topics = (Array.isArray(d.t)?d.t:[]).map(x=>clean(x,40)).filter(Boolean).slice(0,50);
+    // each card is "text" or ["text", topicIndex]; the label is its topic, or the deck name for general cards
+    const card = (x, n) => { const t = clean(Array.isArray(x) ? x[0] : x, n); const ti = Array.isArray(x) ? x[1] : -1;
+      return t ? {t, s: (Number.isInteger(ti) && topics[ti]) ? topics[ti] : name} : null; };
+    const seenT = new Set();
+    const uniq = c => c && !seenT.has(c.t) && seenT.add(c.t);
+    const prompts = (Array.isArray(d.p)?d.p:[]).map(x => card(x,160)).filter(uniq).slice(0,300)
+      .map(c => c.t.includes(BLANK) ? c : {...c, t: c.t.replace(/[.?!]*$/,"") + ": " + BLANK + "."});
+    const answers = (Array.isArray(d.a)?d.a:[]).map(x => card(x,120)).filter(uniq).slice(0,900);
+    if(prompts.length < 5 || answers.length < 20) throw new Error("That deck is too small. It needs at least 5 prompts and 20 answers.");
+    return {name, bobby: !!d.b, topics, prompts, answers};
+  }
+
+  // ---------- shared state ----------
+  // The host's browser is the source of truth. Everyone else renders what the host sends.
+  let peer = null, isHost = false, myId = null, code = null;
+  let game = null;        // public state, broadcast to everyone
+  let myHand = [];        // my private hand: cards {t: text, s: source pack/topic}
+  let mySubmitted = null; // card I played this round
+  let selected = null;    // index into hand / option key
+  let clockSkew = 0;      // host clock minus my clock
+  const conns = new Map(), lastSeen = new Map();
+  let hostConn = null, lastHostMsg = 0, timers = [];
+  let ageOk = false, myDealt = false;
+  // host-only private state
+  let H = null;           // {deck, promptPile, answerPile, hands:Map, subs:Map, keyMap:Map, revealTimer}
+
+  // ---------- hosting ----------
+  function startHosting(attempt=0){
+    setBusy(true); $("homeErr").textContent = ""; net(false,"Opening a room…");
+    const c = newCode();
+    const p = new Peer(ID_PREFIX + c, {debug:0});
+    p.on("open", id => setupHost(p, id, c));
+    p.on("connection", conn => {
+      conn.on("data", d => { lastSeen.set(conn.peer, Date.now()); if(d && typeof d==="object"){ if(d.t==="hello") onHello(conn, d); else act(conn.peer, d); } });
+      conn.on("close", () => dropPlayer(conn.peer));
+      conn.on("error", () => dropPlayer(conn.peer));
+    });
+    p.on("disconnected", () => { if(!p.destroyed){ net(false,"Reconnecting…"); try{ p.reconnect(); }catch{} } });
+    p.on("open", () => net(true,"Hosting"));
+    p.on("error", e => {
+      if(e.type === "unavailable-id" && attempt < 5){ p.destroy(); startHosting(attempt+1); return; }
+      if(!isHost){ setBusy(false); p.destroy(); net(false,"Not connected");
+        $("homeErr").textContent = "Couldn't open a room. The connection service may be busy, so try again in a moment."; }
+    });
+  }
+  function setupHost(p, id, c){
+      peer = p; isHost = true; myId = id; code = c; ageOk = hostBobby;
+      game = {players:[{id, nick:clean(nick())||"Host", color:myColor, ready:false, adult:hostBobby, joinedAt:Date.now(), host:true}],
+              settings:{...DEFAULT_SETTINGS, packs:[...DEFAULT_SETTINGS.packs], bobby:hostBobby},
+              phase:"lobby", topics:[], scores:{}, round:null, now:Date.now()};
+      H = {deck:null, promptPile:[], answerPile:[], hands:new Map(), subs:new Map(), keyMap:new Map(), revealTimer:0};
+      net(true,"Hosting");
+      timers.push(setInterval(() => { sweep(); broadcast(); }, HEARTBEAT_MS));
+      timers.push(setInterval(hostTick, 1000));
+      timers.push(setInterval(botTick, 500));   // bots the host adds play on their own
+      setBusy(false); showView();
+  }
+
+  // ---------- solo test mode (private test copy only) ----------
+  // Hosts with no network and adds two bots that ready up, play cards, and judge on their own.
+  const BOTS = [{nick:"Bot Bea", color:"#38A7FF"}, {nick:"Bot Bo", color:"#3FB84A"}];
+  function startSoloTest(){
+    setupHost({destroy(){}, destroyed:false}, "local-host", "TEST");
+    net(true, "Solo test");
+    BOTS.forEach(() => addBot(true));
+    broadcast(); toast("Solo test game: two bots joined. Ready up and press Start.");
+  }
+  // ---------- card ratings (host keeps them across games) ----------
+  let RATINGS = store.get("ratings", {});   // text -> {k: "p"|"a", s: source, up, down}
+  function rateCard(kind, card, prev, v){
+    const e = RATINGS[card.t] || (RATINGS[card.t] = {k: kind, s: card.s || "", up: 0, down: 0});
+    if(prev === 1) e.up = Math.max(0, e.up - 1); if(prev === -1) e.down = Math.max(0, e.down - 1);
+    if(v === 1) e.up++; if(v === -1) e.down++;
+    const keys = Object.keys(RATINGS); if(keys.length > 3000) keys.slice(0, keys.length - 2250).forEach(k => delete RATINGS[k]);   // clear the oldest quarter
+    saveCapped("ratings", i => { if(i){ const ks = Object.keys(RATINGS); ks.slice(0, Math.floor(ks.length / 2)).forEach(k => delete RATINGS[k]); } return RATINGS; }); if(!$("ratingsBox").hidden) renderRatingsBox();
+  }
+  // BLR1.<base64url of deflate-raw JSON> — the most liked and disliked cards, for the Deck Maker
+  async function ratingsCode(){
+    const all = Object.entries(RATINGS).map(([t, e]) => ({t, k: e.k, score: e.up - e.down, n: e.up + e.down}));
+    const pick = (k, dir) => all.filter(c => c.k === k && (dir > 0 ? c.score > 0 : c.score < 0))
+      .sort((a, b) => dir > 0 ? b.score - a.score || b.n - a.n : a.score - b.score || b.n - a.n).slice(0, 60).map(c => c.t);
+    const data = {v:1, l:{p:pick("p",1), a:pick("a",1)}, d:{p:pick("p",-1), a:pick("a",-1)}};
+    const bytes = new TextEncoder().encode(JSON.stringify(data));
+    const toB64 = u8 => { let s = ""; u8.forEach(b => s += String.fromCharCode(b)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); };
+    try{
+      const buf = await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer();
+      return "BLR1." + toB64(new Uint8Array(buf));
+    }catch{ return "BLR0." + toB64(bytes); }
+  }
+  function renderRatingsBox(){
+    const vals = Object.values(RATINGS), liked = vals.filter(e => e.up > e.down).length, disliked = vals.filter(e => e.down > e.up).length;
+    $("ratingsNote").textContent = vals.length ? `${vals.length} cards rated on this device: ${liked} liked, ${disliked} disliked.` : "No ratings yet. Players rate cards with thumbs up or down after each round.";
+    $("copyRatings").disabled = !(liked + disliked);
+    $("ratingsSum").textContent = vals.length ? `${vals.length} rated · ${liked} liked` : "None yet";
+  }
+
+  // ---------- bots (host only) ----------
+  const BOT_NAMES = ["Bot Bea", "Bot Bo", "Bot Pickle", "Bot Ziggy", "Bot Nova", "Bot Sprout", "Bot Gus", "Bot Lulu", "Bot Waffles"];
+  function addBot(quiet){
+    if(!isHost || !game || game.phase !== "lobby") return;
+    if(game.players.length >= MAX){ toast("The room is full (10 players)."); return; }
+    const taken = new Set(game.players.map(p => p.nick));
+    const nick = [...store.get("botNames", []), ...BOT_NAMES].find(n => !taken.has(n)) || `Bot ${game.players.length + 1}`;
+    const color = COLORS[(game.players.filter(p => p.bot).length + 3) % COLORS.length];
+    game.players.push({id:"bot-" + rid(), nick, color, ready:true, adult:true, joinedAt:Date.now(), host:false, bot:true});
+    if(!quiet) toast(`${nick} joined. Tap its name to rename it.`);
+    broadcast();
+  }
+  let renamingId = null, renameDraft = "";
+  function renameBot(id, value){
+    const b = playerById(id); renamingId = null; if(!b || !b.bot){ renderLobby(); return; }
+    const nick = clean(value, 16);
+    if(!nick || nick === b.nick){ renderLobby(); return; }
+    if(game.players.some(p => p.id !== id && p.nick.toLowerCase() === nick.toLowerCase())){ toast("Someone already has that name."); renderLobby(); return; }
+    const old = b.nick; b.nick = nick;
+    // remembered on this device, so "Add a bot" uses your names first next time
+    store.set("botNames", [nick, ...store.get("botNames", []).filter(n => n !== nick && n !== old)].slice(0, 9));
+    broadcast();
+  }
+  const botWait = new Map();   // bot id -> when it will act
+  function botTick(){
+    if(!isHost || !game) return;
+    const r = game.round, now = Date.now();
+    game.players.filter(p => p.bot).forEach(b => {
+      if(game.phase === "lobby"){ if(!b.ready || !b.adult){ b.ready = true; b.adult = true; broadcast(); } return; }
+      if(game.phase !== "playing" || !r) return;
+      const key = `${b.id}:${r.n}:${r.stage}`;
+      if(r.stage === "picking" && r.judge !== b.id && !H.subs.has(b.id) && H.hands.get(b.id)?.length){
+        if(!botWait.has(key)) botWait.set(key, now + 1500 + rnd(4000));
+        else if(now >= botWait.get(key)) act(b.id, {t:"play", i: rnd(H.hands.get(b.id).length)});
+      }
+      if(r.stage === "reveal" && !(r.reacts||[]).some(x => x.id === b.id)){
+        if(!botWait.has(key)) botWait.set(key, rnd(10) < 4 ? now + 1000 + rnd(3500) : Infinity);
+        else if(now >= botWait.get(key)){ act(b.id, {t:"react", r: rnd(3) ? "clap" : "boo"}); botWait.set(key, Infinity); }
+      }
+      if(r.stage === "judging" && r.judge === b.id && r.options.length){
+        if(!botWait.has(key)) botWait.set(key, now + 3000 + rnd(3000));
+        else if(now >= botWait.get(key)){
+          // bot judges: 75% of the time pick a real player's answer, 25% of the time any answer at random
+          const human = r.options.filter(o => !playerById(H.keyMap.get(o.k))?.bot);
+          const pool = (human.length && rnd(100) < 75) ? human : r.options;
+          act(b.id, {t:"pick", k: pool[rnd(pool.length)].k});
+        }
+      }
+    });
+  }
+
+  function onHello(conn, d){
+    const existing = playerById(conn.peer);
+    if(!existing && game.players.length >= MAX){ conn.send({t:"full"}); setTimeout(()=>conn.close(), 300); return; }
+    conns.set(conn.peer, conn);
+    if(existing){ existing.nick = clean(d.nick)||"Player"; existing.color = safeColor(d.color); }
+    else {
+      game.players.push({id:conn.peer, nick:clean(d.nick)||"Player", color:safeColor(d.color), ready:false, adult:d.adult===true, joinedAt:Date.now(), host:false});
+      toast(`${clean(d.nick)||"Someone"} clocked in!`);
+      if(game.phase !== "lobby") game.scores[conn.peer] = game.scores[conn.peer] || 0;
+    }
+    broadcast();
+  }
+
+  // Every player action, from the host itself or from a guest, goes through here.
+  function act(id, d){
+    const pl = playerById(id); if(!pl || !d) return;
+    const s = game.settings, r = game.round;
+    switch(d.t){
+      case "ready":
+        if(game.phase !== "lobby") return;
+        if(d.adult === true) pl.adult = true;
+        if(d.ready && s.bobby && !pl.adult) return;
+        pl.ready = !!d.ready; break;
+      case "adult":
+        pl.adult = true; break;
+      case "topic": {
+        if(game.phase !== "lobby") return;
+        const text = clean(d.text, 40);
+        if(text.length < 2) return;
+        if(game.topics.length >= MAX_TOPICS) return;
+        if(game.topics.filter(t => t.by === id).length >= TOPICS_EACH) return;
+        if(game.topics.some(t => t.text.toLowerCase() === text.toLowerCase())) return;
+        game.topics.push({id:rid(), by:id, text}); break;
+      }
+      case "untopic":
+        game.topics = game.topics.filter(t => !(t.id === d.id && (t.by === id || id === myId && isHost))); break;
+      case "play": {
+        if(game.phase !== "playing" || !r || r.stage !== "picking" || id === r.judge) return;
+        const hand = H.hands.get(id); if(!hand || H.subs.has(id)) return;
+        const i = d.i|0; if(i < 0 || i >= hand.length) return;
+        const [card] = hand.splice(i,1);
+        H.subs.set(id, card); r.submitted.push(id);
+        if(allIn()) toJudging(); break;
+      }
+      case "refresh": {
+        if(game.phase !== "playing" || !H.hands.has(id) || game.refreshUsed?.[id]) return;
+        if(r && r.stage === "picking" && H.subs.has(id)) return;
+        H.discard.push(...H.hands.get(id)); H.hands.set(id, []); dealIn(id);
+        game.refreshUsed = {...(game.refreshUsed||{}), [id]:true};
+        break;
+      }
+      case "react": {
+        // one boo or clap per player per round, after the judge picks
+        if(game.phase !== "playing" || !r || r.stage !== "reveal" || !["boo","clap"].includes(d.r)) return;
+        if((r.reacts||[]).some(x => x.id === id)) return;
+        r.reacts = [...(r.reacts||[]), {id, r:d.r, k:rid()}];
+        break;
+      }
+      case "vote": {
+        // thumbs up/down on the prompt or a played answer; each player gets one vote per card
+        if(game.phase !== "playing" || !r || r.stage !== "reveal" || ![1,-1,0].includes(d.v)) return;
+        const kind = d.c === "p" ? "p" : "a";
+        const card = kind === "p" ? r.prompt : r.options.find(o => o.k === d.c);
+        if(!card) return;
+        const mine = {...((r.votes||{})[id] || {})}, key = kind === "p" ? "p" : d.c, prev = mine[key] || 0;
+        if(prev === d.v) return;
+        mine[key] = d.v; r.votes = {...(r.votes||{}), [id]: mine};
+        rateCard(kind, card, prev, d.v);
+        break;
+      }
+      case "skipIntro":
+        if(id === myId && isHost && game.phase === "intro") endIntro();
+        return;
+      case "pick": {
+        if(game.phase !== "playing" || !r || r.stage !== "judging" || id !== r.judge) return;
+        const winner = H.keyMap.get(d.k); if(winner === undefined) return;
+        const opt = r.options.find(o => o.k === d.k);
+        r.stage = "reveal"; r.winKey = d.k; r.winner = winner; r.winCard = opt; r.deadline = null;
+        r.options = r.options.map(o => ({...o, by: H.keyMap.get(o.k)}));   // reveal who played what
+        r.reacts = []; r.votes = {}; r.revealAt = Date.now();
+        if(playerById(winner)) game.scores[winner] = (game.scores[winner]||0) + 1;
+        H.subs.forEach(t => H.discard.push(t));
+        clearTimeout(H.revealTimer);
+        H.revealTimer = setTimeout(() => {
+          const champ = sortedPlayers().find(p => (game.scores[p.id]||0) >= s.points);
+          if(champ){ endGame(""); }
+          else newRound();
+        }, REVEAL_MS);
+        break;
+      }
+      default: return;
+    }
+    broadcast();
+  }
+
+  function allIn(){
+    const r = game.round;
+    return activeIds().filter(id => id !== r.judge).every(id => H.subs.has(id));
+  }
+  const activeIds = () => sortedPlayers().map(p => p.id).filter(id => H.hands.has(id));
+
+  // Cards the host has seen in earlier games, so fresh ones get dealt first.
+  const hashT = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) | 0; return (h>>>0).toString(36); };
+  let seenCards = new Set(store.get("seen", []));
+  const saveSeen = () => {
+    let arr = refresh([...seenCards], 4000); seenCards = new Set(arr);
+    saveCapped("seen", i => { if(i){ arr = arr.slice(-Math.floor(arr.length / 2)); seenCards = new Set(arr); } return arr; });
+  };
+  const PACK_NAMES = Object.fromEntries(PACKS.map(p => [p.id, p.name]));
+  function buildPiles(){
+    const s = game.settings;
+    let prompts = [], answers = [];
+    const add = (pk, label) => { prompts.push(...pk.prompts.map(t => ({t, s:label}))); answers.push(...pk.answers.map(t => ({t, s:label}))); };
+    // Bobby Style plays only the cards generated from the players' topics; built-in packs are for normal games
+    if(!s.bobby) (s.packs||[]).forEach(id => { const pk = BUILTIN_PACKS[id]; if(pk) add(pk, PACK_NAMES[id] || id); });
+    if(H.deck){ prompts.push(...H.deck.prompts); answers.push(...H.deck.answers); }
+    // piles are drawn from the end: unseen cards go last so they come out first
+    const pile = list => { const fresh = [], old = [];
+      const dup = new Set(); list.forEach(c => { if(dup.has(c.t)) return; dup.add(c.t); (seenCards.has(hashT(c.t)) ? old : fresh).push(c); });
+      return [...shuffle(old), ...shuffle(fresh)]; };
+    H.promptPile = pile(prompts); H.answerPile = pile(answers); H.discard = [];
+  }
+  // No recycling: once a card is played or dealt it never comes back this game.
+  function drawAnswer(){ const c = H.answerPile.pop() || null; if(c) seenCards.add(hashT(c.t)); return c; }
+  function drawPrompt(){ const c = H.promptPile.pop() || null; if(c) seenCards.add(hashT(c.t)); return c; }
+  function dealIn(id){
+    const hand = H.hands.get(id) || [];
+    while(hand.length < HAND){ const c = drawAnswer(); if(!c) break; hand.push(c); }
+    H.hands.set(id, hand);
+  }
+
+  function startGame(){
+    buildPiles();
+    H.hands = new Map(); game.scores = {}; game.refreshUsed = {};
+    sortedPlayers().forEach(p => { game.scores[p.id] = 0; dealIn(p.id); });
+    game.round = null;
+    // Bobby's intro plays first; the first round starts when it ends (or the host skips it)
+    game.phase = "intro"; game.introAt = Date.now();
+    game.introLen = introLen();
+    const len = (game.settings.bobby ? INTRO_PREROLL : 0) + game.introLen;
+    clearTimeout(H.introTimer);
+    H.introTimer = setTimeout(endIntro, len * 1000);
+    broadcast();
+  }
+  function endIntro(){
+    clearTimeout(H.introTimer);
+    if(!game || game.phase !== "intro") return;
+    game.phase = "playing";
+    newRound(true);
+  }
+
+  function newRound(first){
+    clearTimeout(H.revealTimer);
+    const s = game.settings, prev = game.round;
+    // deal in anyone waiting (late joiners) who's allowed to play
+    sortedPlayers().forEach(p => { if(s.bobby && !p.adult) return; if(game.scores[p.id] == null) game.scores[p.id] = 0; dealIn(p.id); });
+    const ids = activeIds();
+    if(ids.length < MIN){ toLobby(`Not enough players to keep going (need ${MIN}). Back to the lobby.`); return; }
+    let judge;
+    if(first || !prev) judge = ids[rnd(ids.length)];
+    else { const i = ids.indexOf(prev.judge); judge = ids[(i+1) % ids.length] ?? ids[0]; if(i === -1) judge = ids[0]; }
+    saveSeen();
+    const outOfAnswers = ids.some(id => id !== judge && !(H.hands.get(id)||[]).length);
+    if(!H.promptPile.length || outOfAnswers){ endGame("The deck ran out of fresh cards, so the game is over. Make a new deck for next time!"); return; }
+    H.subs = new Map(); H.keyMap = new Map();
+    const pickVoice = (n, last) => { if(!n) return 0; if(n === 1) return 1; let v; do{ v = 1 + rnd(n); }while(v === last); return v; };
+    game.round = {n:(prev?.n||0)+1, judge, players:ids, prompt:drawPrompt(),
+                  v30: pickVoice(VOICES[30], prev?.v30), v15: pickVoice(VOICES[15], prev?.v15),
+                  say30: pickLine(30, prev?.say30), say15: pickLine(15, prev?.say15), stage:"picking", submitted:[], options:[], winner:null, winKey:null, winCard:null,
+                  deadline: s.timer ? Date.now() + s.timer*1000 : null};
+    broadcast();
+  }
+  function endGame(note){
+    clearTimeout(H.revealTimer); saveSeen();
+    game.phase = "over"; game.round = null; game.endNote = note || "";
+    broadcast();
+  }
+
+  function toJudging(){
+    const r = game.round;
+    if(!H.subs.size){ toast("Nobody played a card. Skipping to the next round."); newRound(); return; }
+    const entries = shuffle([...H.subs.entries()]);
+    r.options = entries.map(([pid, card]) => { const k = rid(); H.keyMap.set(k, pid); return {k, t:card.t, s:card.s}; });
+    r.stage = "judging"; r.deadline = null;
+    r.judgeAt = Date.now();
+    const pool = shuffle([...(LINES.j||[])]); r.nags = pool.slice(0, 3);
+  }
+
+  function hostTick(){
+    if(!isHost || !game || game.phase !== "playing") return;
+    const r = game.round;
+    if(r && r.stage === "picking" && r.deadline && Date.now() > r.deadline){
+      // time's up: play a random card for anyone who didn't pick
+      activeIds().filter(id => id !== r.judge && !H.subs.has(id)).forEach(id => {
+        const hand = H.hands.get(id); if(!hand.length) return;
+        const [card] = hand.splice(rnd(hand.length),1);
+        H.subs.set(id, card); r.submitted.push(id);
+      });
+      toJudging(); broadcast();
+    }
+  }
+
+  function toLobby(msg){
+    if(H){ clearTimeout(H.revealTimer); clearTimeout(H.introTimer); H.hands = new Map(); H.subs = new Map(); }
+    game.phase = "lobby"; game.round = null; game.scores = {}; game.endNote = "";
+    game.players.forEach(p => { p.ready = false; });
+    if(msg) toast(msg);
+    broadcast();
+  }
+
+  function stateFor(id){
+    const r = game.round;
+    return {t:"state", game:{...game, now:Date.now()}, you:id,
+            hand: H.hands.get(id) || [], mine: r && H.subs.get(id) || null, dealt: H.hands.has(id)};
+  }
+  function broadcast(){
+    if(!isHost || !game) return;
+    conns.forEach((c, id) => { if(c.open){ try{ c.send(stateFor(id)); }catch{} } });
+    applyState(stateFor(myId));
+  }
+
+  function dropPlayer(id){
+    if(!isHost || !game) return;
+    conns.delete(id); lastSeen.delete(id);
+    const pl = playerById(id); if(!pl) return;
+    game.players = game.players.filter(p => p.id !== id);
+    game.topics = game.topics.filter(t => t.by !== id);
+    toast(`${pl.nick} left.`);
+    if((game.phase === "playing" || game.phase === "intro") && H.hands.has(id)){
+      const hand = H.hands.get(id); H.discard.push(...hand); H.hands.delete(id);
+      const r = game.round;
+      if(activeIds().length < MIN){ toLobby(`Not enough players to keep going (need ${MIN}). Back to the lobby.`); return; }
+      if(r && r.judge === id && r.stage !== "reveal"){ toast("The judge left. Starting a new round."); H.subs.forEach(t => H.discard.push(t)); newRound(); return; }
+      if(r && r.stage === "picking"){ H.subs.delete(id); r.submitted = r.submitted.filter(x => x !== id); if(allIn() && H.subs.size) toJudging(); }
+    }
+    broadcast();
+  }
+  function sweep(){
+    const now = Date.now();
+    game.players.forEach(p => { if(!p.host && !p.bot && now - (lastSeen.get(p.id)||0) > TIMEOUT_MS) dropPlayer(p.id); });
+  }
+  function kick(id){
+    const c = conns.get(id);
+    if(c){ try{ c.send({t:"kicked"}); }catch{} setTimeout(()=>{ try{c.close();}catch{} }, 300); }
+    dropPlayer(id);
+  }
+  function hostUpdate(patch){ Object.assign(game, patch); broadcast(); }
+
+  // ---------- joining ----------
+  function joinGame(c){
+    setBusy(true); $("homeErr").textContent = ""; net(false,"Finding the room…");
+    const p = new Peer({debug:0});
+    let gotState = false;
+    const fail = msg => { if(gotState) return; setBusy(false); try{ p.destroy(); }catch{} net(false,"Not connected"); $("homeErr").textContent = msg; };
+    const giveUp = setTimeout(() => fail(`Couldn't reach a game with code ${c}. Double-check the letters with your host.`), 10000);
+    p.on("open", id => {
+      peer = p; myId = id;
+      const conn = p.connect(ID_PREFIX + c, {reliable:true});
+      conn.on("open", () => { conn.send({t:"hello", nick:nick(), color:myColor, adult:ageOk}); });
+      conn.on("data", d => {
+        if(!d || typeof d !== "object") return;
+        lastHostMsg = Date.now();
+        if(d.t === "state" && d.game && Array.isArray(d.game.players)){
+          if(!gotState){
+            gotState = true; clearTimeout(giveUp); hostConn = conn; code = c; isHost = false;
+            net(true,"Connected"); setBusy(false);
+            timers.push(setInterval(() => {
+              if(conn.open) conn.send({t:"ping"});
+              if(Date.now() - lastHostMsg > TIMEOUT_MS) backHome("Lost the connection to the host.");
+            }, HEARTBEAT_MS));
+          }
+          applyState(d);
+        } else if(d.t === "full"){ clearTimeout(giveUp); fail("That room is full (10 players)."); }
+        else if(d.t === "kicked"){ backHome("The host removed you from the game."); }
+        else if(d.t === "closed"){ backHome("The host ended the game."); }
+      });
+      conn.on("close", () => { if(gotState) backHome("The host left, so the game ended."); });
+    });
+    p.on("error", e => {
+      if(e.type === "peer-unavailable"){ clearTimeout(giveUp); fail(`No game found with code ${c}. Double-check the letters with your host.`); }
+      else if(!gotState){ clearTimeout(giveUp); fail("Couldn't connect. Check your internet connection and try again."); }
+    });
+    p.on("disconnected", () => { if(!p.destroyed) try{ p.reconnect(); }catch{} });
+  }
+  function send(d){ if(isHost) act(myId, d); else if(hostConn?.open) hostConn.send(d); }
+
+  // ---------- receiving state ----------
+  let lastRoundKey = "", lastPhase = "";
+  const seenReacts = new Set();
+  function showReaction(x){
+    const p = playerById(x.id), name = x.id === myId ? "You" : (p ? p.nick : "Someone");
+    const el = document.createElement("div"); el.className = "react-pop " + x.r;
+    el.innerHTML = `<span class="dot" style="background:${safeColor(p?.color)}">${esc((name[0]||"?").toUpperCase())}</span><b>${esc(name)}</b> ${x.r === "clap" ? "clapped 👏" : "booed 👎"}`;
+    $("reactPops").appendChild(el); setTimeout(() => el.remove(), 2600);
+    x.r === "clap" ? sfx.clap() : sfx.boo();
+  }
+  function applyState(d){
+    const prevPhase = game?.phase;
+    if(!isHost){ game = d.game; if(typeof game.now === "number") clockSkew = game.now - Date.now(); }
+    myId = d.you || myId; myHand = Array.isArray(d.hand) ? d.hand : [];
+    mySubmitted = d.mine || null; myDealt = !!d.dealt;
+    const r = game.round;
+    const rk = r ? `${r.n}:${r.stage}` : game.phase;
+    if(rk !== lastRoundKey){ selected = null; lastRoundKey = rk;
+      if(r && r.stage === "reveal" && r.winner === myId) burst(140);
+    }
+    if(r && r.stage === "reveal") (r.reacts||[]).forEach(x => { if(!seenReacts.has(x.k)){ seenReacts.add(x.k); showReaction(x); } });
+    if(game.phase === "over" && lastPhase !== "over"){ burst(200); stopGameMusic(); }   // the loop plays until the game ends
+    if(game.phase === "intro" && lastPhase !== "intro") beginIntro();
+    if(game.phase === "playing" && (lastPhase === "lobby" || lastPhase === "intro")){
+      endIntroView();
+      if(!musicAllowed) startGameMusic();
+    }
+    // the game loop plays in the lobby too, so players can set the volume before the intro
+    if(game.phase === "lobby" && lastPhase !== "lobby") startGameMusic(0);
+    lastPhase = game.phase;
+    showView();
+  }
+
+  // ---------- leaving ----------
+  function teardown(){
+    timers.forEach(clearInterval); timers = [];
+    if(H) clearTimeout(H.revealTimer);
+    if(isHost){ conns.forEach(c => { try{ c.send({t:"closed"}); }catch{} }); }
+    const p = peer;
+    setTimeout(() => { try{ p?.destroy(); }catch{} }, 200);
+    stopGameMusic(); endIntroView();
+    peer = null; isHost = false; myId = null; code = null; game = null; hostConn = null; ageOk = false; H = null;
+    myHand = []; mySubmitted = null; myDealt = false; selected = null; lastRoundKey = ""; lastPhase = "";
+    conns.clear(); lastSeen.clear();
+    $("ageBox").hidden = true; $("tableAge").hidden = true;
+  }
+  function backHome(msg){
+    if(!game && !peer) return;
+    teardown();
+    ["lobbyView","tableView","overOverlay"].forEach(v => $(v).hidden = true); $("homeView").hidden = false;
+    net(false,"Not connected"); setBusy(false);
+    if(msg) $("homeErr").textContent = msg;
+  }
+  window.addEventListener("beforeunload", () => { if(isHost) conns.forEach(c => { try{ c.send({t:"closed"}); }catch{} }); });
+
+  // ---------- views ----------
+  let shownView = "";
+  function showView(){
+    if(!game) return;
+    const v = game.phase === "lobby" ? "lobby" : "table";
+    $("homeView").hidden = true;
+    $("lobbyView").hidden = v !== "lobby";
+    $("tableView").hidden = v !== "table";
+    $("overOverlay").hidden = game.phase !== "over";
+    $("intro").hidden = game.phase !== "intro";
+    if(v !== shownView){ shownView = v; window.scrollTo({top:0}); }
+    $("roomCode").textContent = code;
+    $("hostNote").hidden = !isHost;
+    if(v === "lobby") renderLobby(); else renderTable();
+    if(game.phase === "over") renderOver();
+  }
+
+  const lobbySeen = new Set();
+  function renderLobby(){
+    const ps = sortedPlayers().slice(0,MAX);
+    const me = playerById(myId);
+    const ul = $("players");
+    // while the host is typing a bot's new name, leave the player cards alone so the box stays open
+    const editing = renamingId && document.getElementById("rename-" + renamingId);
+    if(!editing) ul.innerHTML = "";
+    if(!editing) ps.forEach(p => {
+      const li = document.createElement("li"); li.className = "pcard" + (lobbySeen.has(p.id) ? "" : " deal"); lobbySeen.add(p.id);
+      li.innerHTML = `<div class="who"><span class="dot" style="background:${safeColor(p.color)}">${esc((p.nick[0]||"?").toUpperCase())}</span><span class="nm">${esc(p.nick)}</span></div>
+        <div class="tags">${p.host?'<span class="tag host">Host</span>':''}${p.id===myId?'<span class="tag you">You</span>':''}${p.bot?'<span class="tag you">Bot</span>':''}</div>
+        <span class="state ${p.ready?'ready':'wait'}"><i></i>${p.ready?'Ready':'Picking a snack…'}</span>`;
+      if(isHost && p.bot){
+        const nm = li.querySelector(".nm");
+        if(renamingId === p.id){
+          const inp = document.createElement("input"); inp.type = "text"; inp.className = "bot-rename"; inp.maxLength = 16;
+          inp.id = "rename-" + p.id; inp.value = renameDraft; inp.setAttribute("aria-label", `New name for ${p.nick}`);
+          inp.addEventListener("input", () => { renameDraft = inp.value; });
+          inp.addEventListener("keydown", e => { if(e.key === "Enter") renameBot(p.id, inp.value); if(e.key === "Escape"){ renamingId = null; renderLobby(); } });
+          inp.addEventListener("blur", () => { if(renamingId === p.id) renameBot(p.id, inp.value); });
+          nm.replaceWith(inp); setTimeout(() => { if(document.activeElement !== inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } }, 0);
+        } else {
+          const btn = document.createElement("button"); btn.type = "button"; btn.className = "nm bot-name";
+          btn.innerHTML = `${esc(p.nick)} <span aria-hidden="true">✎</span>`; btn.title = "Rename this bot"; btn.setAttribute("aria-label", `Rename ${p.nick}`);
+          btn.addEventListener("click", () => { renamingId = p.id; renameDraft = p.nick; renderLobby(); });
+          nm.replaceWith(btn);
+        }
+      }
+      if(isHost && !p.host){
+        const k = document.createElement("button"); k.className="kick"; k.type="button"; k.textContent="×";
+        k.setAttribute("aria-label", `Remove ${p.nick}`); k.title = `Remove ${p.nick}`;
+        k.addEventListener("click", () => kick(p.id)); li.appendChild(k);
+      }
+      ul.appendChild(li);
+    });
+    const slots = editing ? 0 : Math.min(MAX, Math.max(MIN, ps.length + 1));
+    for(let i=ps.length;i<slots;i++){ const li=document.createElement("li"); li.className="pcard empty"; li.textContent="Waiting for a friend"; ul.appendChild(li); }
+    $("count").textContent = `${ps.length} / ${MAX} players`;
+    $("addBot").hidden = !isHost; $("addBot").disabled = ps.length >= MAX;
+
+    // topics
+    const tl = $("topics"); tl.innerHTML = "";
+    const topics = game.topics || [];
+    if(!topics.length){ const li = document.createElement("li"); li.className = "none"; li.textContent = "No topics yet. Add the first one!"; tl.appendChild(li); }
+    topics.forEach(t => {
+      const by = playerById(t.by);
+      const li = document.createElement("li"); li.className = "chip";
+      li.innerHTML = `<span class="cdot" style="background:${safeColor(by?.color)}"></span><span class="t">${esc(t.text)}</span>`;
+      li.title = by ? `Added by ${by.nick}` : "";
+      if(isHost || t.by === myId){
+        const x = document.createElement("button"); x.type="button"; x.textContent="×"; x.setAttribute("aria-label", `Remove topic ${t.text}`);
+        x.addEventListener("click", () => send({t:"untopic", id:t.id})); li.appendChild(x);
+      }
+      tl.appendChild(li);
+    });
+    $("topicCount").textContent = `${topics.length} / ${MAX_TOPICS}`;
+    const mineCount = topics.filter(t => t.by === myId).length;
+    const canAdd = topics.length < MAX_TOPICS && mineCount < TOPICS_EACH;
+    $("topicIn").disabled = !canAdd; $("topicAdd").disabled = !canAdd;
+    $("topicIn").placeholder = canAdd ? "e.g. camping trips" : (topics.length >= MAX_TOPICS ? "Topic list is full" : `You've added your ${TOPICS_EACH} topics`);
+    $("copyTopics").hidden = !isHost || !topics.length;
+
+    // settings
+    const s = game.settings || DEFAULT_SETTINGS, host = ps.find(p => p.host);
+    $("setNote").textContent = isHost ? "You're the host. Pick how this game plays." : `Set by ${host ? host.nick : "the host"}.`;
+    seg($("segPoints"), POINTS.map(v=>({v,l:String(v)})), s.points, v => hostUpdate({settings:{...s, points:v}}));
+    seg($("segTimer"), TIMERS, s.timer, v => hostUpdate({settings:{...s, timer:v}}));
+    const pk = $("packs"); pk.innerHTML = "";
+    PACKS.forEach(p => {
+      const on = !s.bobby && Array.isArray(s.packs) && s.packs.includes(p.id);
+      const b = document.createElement("button"); b.type="button"; b.className="pack"; b.disabled=!isHost || !!s.bobby;
+      b.setAttribute("aria-pressed", String(on));
+      b.innerHTML = `<span class="sw" style="background:${p.c}"></span><span class="txt"><b>${p.name}</b><span>${p.desc}</span></span><span class="chk"></span>`;
+      b.addEventListener("click", () => {
+        const cur = new Set(s.packs||[]); on ? cur.delete(p.id) : cur.add(p.id);
+        if(!cur.size && !s.custom){ toast("Keep at least one pack, or load a custom deck."); return; }
+        hostUpdate({settings:{...s, packs:[...cur]}});
+      });
+      pk.appendChild(b);
+    });
+
+    // custom deck
+    const cd = s.custom;
+    $("deckInfo").hidden = !cd;
+    if(cd){ $("deckName").textContent = cd.name + (cd.bobby ? " (18+)" : "");
+            $("deckMeta").textContent = `${cd.prompts} prompts · ${cd.answers} answers${cd.topics?.length ? " · " + cd.topics.join(", ") : ""}`; }
+    $("deckRemove").hidden = !isHost;
+    $("deckCopy").hidden = !isHost || !H?.deckCode;
+    $("deckLoad").hidden = !isHost || !!cd;
+    $("deckLast").hidden = !store.get("lastDeckCode", "");
+    // making a deck with Bobby
+    $("makeBox").hidden = !isHost || TEST_MODE;
+    if(isHost && !TEST_MODE){
+      $("serverRow").hidden = !!DECK_SERVER;
+      seg($("segSize"), DECK_SIZES.map(z => ({v:z.id, l:`${z.label} · ${z.p}/${z.a}`})), genSize, v => { genSize = v; store.set("genSize", v); renderLobby(); });
+      const nt = (game.topics||[]).length, nn = ps.filter(p => !p.bot).length;
+      const roast = nn && $("useNames").checked;
+      $("makeNote").textContent = nt < 3 ? `Add at least 3 deck topics below, then Bobby writes a deck from them${roast ? " and roasts the players by name" : ""}.`
+        : `Bobby writes a deck from the ${nt} topics${roast ? " and roasts the players by name" : ""}. Takes about 1 to 3 minutes.`;
+      $("makeBtn").disabled = making || !!game.making;
+      $("makeBtn").textContent = making ? "Bobby is cooking…" : (cd ? "Make a new deck" : "Make deck");
+    }
+    // what each closed section says at a glance
+    const onPacks = (s.packs||[]).map(id => PACKS.find(p => p.id === id)?.name).filter(Boolean);
+    $("packsSum").textContent = s.bobby ? "Off in Bobby Style" : (onPacks.length ? `${onPacks.length} on · ${onPacks.join(", ")}` : "None on");
+    $("deckSum").textContent = game.making ? "Bobby is cooking…" : cd ? `${cd.name}${cd.bobby ? " (18+)" : ""} · ${cd.prompts + cd.answers} cards` : (isHost ? "None yet · make one here" : "None");
+    $("dropDeck").classList.toggle("needs", !!(s.bobby && !cd && isHost));
+    const mk = game.making;
+    $("cooking").hidden = !mk;
+    if(mk){ $("cookStep").textContent = mk.label || ""; $("cookBar").style.width = `${Math.max(3, Math.min(100, mk.pct||0))}%`; }
+    $("deckNone").hidden = isHost || !!cd;
+    $("ratingsBox").hidden = !isHost; if(isHost) renderRatingsBox();
+
+    const bobby = !!s.bobby;
+    const bb = $("bobbyBtn"); bb.disabled = !isHost; bb.setAttribute("aria-pressed", String(bobby));
+    $("adultBanner").hidden = !bobby;
+    if(!bobby) $("ageBox").hidden = true;
+
+    const ready = !!me?.ready;
+    const rb = $("readyBtn");
+    rb.textContent = ready ? "Not ready yet" : "I'm ready!";
+    rb.className = "btn big " + (ready ? "" : "sun");
+    const notReady = ps.filter(p => !p.ready).length;
+    const sb = $("startBtn"); sb.hidden = !isHost;
+    const needDeck = !!s.bobby && !s.custom;
+    $("packNote").hidden = !s.bobby;
+    sb.disabled = !(ps.length >= MIN && notReady === 0) || needDeck || !!game.making;
+    $("startNote").textContent =
+      game.making ? "Wait for Bobby to finish the deck." :
+      needDeck ? (isHost ? "Bobby Style only uses a generated deck. Make one with Bobby, or load a deck code, to start." : "Waiting for the host to make a Bobby Style deck.") :
+      ps.length < MIN ? `Need ${MIN - ps.length} more ${MIN-ps.length===1?"player":"players"} to start.` :
+      notReady ? `Waiting on ${notReady} to tap Ready.` :
+      isHost ? "Everyone's ready. Start when you like!" : "Everyone's ready. Waiting for the host to start.";
+  }
+
+  function seg(el, opts, cur, onPick){
+    el.innerHTML = "";
+    opts.forEach(o => { const b=document.createElement("button"); b.type="button"; b.textContent=o.l;
+      b.setAttribute("aria-pressed", String(o.v===cur)); b.disabled=!isHost;
+      b.addEventListener("click", () => onPick(o.v)); el.appendChild(b); });
+  }
+
+  // Fit an answer card into a prompt's blank: drop its end punctuation, and lowercase
+  // a leading article, number or "-ing" word when the blank sits mid-sentence.
+  const LOWER_OK = /^(a|an|the|my|your|his|her|its|our|their|some|one|two|three|four|five|six|seven|eight|nine|ten|twelve|forty|fifty|several|every|no|that|this|these|those|another|being|getting|having|making)$/i;
+  function fitAnswer(prompt, answer){
+    let a = String(answer).trim().replace(/[.!]+$/,"");
+    const before = String(prompt).split(BLANK)[0];
+    const atStart = !before.trim() || /[.?!]\s*$/.test(before);
+    const first = (a.match(/^[A-Za-z]+/)||[""])[0];
+    if(!atStart && first && (LOWER_OK.test(first) || (/ing$/i.test(first) && first.length > 4)) && first[0] === first[0].toUpperCase() && first.slice(1) === first.slice(1).toLowerCase())
+      a = a[0].toLowerCase() + a.slice(1);
+    const after = String(prompt).split(BLANK)[1] || "";
+    if(/^[?!.]/.test(after.trim())) a = a.replace(/[?]+$/,"");
+    return a;
+  }
+  function promptHTML(text, fill){
+    const parts = String(text).split(BLANK).map(esc);
+    const blank = fill ? `<span class="fill">${esc(fitAnswer(text, fill))}</span>` : `<span class="bl"></span>`;
+    return parts.join(blank);
+  }
+
+  function renderTable(){
+    const r = game.round, s = game.settings;
+    const ps = sortedPlayers();
+    // scoreboard
+    const sb = $("scorebar"); sb.innerHTML = "";
+    ps.forEach(p => {
+      const li = document.createElement("li");
+      const isJudge = r && r.judge === p.id, done = r && r.stage === "picking" && r.submitted.includes(p.id);
+      li.className = "score" + (isJudge ? " judge" : "") + (done ? " done" : "") + (p.id === myId ? " me" : "");
+      li.innerHTML = `<span class="dot" style="background:${safeColor(p.color)}">${esc((p.nick[0]||"?").toUpperCase())}</span>${esc(p.nick)}
+        <span class="pts">${game.scores?.[p.id] ?? 0}</span>${isJudge ? '<span class="flag">Judge</span>' : done ? '<span class="flag">✓ In</span>' : ''}`;
+      sb.appendChild(li);
+    });
+
+    const hand = $("hand"); hand.innerHTML = "";
+    $("reactBar").hidden = true; $("promptVote").replaceChildren();
+    const playBtn = $("playBtn"), pickBtn = $("pickBtn");
+    playBtn.hidden = true; pickBtn.hidden = true; $("winLine").hidden = true;
+    const rb = $("refreshBtn");
+    rb.hidden = !myDealt || !!game.refreshUsed?.[myId] || !r || r.stage === "reveal";
+    rb.disabled = !!(r && r.stage === "picking" && mySubmitted);
+    if(rb.hidden || rb.disabled){ refreshArmed = false; }
+    rb.textContent = refreshArmed ? "Tap again to swap all 7 cards" : "New hand (1 per game)";
+    $("tableAge").hidden = !(s.bobby && !myDealt && !playerById(myId)?.adult);
+
+    if(!r){ $("promptText").textContent = ""; $("promptMeta").textContent = ""; $("promptSrc").textContent = ""; $("stageTitle").textContent = game.phase === "over" ? "Game over!" : "Shuffling…"; $("stageNote").textContent = ""; $("timer").hidden = true; return; }
+
+    const judge = playerById(r.judge), iJudge = r.judge === myId;
+    $("promptMeta").textContent = `Round ${r.n} · Judge: ${judge ? judge.nick : "?"} · First to ${s.points}`;
+    $("promptText").innerHTML = promptHTML(r.prompt.t, r.stage === "reveal" ? r.winCard?.t : (r.stage === "judging" && iJudge && selected ? r.options.find(o=>o.k===selected)?.t : null));
+    $("promptSrc").textContent = r.prompt.s || "";
+    updateTimer();
+
+    if(r.stage === "picking"){
+      const total = Math.max(0, (r.players||[]).length - 1);
+      const missing = Math.max(0, total - r.submitted.length);
+      if(!myDealt){
+        $("stageTitle").textContent = "You'll be dealt in next round";
+        $("stageNote").textContent = "Watch this round. Your cards are coming.";
+        $("handTitle").textContent = "Your hand";
+      } else if(iJudge){
+        $("stageTitle").textContent = "You're the judge!";
+        $("stageNote").textContent = `Read the prompt out loud. ${r.submitted.length} of ${total} answers are in.`;
+        $("handTitle").textContent = "Your hand (you sit this one out)";
+        myHand.forEach(t => hand.appendChild(cardEl(t, {disabled:true, dim:true})));
+      } else if(mySubmitted){
+        $("stageTitle").textContent = "Card played!";
+        $("stageNote").textContent = `Waiting on ${missing} more ${missing===1?"player":"players"}.`;
+        $("handTitle").textContent = "Your hand";
+        hand.appendChild(cardEl(mySubmitted, {disabled:true, pressed:true, label:"Your answer"}));
+        myHand.forEach(t => hand.appendChild(cardEl(t, {disabled:true, dim:true})));
+      } else {
+        $("stageTitle").textContent = "Pick your funniest card";
+        $("stageNote").textContent = `${judge ? judge.nick : "The judge"} will choose the winner.`;
+        $("handTitle").textContent = "Your hand";
+        myHand.forEach((t,i) => hand.appendChild(cardEl(t, {pressed: selected===i, onClick: () => { selected = i; renderTable(); }})));
+        playBtn.hidden = false; playBtn.disabled = selected === null;
+      }
+    } else if(r.stage === "judging"){
+      $("handTitle").textContent = "The answers";
+      if(iJudge){
+        $("stageTitle").textContent = "Pick the winner";
+        $("stageNote").textContent = "Tap a card to try it in the blank, then lock it in.";
+        r.options.forEach(o => hand.appendChild(cardEl(o, {pressed: selected===o.k, onClick: () => { selected = o.k; renderTable(); }})));
+        pickBtn.hidden = false; pickBtn.disabled = !selected;
+      } else {
+        $("stageTitle").textContent = `${judge ? judge.nick : "The judge"} is choosing…`;
+        $("stageNote").textContent = "Fingers crossed for yours.";
+        r.options.forEach(o => hand.appendChild(cardEl(o, {disabled:true, label: o.t === mySubmitted?.t ? "Yours" : ""})));
+      }
+    } else if(r.stage === "reveal"){
+      const w = playerById(r.winner);
+      $("stageTitle").textContent = r.winner === myId ? "You won the round!" : `${w ? w.nick : "Someone"} wins the round!`;
+      $("stageNote").textContent = "Next round starts in a few seconds.";
+      $("winLine").hidden = false;
+      $("winLine").innerHTML = w ? `<span class="tag host" style="background:${safeColor(w.color)}">+1</span> ${esc(w.nick)} now has ${game.scores?.[w.id] ?? 0}` : "";
+      $("handTitle").textContent = "The answers";
+      // every card shows who played it, with thumbs up/down underneath
+      const myVotes = (r.votes||{})[myId] || {};
+      r.options.forEach(o => { const by = playerById(o.by), name = o.by === myId ? "You" : (by ? by.nick : "Someone who left");
+        const li = cardEl(o, {disabled:true, win: o.k === r.winKey, dim: o.k !== r.winKey,
+          label: o.k === r.winKey ? `Winner · ${name}` : `Played by ${name}`});
+        li.appendChild(voteRow(o.k, myVotes[o.k] || 0)); hand.appendChild(li); });
+      $("promptVote").replaceChildren(voteRow("p", myVotes.p || 0, "this prompt"));
+      const reacted = (r.reacts||[]).find(x => x.id === myId);
+      $("reactBar").hidden = false;
+      $("clapBtn").disabled = $("booBtn").disabled = !!reacted;
+      $("clapBtn").setAttribute("aria-pressed", String(reacted?.r === "clap"));
+      $("booBtn").setAttribute("aria-pressed", String(reacted?.r === "boo"));
+    }
+  }
+
+  function voteRow(target, v, what = "this card"){
+    const row = document.createElement("div"); row.className = "votes";
+    [[1, "▲", `Upvote ${what}`], [-1, "▼", `Downvote ${what}`]].forEach(([val, ico, label]) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "vote" + (val > 0 ? " up" : " down");
+      b.textContent = ico; b.setAttribute("aria-label", label); b.title = label; b.setAttribute("aria-pressed", String(v === val));
+      b.addEventListener("click", () => send({t:"vote", c: target, v: v === val ? 0 : val}));
+      row.appendChild(b);
+    });
+    return row;
+  }
+  let animSeen = new Set();   // cards already shown, so re-renders don't make them jump
+  function cardEl(card, o={}){
+    const li = document.createElement("li");
+    const b = document.createElement("button"); b.type = "button";
+    const key = `${game.round?.n}|${game.round?.stage}|${card.t}`;
+    const fresh = !animSeen.has(key); animSeen.add(key);
+    b.className = "acard" + (o.win ? " win" : "") + (o.dim ? " dim" : "") + (fresh ? " deal" : "");
+    b.innerHTML = `<span>${esc(card.t)}</span><span class="foot">${o.label ? `<small class="who">${esc(o.label)}</small>` : ""}<small>${esc(card.s || "Answer")}</small></span>`;
+    if(o.pressed !== undefined) b.setAttribute("aria-pressed", String(!!o.pressed));
+    b.disabled = !!o.disabled;
+    if(o.onClick) b.addEventListener("click", o.onClick);
+    li.appendChild(b); return li;
+  }
+
+  function updateTimer(){
+    const r = game?.round, el = $("timer");
+    if(!r || r.stage !== "picking" || !r.deadline){ el.hidden = true; $("hand").classList.remove("hurry"); return; }
+    const left = Math.max(0, Math.ceil((r.deadline - (Date.now() + clockSkew))/1000));
+    el.hidden = false; el.textContent = `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}`;
+    el.classList.toggle("low", left <= 10);
+    // countdown alerts only for players who still have to play a card
+    const needsToPlay = myDealt && !mySubmitted && r.judge !== myId;
+    if(left <= 30 && left > 0 && !alerted.has(`${r.n}:30`)){ alerted.add(`${r.n}:30`); if(left > 15 && needsToPlay) sfx.alert30(r.v30, r.say30); }
+    if(left <= 15 && left > 0 && !alerted.has(`${r.n}:15`)){ alerted.add(`${r.n}:15`); if(needsToPlay) sfx.alert15(r.v15, r.say15); }
+    $("hand").classList.toggle("hurry", needsToPlay && left <= 30 && left > 0);
+  }
+  setInterval(() => { if(game?.phase === "playing"){ updateTimer(); judgeNag(); } }, 500);
+  const NAG_AT = [20, 45, 70];
+  function judgeNag(){
+    const r = game?.round; if(!r || r.stage !== "judging" || !r.judgeAt) return;
+    const secs = (Date.now() + clockSkew - r.judgeAt) / 1000;
+    NAG_AT.forEach((t, i) => {
+      const key = `${r.n}:j${i}`;
+      if(secs >= t && secs < t + 5 && !alerted.has(key)){
+        alerted.add(key);
+        const judge = playerById(r.judge);
+        const line = (r.nags||[])[i] || (r.nags||[])[0];
+        sfx.judge(line ? line.replace(/\{judge\}/gi, judge ? judge.nick : "Judge") : "");
+      }
+      if(secs >= t) alerted.add(key);
+    });
+  }
+
+  function renderOver(){
+    const ps = sortedPlayers().sort((a,b) => (game.scores?.[b.id]||0) - (game.scores?.[a.id]||0));
+    const top = ps[0];
+    $("overTitle").textContent = top ? (top.id === myId ? "You win the Laugh Factory!" : `${top.nick} wins!`) : "Game over!";
+    $("standings").innerHTML = ps.map(p => `<li><span class="dot" style="width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);background:${safeColor(p.color)}"></span>${esc(p.nick)}<span class="pts">${game.scores?.[p.id]||0}</span></li>`).join("");
+    $("overLobby").hidden = !isHost;
+    $("overNote").textContent = [game.endNote, isHost ? "" : "Waiting for the host to head back to the lobby."].filter(Boolean).join(" ");
+  }
+
+  // ---------- actions ----------
+  if(TEST_MODE){
+    $("topicsEach").textContent = TOPICS_EACH;
+    // the test copy can't reach the internet, so it only offers solo games
+    $("soloBtn").hidden = false; $("hostBtn").hidden = true;
+    $("joinWrap").hidden = true; document.querySelector("#hostWrap .or").hidden = true; $("homeBobby").hidden = false;
+    $("soloBtn").addEventListener("click", () => { if(needName()) return; startSoloTest(); });
+  }
+  $("hostBtn").addEventListener("click", () => { if(needName() || typeof Peer==="undefined") return; startHosting(); });
+  $("joinBtn").addEventListener("click", () => {
+    if(needName() || typeof Peer==="undefined") return;
+    const c = $("code").value.trim();
+    if(c.length !== 4){ $("homeErr").textContent = "Room codes are four letters, like QRTZ."; $("code").focus(); return; }
+    joinGame(c);
+  });
+  $("code").addEventListener("keydown", e => { if(e.key==="Enter") $("joinBtn").click(); });
+  $("leaveBtn").addEventListener("click", () => backHome(""));
+  $("addBot").addEventListener("click", () => addBot(false));
+  ["dropPacks", "dropDeck", "ratingsBox"].forEach(id => {
+    const d = $(id), saved = store.get("open." + id, null);
+    if(saved !== null) d.open = saved;
+    d.addEventListener("toggle", () => store.set("open." + id, d.open));
+  });
+  $("clapBtn").addEventListener("click", () => send({t:"react", r:"clap"}));
+  $("booBtn").addEventListener("click", () => send({t:"react", r:"boo"}));
+  $("copyRatings").addEventListener("click", async () => {
+    const code = await ratingsCode();
+    try{ await navigator.clipboard.writeText(code); toast("Ratings copied. Paste them into the Deck Maker."); }
+    catch{ $("ratingsNote").textContent = code; toast("Couldn't copy automatically. Select the code shown and copy it."); }
+  });
+  $("leaveTable").addEventListener("click", () => backHome(""));
+
+  function setReady(next){
+    const me = playerById(myId); if(!me) return;
+    if(!isHost){ me.ready = next; renderLobby(); }
+    send({t:"ready", ready:next, adult:ageOk});
+    if(next) burst(40);
+  }
+  $("readyBtn").addEventListener("click", () => {
+    const me = playerById(myId); if(!me) return;
+    if(!me.ready && game.settings?.bobby && !isHost && !ageOk){ $("ageBox").hidden = false; $("ageYes").focus(); return; }
+    setReady(!me.ready);
+  });
+  $("ageYes").addEventListener("click", () => { ageOk = true; $("ageBox").hidden = true; setReady(true); });
+  $("ageNo").addEventListener("click", () => backHome("You left a Bobby Style (18+) game."));
+  $("tAgeYes").addEventListener("click", () => { ageOk = true; $("tableAge").hidden = true; send({t:"adult"}); toast("You're in. Cards coming next round."); });
+  $("tAgeNo").addEventListener("click", () => backHome("You left a Bobby Style (18+) game."));
+
+  function setBobby(on){
+    const s = game.settings;
+    if(!on && s.custom?.bobby){ toast("Remove the 18+ custom deck first."); return; }
+    if(on && !s.bobby){
+      game.players.forEach(p => { if(!p.host) p.ready = false; });
+      playerById(myId).adult = true; ageOk = true;
+      toast("Bobby Style is on. Players must confirm they're 18+ to ready up.");
+    }
+    hostUpdate({settings:{...game.settings, bobby:on}});
+  }
+  $("bobbyBtn").addEventListener("click", () => { if(isHost) setBobby(!game.settings.bobby); });
+
+  $("copyBtn").addEventListener("click", async () => {
+    const link = location.protocol.startsWith("http") ? `${location.origin}${location.pathname}?join=${code}` : code;
+    try{ await navigator.clipboard.writeText(link); toast(link===code ? `Copied ${code}. Send it to your friends!` : "Invite link copied. Send it to your friends!"); }
+    catch{ const r=document.createRange(); r.selectNodeContents($("roomCode")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("Code selected. Copy it to share."); }
+  });
+
+  function addTopic(){
+    const text = clean($("topicIn").value, 40);
+    if(text.length < 2){ toast("Topics need at least 2 letters."); return; }
+    if((game.topics||[]).some(t => t.text.toLowerCase() === text.toLowerCase())){ toast("That topic is already on the list."); return; }
+    send({t:"topic", text}); $("topicIn").value = "";
+  }
+  $("topicAdd").addEventListener("click", addTopic);
+  $("topicIn").addEventListener("keydown", e => { if(e.key === "Enter") addTopic(); });
+  $("copyTopics").addEventListener("click", async () => {
+    // topics, then the real players' names (bots left out) for cards that roast the table
+    const names = sortedPlayers().filter(p => !p.bot).map(p => p.nick);
+    const txt = (game.topics||[]).map(t => t.text).join("\n") + (names.length ? `\nPlayers: ${names.join(", ")}` : "");
+    try{ await navigator.clipboard.writeText(txt); toast("Topics and player names copied. Paste them into the Deck Maker's topics box."); }
+    catch{ toast("Couldn't copy automatically. Select the topics and copy them."); }
+  });
+
+  function loadDeck(deck, codeStr, quiet){
+    H.deck = deck; H.deckCode = codeStr || null;
+    const fresh = deck.answers.filter(c => !seenCards.has(hashT(c.t))).length;
+    if(fresh < deck.answers.length * 0.5) setTimeout(() => toast("You've already played most of this deck. Have Bobby make a fresh one for all-new cards."), 2900);
+    game.settings = {...game.settings, custom:{name:deck.name, bobby:deck.bobby, prompts:deck.prompts.length, answers:deck.answers.length, topics:deck.topics}};
+    if(deck.bobby && !game.settings.bobby){ setBobby(true); } else broadcast();
+    if(!quiet) toast(`Loaded "${deck.name}".`);
+  }
+  async function loadCode(codeStr){
+    if(!isHost) return;
+    try{ const deck = await decodeDeck(codeStr); $("deckCode").value = ""; loadDeck(deck, String(codeStr).replace(/\s+/g, "")); }
+    catch(e){ toast(e.message || "Couldn't load that deck."); }
+  }
+  $("deckBtn").addEventListener("click", () => loadCode($("deckCode").value));
+  $("deckLast").addEventListener("click", () => loadCode(store.get("lastDeckCode", "")));
+  $("deckCopy").addEventListener("click", async () => {
+    if(!H?.deckCode) return;
+    try{ await navigator.clipboard.writeText(H.deckCode); toast("Deck code copied. Save it to play this deck again."); }
+    catch{ $("deckCode").value = H.deckCode; toast("Couldn't copy automatically. The code is in the box; select and copy it."); }
+  });
+  $("deckRemove").addEventListener("click", () => {
+    if(!isHost) return;
+    H.deck = null; H.deckCode = null;
+    const s = {...game.settings, custom:null};
+    if(!s.packs?.length) s.packs = ["classic"];
+    hostUpdate({settings:s});
+  });
+
+  $("startBtn").addEventListener("click", () => { if(isHost && game.phase === "lobby") startGame(); });
+  $("playBtn").addEventListener("click", () => {
+    if(selected === null) return;
+    const card = myHand[selected];
+    send({t:"play", i:selected});
+    if(!isHost){ mySubmitted = card; myHand = myHand.filter((_,i) => i !== selected); selected = null; renderTable(); }
+  });
+  $("pickBtn").addEventListener("click", () => { if(selected) send({t:"pick", k:selected}); });
+  let refreshArmed = false, refreshTimer = 0;
+  $("refreshBtn").addEventListener("click", () => {
+    if(!refreshArmed){ refreshArmed = true; renderTable(); clearTimeout(refreshTimer); refreshTimer = setTimeout(() => { refreshArmed = false; if(game?.phase === "playing") renderTable(); }, 4000); return; }
+    refreshArmed = false; selected = null; send({t:"refresh"}); toast("Fresh hand dealt. That was your one swap this game.");
+  });
+  $("overLobby").addEventListener("click", () => { if(isHost) toLobby(""); });
+
+  // ---------- sound ----------
+  // Background music: a file named music.mp3 placed next to this page. Alerts are synthesized, no files needed.
+  const alerted = new Set();
+  // volume sliders, 0–100 per device; 0 means off
+  let musicVol = store.get("musicVol", store.get("music", true) === false ? 0 : 60);
+  let sfxVol = store.get("sfxVol", store.get("sfx", true) === false ? 0 : 100);
+  let musicOn = musicVol > 0, sfxOn = sfxVol > 0, musicOk = null, actx = null, sfxGain = null;
+  const musicLevel = () => musicVol / 100 * 0.6;   // the game loop sits under the action
+  const sfxLevel = () => sfxVol / 100;
+  const music = new Audio(); music.loop = true; music.volume = musicLevel(); music.preload = "auto";
+  // iPhones don't load audio until it's played, so don't wait for "canplay"; only a real error hides the button
+  music.addEventListener("canplay", () => { musicOk = true; });
+  // Each sound can be an .mp3 or a .wav: try the .mp3 first, then the .wav.
+  const withFallback = (el, names, onMissing) => {
+    let i = 0; el.src = names[0];
+    el.addEventListener("error", () => { if(++i < names.length) el.src = names[i]; else onMissing(); });
+  };
+  // the in-game loop; older folders with a single music.mp3 still work
+  withFallback(music, ["music-game.mp3", "music-game.wav", "music.mp3", "music.wav"], () => { musicOk = false; $("musicVol").closest(".slider").hidden = true; console.warn("No music-game.mp3 next to index.html"); });
+  // Bobby's intro track, played once from start to finish before the first round
+  const introMusic = new Audio(); introMusic.preload = "auto"; introMusic.volume = musicVol / 100;
+  withFallback(introMusic, ["music-intro.mp3", "music-intro.wav"], () => console.warn("No music-intro.mp3 next to index.html"));
+  const intro = new Audio(); intro.preload = "auto";
+  withFallback(intro, ["sounds/bobby-style.mp3", "sounds/bobby-style.wav"], () => console.warn("No sounds/bobby-style.mp3 or .wav"));
+  function syncSound(){
+    $("musicVol").value = musicVol; $("sfxVol").value = sfxVol;
+    $("musicVolTxt").textContent = musicVol ? musicVol + "%" : "Off"; $("sfxVolTxt").textContent = sfxVol ? sfxVol + "%" : "Off";
+    $("soundBtn").classList.toggle("muted", !musicVol && !sfxVol);
+  }
+  let unlocked = false;
+  let musicAllowed = false;   // music only plays during a game, never over the Bobby Style intro
+  function playMusic(){ if(musicOk !== false && musicOn && unlocked && musicAllowed && music.paused) music.play().catch(() => {}); }
+  function startGameMusic(at = 0){ musicAllowed = true; try{ music.currentTime = Math.max(0, at); }catch{} playMusic(); }
+  function stopGameMusic(){ musicAllowed = false; music.pause(); stopIntroMusic(); }
+  function stopIntroMusic(){ if(!introMusic.paused) introMusic.pause(); }
+  function playIntroMusic(at = 0){ if(!musicOn || !unlocked) return; try{ introMusic.currentTime = Math.max(0, at); }catch{} introMusic.play().catch(() => {}); }
+  // Browsers (especially Safari and iPhones) only allow sound that was first started by a tap or click.
+  // On the first tap, silently start and stop each audio player so the game can use them later on its own.
+  let blessed = false;
+  const bless = el => { try{ el.muted = true; const p = el.play(); (p && p.then ? p : Promise.resolve()).then(() => { el.pause(); el.currentTime = 0; el.muted = false; }).catch(() => { el.muted = false; }); }catch{ el.muted = false; } };
+  const unlock = () => {
+    unlocked = true;
+    try{ actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if(actx.state === "suspended") actx.resume();
+      if(!sfxGain){ sfxGain = actx.createGain(); sfxGain.gain.value = sfxLevel(); sfxGain.connect(actx.destination); }
+      decodeSamples(); }catch{}
+    if(!blessed){
+      blessed = true;
+      if(!musicAllowed && musicOk !== false) bless(music);
+      bless(intro); bless(introMusic);
+      try{ const u = new SpeechSynthesisUtterance(" "); u.volume = 0; window.speechSynthesis?.speak(u); }catch{}
+    }
+    playMusic();   // also retries music that a browser blocked earlier
+  };
+  ["pointerdown","keydown"].forEach(ev => document.addEventListener(ev, unlock, {capture:true}));
+  $("soundBtn").addEventListener("click", e => { e.stopPropagation(); const open = $("soundPanel").hidden; $("soundPanel").hidden = !open; $("soundBtn").setAttribute("aria-expanded", String(open)); });
+  document.addEventListener("click", e => { if(!$("soundPanel").hidden && !e.target.closest(".sound-wrap")){ $("soundPanel").hidden = true; $("soundBtn").setAttribute("aria-expanded", "false"); } });
+  $("musicVol").addEventListener("input", () => {
+    musicVol = +$("musicVol").value; musicOn = musicVol > 0; store.set("musicVol", musicVol);
+    music.volume = musicLevel(); introMusic.volume = musicVol / 100; syncSound();
+    if(musicOn) playMusic(); else { music.pause(); stopIntroMusic(); }
+  });
+  let previewT = 0;
+  $("sfxVol").addEventListener("input", () => {
+    sfxVol = +$("sfxVol").value; sfxOn = sfxVol > 0; store.set("sfxVol", sfxVol);
+    if(sfxGain) sfxGain.gain.value = sfxLevel(); syncSound();
+    clearTimeout(previewT); previewT = setTimeout(() => { if(sfxOn) sfx.chime30(); }, 250);   // a quick preview at the new level
+  });
+  function tone(freq, at, dur, type="triangle", vol=0.28){
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g); g.connect(sfxGain || actx.destination); o.start(at); o.stop(at + dur + 0.05);
+  }
+  // recorded-style crowd applause and boos (sounds/clap.mp3, sounds/boo.mp3), played through Web Audio
+  // so they work on phones even when someone else triggered them
+  const SAMPLE = {}, SAMPLE_RAW = {};
+  ["clap", "boo"].forEach(n => fetch(`sounds/${n}.mp3`).then(r => r.ok ? r.arrayBuffer() : null)
+    .then(b => { if(b){ SAMPLE_RAW[n] = b; decodeSamples(); } }).catch(() => {}));
+  function decodeSamples(){
+    if(!actx) return;
+    Object.keys(SAMPLE_RAW).forEach(n => { const raw = SAMPLE_RAW[n]; delete SAMPLE_RAW[n];
+      actx.decodeAudioData(raw).then(b => { SAMPLE[n] = b; }).catch(() => {}); });
+  }
+  function playSample(n){
+    const b = SAMPLE[n]; if(!b || !actx) return false;
+    const src = actx.createBufferSource(), g = actx.createGain();
+    src.buffer = b; src.playbackRate.value = 0.95 + Math.random() * 0.1;   // no two sound exactly alike
+    g.gain.value = 0.85; src.connect(g); g.connect(sfxGain || actx.destination); src.start();
+    duck(b.duration * 1000 + 200); return true;
+  }
+  function noiseHit(at, dur, freq, vol){
+    const len = Math.floor(actx.sampleRate * dur), buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+    for(let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    const src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+    src.buffer = buf; f.type = "bandpass"; f.frequency.value = freq; f.Q.value = 0.9; g.gain.value = vol;
+    src.connect(f); f.connect(g); g.connect(sfxGain || actx.destination); src.start(at);
+  }
+  function duck(ms){ if(!musicOk || music.paused) return; music.volume = musicLevel() * 0.3; clearTimeout(duck.t); duck.t = setTimeout(() => { music.volume = musicLevel(); }, ms); }
+  // ---------- spoken voice lines (the browser's built-in text-to-speech) ----------
+  const DEFAULT_LINES = {
+    30: ["Hustle up, chud.", "Time is ticking, bub.", "Check the clock, you cock.", "Brother, pick a card.",
+         "Bro thinks he has all day.", "It's giving slow.", "Thirty seconds. Lock in.", "Skill issue. Thirty seconds left.",
+         "We don't have all day, sigma.", "Bro is buffering."],
+    15: ["Check the clock, you cock.", "Hustle up, chud.", "Time is ticking, bub.", "Fifteen seconds. Lock in, bro.",
+         "Hurry up, you absolute NPC.", "This is not very demure. Fifteen seconds.", "Tick tock, you're cooked.",
+         "Emotional damage. Fifteen seconds.", "Bro, it's not that deep. Play a card.", "L plus ratio plus out of time.",
+         "Get your aura points up. Fifteen seconds."],
+    j:  ["Hustle up, chud. Pick your favorite card.", "Time is ticking, bub. Choose a winner.", "Check the clock, you cock. Pick a card, judge.",
+         "{judge}, pick your favorite already.", "Judge, lock in and choose a winner.", "Bro is judging like it's the Supreme Court.",
+         "{judge}, it's not that deep. Pick the funniest one.", "The judge is buffering. Choose a card.", "Skill issue, judge. Choose your favorite.",
+         "Emotional damage. Judge, pick a winner.", "{judge}, we're aging over here. Pick one.", "Judge, you're cooked. Pick your favorite card."],
+  };
+  const LINES = DEFAULT_LINES;   // fixed lines, not editable in the game
+  function pickLine(sec, last){
+    const list = (LINES[sec]||[]).filter(Boolean); if(!list.length) return "";
+    if(list.length === 1) return list[0];
+    let l; do{ l = list[rnd(list.length)]; }while(l === last); return l;
+  }
+  let ttsVoice = null;
+  // Prefer a male English voice; natural/neural ones first. The pitch is lowered to make it deep.
+  const MALE = /(guy|andrew|brian|christopher|davis|eric|roger|steffan|ryan|thomas|william|liam|male|david|mark|daniel|aaron|arthur|fred|alex|tom|rishi|george|james|oliver|reed|rocko|grandpa|ralph|albert|bruce)/i;
+  function chooseVoice(){
+    const vs = (window.speechSynthesis?.getVoices?.() || []).filter(v => /^en/i.test(v.lang));
+    const male = vs.filter(v => MALE.test(v.name) && !/female/i.test(v.name));
+    ttsVoice = male.find(v => /natural|neural|online|premium|enhanced/i.test(v.name))
+            || male.find(v => /en[-_](US|GB)/i.test(v.lang)) || male[0] || vs[0] || null;
+  }
+  try{ chooseVoice(); window.speechSynthesis?.addEventListener?.("voiceschanged", chooseVoice); }catch{}
+  function say(text){
+    try{
+      const ss = window.speechSynthesis; if(!ss || !text) return false;
+      ss.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if(ttsVoice) u.voice = ttsVoice;
+      u.rate = 0.95; u.pitch = 0.55; u.volume = sfxLevel();   // slow and low: deep voice
+      duck(15000); u.onend = () => duck(300);
+      ss.speak(u); return true;
+    }catch{ return false; }
+  }
+
+  // Voice lines: sounds/30-1.mp3, sounds/30-2.mp3, … and sounds/15-1.mp3, … (numbered from 1, no gaps).
+  // The page counts how many exist; the host picks one at random each round.
+  const VOICES = {30:0, 15:0};
+  const voiceUrl = (sec, n) => `sounds/${sec}-${n}.mp3`;
+  function exists(url){
+    return new Promise(res => {
+      const a = new Audio(); let done = false;
+      const fin = ok => { if(done) return; done = true; a.removeAttribute("src"); try{ a.load(); }catch{} res(ok); };
+      a.preload = "metadata"; a.addEventListener("loadedmetadata", () => fin(true)); a.addEventListener("error", () => fin(false));
+      setTimeout(() => fin(false), 4000); a.src = url;
+    });
+  }
+  (async () => { for(const sec of [30, 15]){ let n = 0; while(n < 50 && await exists(voiceUrl(sec, n+1))) n++; VOICES[sec] = n; } })();
+  // play a clip, then call done() once it has finished (or couldn't play)
+  function playClip(url, done){
+    let fired = false; const fin = () => { if(fired) return; fired = true; clearTimeout(guard); a.removeEventListener("ended", fin); a.removeEventListener("error", fin); done?.(); };
+    const a = url === "intro" ? intro : new Audio(url); a.volume = sfxLevel(); a.muted = false;
+    try{ a.currentTime = 0; }catch{}
+    a.addEventListener("ended", fin); a.addEventListener("error", fin);
+    const guard = setTimeout(fin, 15000);
+    a.play().catch(fin);
+  }
+  function playVoice(sec, n, fallback){
+    if(!n){ fallback(); return; }
+    const a = new Audio(voiceUrl(sec, n)); a.volume = sfxLevel();
+    a.addEventListener("loadedmetadata", () => duck(Math.min(8000, (a.duration || 2) * 1000 + 300)), {once:true});
+    a.play().catch(fallback);
+    a.addEventListener("error", fallback, {once:true});
+  }
+  const sfx = {
+    _ok(){ window.__sfxLog?.push?.(arguments[0]); return sfxOn && actx && actx.state !== "closed"; },
+    // spoken line first, then a voice file, then a chime
+    alert30(v, line){ if(!this._ok(line ? "say:" + line : v ? "30-" + v : "30")) return;
+      if(line && say(line)) return; playVoice(30, v, () => this.chime30()); },
+    alert15(v, line){ if(!this._ok(line ? "say:" + line : v ? "15-" + v : "15")) return;
+      if(line && say(line)) return; playVoice(15, v, () => this.chime15()); },
+    bobbyIntro(done){ if(!this._ok("bobby-intro")){ done?.(); return; } playClip("intro", done); },
+    judge(line){ if(!this._ok("judge:" + line)) return; if(line && say(line)) return; this.chime30(); },
+    clap(){ if(!this._ok("clap")) return; if(playSample("clap")) return; const t0 = actx.currentTime + 0.01;
+      for(let i = 0; i < 9; i++) noiseHit(t0 + i * 0.09 + Math.random() * 0.04, 0.07, 1800 + Math.random() * 900, 0.5); },
+    boo(){ if(!this._ok("boo")) return; if(playSample("boo")) return; duck(1200); const t = actx.currentTime + 0.02;
+      [0, 7].forEach(det => { const o = actx.createOscillator(), f = actx.createBiquadFilter(), g = actx.createGain();
+        o.type = "sawtooth"; o.frequency.setValueAtTime(175 + det, t); o.frequency.exponentialRampToValueAtTime(105 + det, t + 1.0);
+        f.type = "lowpass"; f.frequency.value = 700; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.12); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+        o.connect(f); f.connect(g); g.connect(sfxGain || actx.destination); o.start(t); o.stop(t + 1.15); }); },
+    chime30(){ duck(1200); const t = actx.currentTime + 0.02; tone(660, t, 0.35); tone(880, t + 0.22, 0.5); },
+    chime15(){ duck(1600); const t = actx.currentTime + 0.02;
+      [0, 0.18, 0.36].forEach(d => tone(988, t + d, 0.14, "square", 0.18)); tone(1318, t + 0.6, 0.45, "square", 0.2); },
+  };
+  syncSound();
+
+  // ---------- Bobby's intro ----------
+  // Plays the whole music-intro track. Timing matches the theme: soft fade-in for 2.5 s,
+  // then a strong accent every ~1.49 s starting at 4.06 s.
+  const INTRO_PREROLL = 4.8;      // Bobby Style: the "Bobby Style" voice clip plays before the intro track
+  const INTRO_FALLBACK_LEN = 29.6;   // length of music-intro.mp3; the host uses the real length once it's loaded
+  const introLen = () => (isFinite(introMusic.duration) && introMusic.duration > 1) ? introMusic.duration : INTRO_FALLBACK_LEN;
+  const ACC0 = 4.06, ACC = 1.486, ENTER = 2.0;
+  // Bobby's mouth for each 1/30 s of the intro track (0 closed … 3 wide), estimated from the voice in the mix
+  const LIP_FPS = 30, LIP = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011112222200000111000000333111220000022111111111111111100000002222220000000000001111000000222222112233333330000333111111111111222223332221100222233333331110022222000011111111111112222222220000033333333333330000001133333333333333000000333311000022222000000000000000000000011100000333333331111133322222333333333332233333333333333333332222110000011113322211111111112221110000022222221100000000000000000000022000000000000000000000000000000000333330000000000000000000000000000000000000111100011113322222222222222233222222333332222111111333333322211133333111111333331111122000000011122000011133322221122200000000000000000000000011111111221111111100111111111333111122110011110011000112222200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+  let introRaf = 0, musicTimer = 0;
+  function beginIntro(){
+    musicAllowed = false; music.pause();   // the lobby loop stops so the intro plays alone
+    const s = game.settings, pre = s.bobby ? INTRO_PREROLL : 0;
+    const elapsed = (Date.now() + clockSkew - game.introAt) / 1000;
+    if(s.bobby && elapsed < 1.5) sfx.bobbyIntro();
+    clearTimeout(musicTimer);
+    if(elapsed >= pre) playIntroMusic(elapsed - pre);
+    else musicTimer = setTimeout(() => { if(game?.phase === "intro") playIntroMusic(0); }, (pre - elapsed) * 1000);
+    $("skipIntro").hidden = !isHost;
+    cancelAnimationFrame(introRaf); introRaf = requestAnimationFrame(introFrame);
+  }
+  function endIntroView(){
+    cancelAnimationFrame(introRaf); introRaf = 0; clearTimeout(musicTimer); $("intro").hidden = true;
+    if(!intro.paused){ intro.pause(); try{ intro.currentTime = 0; }catch{} }   // skipping cuts the voice clip so it never overlaps the music
+    stopIntroMusic();
+  }
+  function introFrame(){
+    if(!game || game.phase !== "intro"){ introRaf = 0; return; }
+    const s = game.settings, pre = s.bobby ? INTRO_PREROLL : 0, len = game.introLen || introLen(), total = pre + len;
+    const t = (Date.now() + clockSkew - game.introAt) / 1000;
+    // follow the real track position while it plays, so the mouth never drifts from the voice
+    const tm = (!introMusic.paused && introMusic.currentTime > 0) ? introMusic.currentTime : t - pre;
+    const bob = $("introBobby");
+    $("introBar").style.width = `${Math.min(100, t / total * 100)}%`;
+
+    const shown = s.bobby ? t >= 0.1 : tm >= ENTER;
+    bob.classList.toggle("in", shown);
+
+    // mouth: flaps during the Bobby Style clip, then follows the voice in the intro track
+    let open = 0;
+    if(s.bobby && t < pre) open = (t > 0.3 && t < 4.4) ? (Math.floor(t * 9) % 3) + 1 : 0;
+    else if(tm >= 0) open = +LIP[Math.floor(tm * LIP_FPS)] || 0;
+    bob.dataset.mouth = String(open);
+    // arms wave while he's mid-phrase
+    const wave = LIP.slice(Math.max(0, Math.floor(tm * LIP_FPS) - 12), Math.floor(tm * LIP_FPS) + 1).replace(/0/g, "").length > 4;
+    bob.classList.toggle("waving", (s.bobby && t < pre && t > 0.3) || (tm >= 0 && wave));
+    $("introCaption").textContent = (len - tm) < 2.5 ? "Dealing the cards…" : (s.bobby && t < pre) ? "Bobby Style" : "Get ready…";
+
+    // bounce on each accent of the theme
+    if(!reduce && shown && tm >= ENTER){
+      const ph = ((tm - ACC0) % ACC + ACC) % ACC, k = Math.exp(-ph * 7);
+      bob.style.setProperty("--sq", (1 - 0.07 * k).toFixed(3));
+      bob.style.setProperty("--st", (1 + 0.06 * k).toFixed(3));
+      bob.style.setProperty("--lift", `${(-14 * k).toFixed(1)}px`);
+    } else { bob.style.setProperty("--sq", 1); bob.style.setProperty("--st", 1); bob.style.setProperty("--lift", "0px"); }
+    introRaf = requestAnimationFrame(introFrame);
+  }
+  $("skipIntro").addEventListener("click", () => send({t:"skipIntro"}));
+
+  // ---------- make a deck with Bobby (Claude, through your deck server) ----------
+  // Put your Cloudflare Worker link between the quotes once it's deployed. Until then hosts can paste it in the lobby.
+  const DECK_SERVER = /*DECK_SERVER*/"https://bobby-decks.celestialdubsss.workers.dev";
+  const DECK_SIZES = [{id:"s", label:"Small", p:20, a:60}, {id:"m", label:"Medium", p:35, a:120}, {id:"l", label:"Large", p:50, a:180}];
+  let genSize = store.get("genSize", "m"), making = false;
+  const serverUrl = () => (DECK_SERVER || clean($("serverIn").value, 300)).replace(/\/+$/, "");
+  $("serverIn").value = store.get("genServer", ""); $("passIn").value = store.get("genPass", "");
+  $("serverIn").addEventListener("input", () => store.set("genServer", $("serverIn").value.trim()));
+  $("passIn").addEventListener("input", () => store.set("genPass", $("passIn").value));
+  $("useNames").checked = store.get("genNames", true);
+  $("useNames").addEventListener("change", () => { store.set("genNames", $("useNames").checked); if(game?.phase === "lobby") renderLobby(); });
+
+  const Gen = (() => {
+    let NAMES = [];
+  function rules(isBobby, soft){
+    return isBobby
+      ? (soft
+        ? `This is an adults-only party game in the style of Cards Against Humanity. Keep the cards edgy, crude, and adult: innuendo, bodily humor, booze, bad decisions, and dark comedy, without graphic sexual detail. Say gross things bluntly (shit, piss, fart) rather than with polite euphemisms. No slurs or hateful jokes about groups of people, nothing sexual involving minors, and no real people by name.`
+        : `This is an adults-only party game in the style of Cards Against Humanity, played by consenting adults who want the raunchiest, most shocking deck possible. Write cards that are crude, dirty, and wickedly dark: sex jokes and innuendo, kinks, drugs and booze, crime, death, and terrible life choices are all welcome, and the edgier the better. If a card would be fine at a family dinner, make it worse. Keep it to jokes rather than graphic sexual description. The grammar rules never make a card tamer: keep the filth, just put the verb after the noun ("A priest twerking at a funeral", "Your uncle's OnlyFans debut", "Two strangers hiding the salami in a Wendy's bathroom"). When a card is about bodily functions (which should be only occasional), use blunt, vulgar words (shit, piss, fart, puke), never polite stand-ins like "relieve yourself", "pass gas", or "number two". For sexual content, lean on clever, filthy euphemisms and innuendo ("hiding the salami", "a trip to pound town", "Grandma's special nap time", "spicy wrestling"), with the occasional blunt word for shock. Hard limits: no slurs or hateful jokes about groups of people, nothing sexual involving minors, and no real public or private individuals by name except the players listed below.`)
+      : `Keep the humor playful and PG-13: silly, absurd, and clever, with no explicit sexual content, slurs, or graphic material.`;
+  }
+  // prompts like "now with 100% real ____" only fit a few answers, so they get fixed or dropped
+  const BAD_BEFORE_BLANK = /(?:^|[\s(])(a|an|the|my|your|his|her|its|our|their|this|that|these|those|some|real|pure|fresh|new|old|big|little|tiny|giant|extra|secret|favorite|favourite|best|worst|own|true|actual|genuine|organic|authentic|premium|\d+%?)\s*$/i;
+  const badBlank = p => BAD_BEFORE_BLANK.test(String(p).split(BLANK)[0]);
+  const keepGoodPrompts = list => { const ok = list.filter(p => !badBlank(p)); return ok.length >= 5 ? ok : list; };
+  // ---------- house style: this group's favorite running jokes ----------
+  const HOUSE = `HOUSE STYLE (this group's favorite running joke): about 1 in 15 of the shortest, simplest answers should be written "cheems" style: misspell exactly ONE word slightly in a cute, babyish way, and end the card with " :3" instead of a period. Examples: "Grilled cheems :3" / "Chimken nuggies :3" / "A big frogg :3" / "Spicy bwead :3". Only do this to short answers of about 2 to 4 words, never to long answers.`;
+  // gross-out humor and grandparents: this group's other favorite things
+  // each regional stereotype may appear only once per deck; "need" ones only count when the place is named too
+  const PLACES = {Texas: /\btex(as|an)/i, Kentucky: /\bkentuck/i, "Washington state": /\b(washington|seattle)/i, Canada: /\bcanad|\bcanuck/i};
+  const STEREO = [
+    ["Texas", "everything being bigger", /bigger|texas-sized/i, 1], ["Texas", "guns", /\bguns?\b|\brifles?\b|ar-15/i, 1], ["Texas", "BBQ", /\bbbq\b|barbecue|brisket/i, 1],
+    ["Texas", "cowboy boots", /cowboy|\bboots?\b/i, 1], ["Texas", "big trucks", /\btrucks?\b/i, 1],
+    ["Kentucky", "bourbon", /bourbon/i], ["Kentucky", "KFC", /\bkfc\b|kentucky fried|colonel sanders/i], ["Kentucky", "the Derby", /\bderby\b/i],
+    ["Kentucky", "mullets", /mullet/i], ["Kentucky", "moonshine", /moonshine/i],
+    ["Washington state", "endless rain", /\brain/i, 1], ["Washington state", "coffee addiction", /coffee|starbucks|espresso|latte/i, 1],
+    ["Washington state", "Seattle tech bros", /tech ?bros?|amazon|microsoft/i, 1], ["Washington state", "flannel", /flannel/i, 1], ["Washington state", "Bigfoot", /bigfoot|sasquatch/i],
+    ["Canada", "saying sorry", /sorry|apologi/i, 1], ["Canada", "maple syrup", /maple/i], ["Canada", "hockey", /hockey/i, 1],
+    ["Canada", "moose", /\bmoose\b/i], ["Canada", "Tim Hortons", /tim horton|timbits|double-double/i], ["Canada", "aggressive politeness", /polite/i, 1],
+  ].map(([place, label, re, need]) => ({place, label, re, need: !!need}));
+  // classic 2018-2022 memes: each used at most once per deck, and rotated so new decks get ones not used lately
+  const MEMES = [
+    ["Big Chungus", "a chubby Bugs Bunny treated as an epic blockbuster", /chungus/i],
+    ["Ugandan Knuckles", "\"do you know da wae\"", /ugandan knuckles|da wae/i],
+    ["the Tide Pod challenge", "people daring each other to eat laundry pods", /tide ?pods?/i],
+    ["Yanny or Laurel", "the audio clip that split the internet", /yanny/i],
+    ["moth and lamp", "\"brother, may I have some lamp\"", /\bmoths?\b|some lamp/i],
+    ["Storm Area 51", "\"they can't stop all of us\", Naruto running", /area 51|naruto.?run/i],
+    ["woman yelling at a cat", "a screaming woman versus a confused cat at dinner", /yelling at a cat|woman yelling/i],
+    ["OK boomer", "the all-purpose comeback to anyone older", /\bok,? boomer/i],
+    ["Stonks", "meme man making terrible financial moves", /stonks/i],
+    ["Baby Yoda", "the tiny green guy sipping soup", /baby yoda|grogu/i],
+    ["Karen", "\"can I speak to your manager\"", /\bkarens?\b|speak to (the|your) manager/i],
+    ["toilet paper hoarding", "2020 panic-buying", /toilet paper (hoard|stockpil|panic)|hoard\w* toilet paper/i],
+    ["the Coffin Dance", "pallbearers dancing after a fail", /coffin danc|pallbearer/i],
+    ["Among Us", "\"sus\", \"emergency meeting\", \"sussy baka\"", /\bsus\b|sussy|among us|emergency meeting|impost[eo]r/i],
+    ["horny jail", "the bonk dog sending someone to horny jail", /horny jail|\bbonk/i],
+    ["gaslight, gatekeep, girlboss", "the toxic girlboss slogan", /gatekeep|girlboss/i],
+    ["Gigachad", "the impossibly chiseled ultimate alpha", /giga ?chad/i],
+    ["\"no b*tches?\"", "Megamind asking the brutal question", /no b[i*]tches|megamind/i],
+    ["\"It's Morbin' time\"", "fake hype for a movie nobody saw", /morbin|morbius/i],
+    ["\"Only in Ohio\"", "Ohio as a cursed place where anything goes wrong", /\bohio\b/i],
+  ].map(([label, desc, re]) => ({meme: true, label, desc, re}));
+  const stereoOf = t => [...STEREO, ...MEMES].filter(x => x.re.test(t) && (!x.need || PLACES[x.place].test(t)));
+  // which memes recent decks used, so the next deck reaches for fresh ones first
+  let MEME_USE = store.get("genMemeUse", {});
+  const pickMemes = k => shuffle([...MEMES]).sort((a, b) => (MEME_USE[a.label] || 0) - (MEME_USE[b.label] || 0)).slice(0, k);
+  const noteMemes = cards => { const n = Math.max(0, ...Object.values(MEME_USE)) + 1; MEMES.forEach(m => { if(cards.some(t => m.re.test(t))) MEME_USE[m.label] = n; }); store.trySet("genMemeUse", MEME_USE); };
+  // keeps the first card for each stereotype and drops later repeats, across prompts and answers together
+  function onePerStereo(prompts, answers){
+    const used = new Set();
+    const keep = t => { const hits = stereoOf(t); if(hits.some(x => used.has(x))) return false; hits.forEach(x => used.add(x)); return true; };
+    const p = prompts.filter(keep), a = answers.filter(keep);
+    return [p.length >= 5 ? p : prompts, a];
+  }
+  // hands each writing batch its own stereotypes, so parallel batches don't reuse the same one
+  const dealStereo = (jobs, memes) => { const out = Array.from({length: jobs}, () => []); [...shuffle([...STEREO]), ...shuffle([...memes])].forEach((x, k) => out[k % jobs].push(x)); return out; };
+  const regionsText = list => {
+    const by = {}; list.filter(x => !x.meme).forEach(x => (by[x.place] = by[x.place] || []).push(x.label));
+    return Object.entries(by).map(([pl, ls]) => `${pl} (${ls.join(", ")})`).join(", ") +
+      ". Use EACH of these stereotypes in at most ONE card (a place can appear more than once, but only through different stereotypes). Keep regional jokes about culture, food, weather, and habits, never about race or ethnicity";
+  };
+  function houseStyle(isBobby, kind, stereo){
+    const REGIONS = regionsText(stereo && stereo.some(x => !x.meme) ? stereo : STEREO);
+    const myMemes = (stereo || []).filter(x => x.meme);
+    const MEME_LINE = myMemes.length ? `\n- Classic 2018 to 2022 internet memes: about 1 in 12 cards riffs on one of these, so players who lived through them get the callback: ${myMemes.map(m => `${m.label} (${m.desc})`).join("; ")}. Use EACH meme in at most ONE card, and only the memes listed here.` : "";
+    const SHARE = `HOUSE STYLE (this group's running jokes): all the house themes below TOGETHER should appear in roughly 1 in 3 cards (between a quarter and two-fifths of them, never more). The other cards should be ordinary`;
+    const gross = isBobby
+      ? `${SHARE} raunchy jokes about the players' topics that use none of the house themes. Spread the house themes across the deck, mixing them up:
+- Shit, piss, farts, sharts, or cum: about 1 in 12 cards at most, said bluntly when used. Never let poop or fart jokes pile up; a deck full of them gets old fast.
+- A grandpa or grandma doing or owning something deeply wrong: about 1 in 12 cards.
+- Now and then (a handful of cards per deck), roast places with their famous stereotypes: ${REGIONS}.${MEME_LINE}
+Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all through the deck as normal adult humor, with variety. Work everything into the players' topics rather than writing separate cards. The tone to aim for (note how few are about bodily functions): "A blowjob that ended in a lawsuit." / "An awkward threesome at a Renaissance faire." / "The coke dealer who also does taxes." / "Grandpa's third DUI this week." / "Getting caught pantsless at Costco." / "Shotgunning a Natty Light at a baptism." / "A trip to pound town with the pool guy." / "Crying during your own intervention." / "A Canadian apologizing mid-threesome." / "Grandma shitting in the Olive Garden fountain."`
+      : `${SHARE} playful jokes about the players' topics with none of these themes. Spread them across the deck: a grandpa or grandma about 1 in 12 cards, harmless gross-out humor (farts, boogers, toe jam) about 1 in 12, someone losing their pants now and then, and a handful of regional stereotype roasts: ${REGIONS}.${MEME_LINE} Work these into the players' topics. The tone to aim for: "Grandpa stuck in a revolving door." / "Losing your pants on a water slide." / "A Canadian apologizing to a moose." / "Seattle's eleventh straight month of rain."`;
+    const reinvent = `\nGROSS REINVENTION (another rare house favorite, only about 1 in 15 cards): instead of the normal name for an everyday thing or act, describe it with a made-up, weirdly specific, slightly disgusting phrase, as if you had never heard the real word. It must be instantly clear (a player gets it in one second), concrete, and physical: name the body part or gross substance and pair it with a familiar food or everyday object, in 2 to 4 words. Good: picking a wedgie becomes "fishing out a butt knot", a mud bath becomes "swamp gravy", toxic mushrooms become "butt-mushrooms", earwax becomes "ear jelly". Bad: "mouth weather" (too abstract), "head butter" (vague), "a gym sock's diary" (whimsical, not gross).`;
+    return kind === "a" ? gross + reinvent + "\n" + HOUSE : gross + reinvent;
+  }
+  // backstop so bathroom humor stays a rare treat, whatever Claude writes
+  const POTTY = /\b(shit\w*|shart\w*|poo|poos|poop\w*|crap|craps|crapp\w*|turds?|diarrh\w*|piss\w*|pee|pees|peed|peeing|fart\w*|cum|cums|cumm\w*|cumshot\w*|jizz\w*|butt-?mushrooms?)\b/i;
+  const GRANDS = /\b(grand(pa|ma|mother|father|parents?)s?|granny|grannies|gramps|nana|meemaw|pawpaw)\b/i;
+  const isHouse = t => /:3$/.test(t) || POTTY.test(t) || GRANDS.test(t) || stereoOf(t).length > 0;
+  const capHouse = (list, size) => { const plain = list.filter(x => !isHouse(x)).length; const max = Math.min(Math.round(size * 0.4), Math.floor(Math.min(plain, size * 0.6) * 2 / 3));   // house cards stay at or under 40% of the final deck
+    let n = 0; return list.filter(x => !isHouse(x) || ++n <= max); };
+  const capPotty = (list, size = list.length) => { const max = Math.max(2, Math.round(size * 0.1)); let n = 0; return list.filter(x => !POTTY.test(x) || ++n <= max); };
+  const capCheems = (list, size = list.length) => { const max = Math.max(2, Math.round(size * 0.08)); let n = 0; return list.filter(x => !/:3$/.test(x) || ++n <= max); };
+  const GRAMMAR = `GRAMMAR RULES (critical: any answer card must read naturally in any prompt's blank):
+- Every blank must be fillable by a NOUN PHRASE: a thing, a person, or a situation, such as "a suspicious amount of glitter", "Grandma's dentures", or "a public meltdown".
+- Never put an article, adjective, number, or possessive directly before the blank (no "a ____", "the ____", "my ____", "100% real ____", "the majestic ____"). The word right before the blank should be a verb, a preposition, or punctuation, as in "made entirely of ____" or "Nothing ruins a date like ____." Never make the blank need a verb, an adjective, or a plural/singular match.
+- Answers are NOUN PHRASES: they start with a noun, "a", "an", "the", a number, or a name. At most 1 in 5 answers may be an -ing phrase (like "crying in the shower"), and no answer may start with any other kind of verb. Each answer starts with a capital letter and ends with a period. Never a full sentence, a lone verb, an adjective, or a question.
+- The noun rule is about word order, NOT about making cards safer or blander. Pack the action in after the noun: "A raccoon stealing your wallet", "The time Dad cried at Applebee's", "A wedding DJ having a breakdown". A vivid, specific, shocking answer always beats a plain object.
+- Cards ending in ":3" are a deliberate joke with an intentional misspelling. Never correct their spelling or remove the ":3".
+- Made-up gross descriptions (like "fishing out a butt knot" for picking a wedgie) are deliberate. Never swap them back to the plain word.
+- Good prompt: "Nothing ruins a camping trip faster than ____." Good answers: "A raccoon with a grudge." / "Grandpa's emergency underwear." / "A mime getting arrested at a funeral."
+- Bad prompts: "I love to ____ on weekends." (needs a verb) / "Now with 100% real ____." (adjective right before the blank). Bad answers: "So embarrassing." (adjective) / "Licks the dashboard." (starts with a verb)`;
+  const ANGLES = ["worst-case scenarios", "embarrassing secrets", "terrible life advice", "overheard conversations", "fake product names", "things you'd never say at a funeral",
+    "petty revenge", "awkward first dates", "bad decisions at 2 a.m.", "group chat drama", "conspiracy theories", "confessions", "family holiday disasters",
+    "rejected movie titles", "gross-out moments", "workplace chaos", "brutal honesty", "unhinged hobbies", "fake news headlines", "regrettable tattoos",
+    "things a squash would say", "inappropriate timing", "medical mysteries", "reality TV moments", "doomed business ideas", "hostile takeovers of everyday life"];
+
+    // every card Bobby has written on this device, so new decks steer away from repeats
+    let HIST = store.get("genHistory", { p: [], a: [] });
+    const saveHist = () => {
+      HIST.p = refresh(HIST.p, 1500); HIST.a = refresh(HIST.a, 3000);
+      saveCapped("genHistory", i => { if(i){ HIST.p = HIST.p.slice(-Math.floor(HIST.p.length / 2)); HIST.a = HIST.a.slice(-Math.floor(HIST.a.length / 2)); } return HIST; });
+    };
+    const TAG = new Map();   // card text -> its topic
+    const remember = (kind, list) => { const have = new Set(HIST[kind].map(c => c.x)); list.forEach(x => { if(!have.has(x)) HIST[kind].push({x, k: TAG.get(x) || ""}); }); };
+  const STOP = new Set("a an the of to and or in on at for with my your his her their our is are was be it this that i you me we they ____".split(" "));
+  const words = t => new Set(String(t).toLowerCase().replace(/[^a-z0-9' ]+/g, " ").split(/\s+/).filter(w => w && !STOP.has(w)));
+  function tooSimilar(t, pool){
+    const a = words(t); if(!a.size) return false;
+    for(const other of pool){
+      const b = other.w || (other.w = words(other.x ?? other));
+      let inter = 0; a.forEach(w => { if(b.has(w)) inter++; });
+      if(inter / (a.size + b.size - inter) >= 0.7) return true;   // mostly the same words = a repeat
+    }
+    return false;
+  }
+    function pastFor(kind, topics, n){
+      const set = new Set(topics.map(t => t.toLowerCase()));
+      return shuffle(HIST[kind].filter(c => set.has(String(c.k).toLowerCase()))).slice(0, n).map(c => c.x);
+    }
+    // the group's thumbs up/down from past games on this host's device
+    function tasteFor(kind){
+      const all = Object.entries(RATINGS).filter(([, e]) => e.k === kind);
+      const liked = shuffle(all.filter(([, e]) => e.up > e.down).map(([t]) => t)).slice(0, 25);
+      const disliked = shuffle(all.filter(([, e]) => e.down > e.up).map(([t]) => t)).slice(0, 20);
+      let out = "";
+      if(liked.length) out += `\nThis group UPVOTED these ${kind === "p" ? "prompts" : "answers"} in past games. Match their sense of humor, tone, and edge (but write new jokes, don't copy them):\n${liked.map(x => "- " + x).join("\n")}`;
+      if(disliked.length) out += `\nThis group DOWNVOTED these. Avoid this kind of joke:\n${disliked.map(x => "- " + x).join("\n")}`;
+      return out;
+    }
+    function namesRule(count){
+      const names = NAMES; if(!names.length) return "";
+      const n = Math.max(1, Math.round(count * 0.15));
+    return `The players at the table are: ${names.join(", ")}. Work their first names into about ${n} of these cards (spread evenly so everyone gets roasted), still tied to a topic. These players are friends who asked to be roasted, so name cards should be merciless but playful ribbing, the way friends roast each other: gross habits, catastrophic decisions, drunk disasters, embarrassing moments, and petty crimes against good taste. A card with a player's name is never sexual, and never targets their race, religion, sexuality, or a real disability or illness. Write name cards gender-neutrally: refer to players only by name or as they/them, and never assume anyone's gender (no he/she/his/her, no boyfriend/girlfriend or husband/wife guesses).`;
+    }
+    function tidyOne(kind, x){
+      x = clean(x, kind === "p" ? 160 : 120); if(!x) return null;
+      if(kind === "p"){ x = x.replace(/_{2,}/g, BLANK); return x.split(BLANK).length === 2 ? x : null; }
+      if(/:3\.?$/.test(x)) return x.replace(/\.$/, "");
+    return /[.!?]$/.test(x) ? x : x + ".";
+    }
+    const tidy = (kind, list) => list.map(x => tidyOne(kind, x)).filter(Boolean);
+    const carry = (from, to) => { if(from !== to && TAG.has(from) && !TAG.has(to)) TAG.set(to, TAG.get(from)); };
+    const filled = (p, a) => p.split(BLANK).join(`[${fitAnswer(p, a)}]`);
+
+    // one request to Claude through the deck server; retries once if Claude is busy
+    function parseJSON(text){
+      let t = String(text || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+      try{ return JSON.parse(t); }catch{}
+      const i = t.indexOf("{"), j = t.lastIndexOf("}");
+      if(i >= 0 && j > i){ try{ return JSON.parse(t.slice(i, j + 1)); }catch{} }
+      throw {code:"invalid_json", message:"Claude's reply came back garbled. Try again."};
+    }
+    async function post(body){
+      const url = serverUrl();
+      if(!url) throw {code:"setup", message:"Add your deck server link first."};
+      const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 180000);
+      let res, data;
+      try{
+        res = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({passcode: $("passIn").value, ...body}), signal: ac.signal});
+        data = await res.json().catch(() => null);
+      }catch(e){ throw {code:"network", message: e?.name === "AbortError" ? "Claude took too long to answer. Try again." : "Couldn't reach the deck server. Check the server link."}; }
+      finally{ clearTimeout(timer); }
+      if(!res.ok) throw {code: data?.error || "error", message: data?.message || "The deck server had a problem. Try again."};
+      return data;
+    }
+    // When a reply isn't clean JSON (cut off, or wrapped in chatter), pull out whatever cards it does contain.
+    function salvage(text){
+      const t = String(text || ""), un = s => { try{ return JSON.parse('"' + s + '"'); }catch{ return s; } };
+      const objs = [...t.matchAll(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"topic"\s*:\s*"((?:[^"\\]|\\.)*)"/g)].map(m => ({text: un(m[1]), topic: un(m[2])}));
+      if(objs.length >= 3) return {cards: objs};
+      const fl = t.match(/"flagged"\s*:\s*\[([\d,\s]*)/);
+      if(fl) return {flagged: fl[1].split(",").map(Number).filter(Number.isFinite)};
+      return null;
+    }
+    let lastStep = "";
+    // up to 4 requests to Claude at once: much faster, while staying under the API's rate limits
+    const pool = (() => { let active = 0; const q = [];
+      const next = () => { if(active >= 4 || !q.length) return; active++; const {fn, res, rej} = q.shift();
+        fn().then(res, rej).finally(() => { active--; next(); }); };
+      return fn => new Promise((res, rej) => { q.push({fn, res, rej}); next(); });
+    })();
+    async function call(input, opts = {}){
+      for(let attempt = 0; ; attempt++){
+        let d;
+        try{
+          d = await pool(() => post({prompt: input, ...opts}));
+          try{ return parseJSON(d.text); }
+          catch{
+            const got = salvage(d.text); if(got) return got;
+            const said = clean(d.text, 140);
+            if(d.stop === "refusal") throw {code:"refusal", message:"Claude wouldn't write some of these cards."};
+            if(d.stop === "max_tokens") throw {code:"cutoff", message:"Claude's reply got cut off before it finished."};
+            throw {code:"invalid_json", message: said ? `Claude replied with words instead of cards: "${said}…"` : "Claude sent back an empty reply."};
+          }
+        }catch(e){
+          if(attempt < (e.code === "invalid_json" ? 1 : 3) && ["busy","invalid_json"].includes(e.code)){ await new Promise(r => setTimeout(r, 2500 * (attempt + 1))); continue; }
+          e.step = lastStep; throw e;
+        }
+      }
+    }
+    const check = () => post({check: true});
+    // Checks each link in the chain and reports where it breaks.
+    async function diagnose(report){
+      const url = serverUrl();
+      if(!url){ report("bad", "No deck server link is set."); return; }
+      report("wait", "Reaching the deck server…");
+      let res, data;
+      try{
+        res = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({passcode: $("passIn").value, check: true})});
+        data = await res.json().catch(() => null);
+      }catch{
+        // the browser hides why a request failed, so check whether the server answers at all
+        let reachable = false;
+        try{ await fetch(url, {mode:"no-cors"}); reachable = true; }catch{}
+        report("bad", reachable
+          ? `The deck server is up but refused this website. In Cloudflare, set ALLOWED_ORIGINS to exactly ${location.origin} (no folder at the end), then deploy again.`
+          : "Couldn't reach the deck server at all. Check the link, and check the Worker is deployed in Cloudflare.");
+        return;
+      }
+      if(res.status === 401){ report("good", "Deck server reached."); report("bad", "Wrong host passcode. Check HOST_PASSCODE in Cloudflare."); return; }
+      if(!res.ok){ report("bad", `Deck server problem (${res.status}): ${data?.message || "no details"}`); return; }
+      report("good", "Deck server reached and this website is allowed.");
+      report("good", "Host passcode accepted.");
+      report("wait", "Asking Claude for a test card…");
+      try{
+        const out = await call('Reply with JSON only: {"cards": [{"text": "A test card.", "topic": "test"}]}');
+        report(Array.isArray(out?.cards) ? "good" : "bad", Array.isArray(out?.cards) ? "Claude answered. Deck making should work." : "Claude answered, but not with cards.");
+      }catch(e){ report("bad", `Claude didn't answer: ${e?.message || e?.code || "unknown problem"}`); }
+    }
+
+    async function ask(kind, count, topics, isBobby, avoid, soft, stereo){
+      const perTopic = Math.max(1, Math.ceil(count / topics.length));
+      const want = Math.ceil(count * 1.25);
+      const what = kind === "p"
+        ? `${count} PROMPT cards. Each prompt is a sentence or question with exactly one blank written as ____ (four underscores) for an answer card to fill. Keep each under 20 words. Keep prompts GENERAL and open-ended, so that dozens of different answer cards could be funny in the blank, rather than prompts that only one specific answer fits.${isBobby ? " Favor out-of-pocket setups that invite the most depraved answers." : ""}`
+        : `${count} ANSWER cards. Each answer is a short noun phrase (2 to 10 words) that could fill the blank of many different prompts. Favor broad, general responses (people, acts, body parts, things, situations) over niche specifics.`;
+    const input = `You write cards for a fill-in-the-blank party card game called Bobby's Laugh Factory, where players play the funniest answer card into a prompt card's blank.
+
+Write ${what.replace(String(count), String(want))}
+
+EVERY card must be about one of the players' topics below. Do not write any general cards that aren't tied to a topic. Spread the cards evenly, about ${perTopic} per topic, so every topic gets its share. Within each topic, keep the wording broad so anyone at the table gets the joke and there's room for creative ${isBobby ? "adult " : ""}humor, rather than niche references only a superfan would get.
+${topics.map(t => "- " + t).join("\n")}
+
+${rules(isBobby, soft)}
+${soft ? "" : namesRule(count)}
+${tasteFor(kind)}
+${houseStyle(isBobby, kind, stereo)}
+
+${GRAMMAR}
+
+Make them genuinely funny and varied: surprising specifics, absurd images, and punchy wording. No duplicates.
+For freshness this time, lean on these comedic angles (mix them, don't label them): ${shuffle([...ANGLES]).slice(0,4).join(", ")}. (Batch ${Math.random().toString(36).slice(2,8)}.)${(() => {
+        const prev = [...new Set([...(avoid||[]).slice(-60), ...pastFor(kind, topics, 120)])];
+        return prev.length ? `\nThese cards already exist from earlier decks. Write completely NEW jokes: don't reuse their punchlines, premises, or key phrases:\n${prev.map(x => "- " + x).join("\n")}` : "";
+      })()}
+
+Reply with JSON only, in this shape: {"cards": [{"text": "...", "topic": "the exact topic name from the list that this card is about"}]}`;
+      const out = await call(input, {maxTokens: 8000});
+      const list = Array.isArray(out?.cards) ? out.cards : [];
+      const byLower = new Map(topics.map(t => [t.toLowerCase(), t]));
+      const res = [];
+      list.forEach(c => {
+        const t = tidyOne(kind, typeof c === "string" ? c : c?.text); if(!t) return;
+        const topic = byLower.get(String(c?.topic||"").toLowerCase().trim());
+        if(!topic) return;   // only cards built from the players' topics
+        if(tooSimilar(t, [...HIST[kind], ...res, ...(avoid||[])])) return;   // basically a card we've already made
+        TAG.set(t, topic); res.push(t);
+      });
+      return res.slice(0, want);   // spares let later filters drop cards without shrinking the deck
+    }
+    // grammar pass: Claude rereads the cards and fixes any that won't fit a blank cleanly
+    async function polish(kind, cards, isBobby){
+      const chunks = []; for(let i = 0; i < cards.length; i += 60) chunks.push(cards.slice(i, i + 60));
+      const parts = await Promise.all(chunks.map(async chunk => {
+        const out = [];
+      const input = `These are ${kind === "p" ? "PROMPT" : "ANSWER"} cards for a fill-in-the-blank party game. Check each one against the grammar rules below, keep good cards exactly as they are, and rewrite any card that breaks a rule so it follows them while staying just as funny, specific, and shocking: fix the word order, never soften the joke.${kind === "a" ? " Rewrite any answer that starts with a verb (other than the occasional -ing phrase) into a noun phrase." : " Rewrite any prompt where an article, adjective, number, or possessive sits right before the blank."}${isBobby ? " Replace polite euphemisms for bodily functions with blunt words (shit, piss, fart); keep any sexual innuendo as it is." : ""} Return every card, in the same order, one output per input.
+
+${GRAMMAR}
+
+Cards:
+${chunk.map((c,j) => `${j+1}. ${c}`).join("\n")}
+
+Reply with JSON only: {"cards": ["...", "..."]}`;
+        try{
+          const res = await call(input, {maxTokens: 8000});
+          const got = Array.isArray(res?.cards) ? res.cards : [];
+          if(got.length !== chunk.length) return chunk;
+          chunk.forEach((orig, j) => { const fx = tidyOne(kind, typeof got[j] === "string" ? got[j] : got[j]?.text) || orig; carry(orig, fx); out.push(fx); });
+          return out;
+        }catch{ return chunk; }
+      }));
+      return [...new Set(parts.flat())];
+    }
+    // flow pass: Claude reads real prompt + answer combinations and fixes awkward cards
+    async function flowCheck(prompts, answers){
+      prompts = [...prompts]; answers = [...answers];
+      if(!prompts.length || !answers.length) return [prompts, answers];
+      const fixP = true, fixA = true;
+      const aOrder = shuffle([...answers.keys()]); let ai = 0;
+      const nextA = () => { const j = aOrder[ai % aOrder.length]; ai++; return j; };
+      const per = Math.max(4, Math.ceil(answers.length / prompts.length));
+      const tests = prompts.map((p, i) => ({i, js: Array.from({length:per}, nextA)}));
+      const chunks = []; for(let c = 0; c < tests.length; c += 12) chunks.push(tests.slice(c, c + 12));
+      const results = await Promise.all(chunks.map(async chunk => {
+        const lines = chunk.map(t => `P${t.i}: ${prompts[t.i]}\n` + t.js.map(j => `   A${j} -> ${filled(prompts[t.i], answers[j])}`).join("\n")).join("\n");
+      const input = `You're proofreading a fill-in-the-blank party card game. Each prompt card (P#) is shown filled with several random answer cards (A#), with the answer in [brackets]. In the real game ANY answer can land in ANY prompt, so cards must read as natural, grammatical English with a wide range of answers.
+
+${lines}
+
+Find cards that cause awkward or ungrammatical sentences:
+${fixP ? "- A PROMPT is broken if most of its filled versions read awkwardly (wrong grammar around the blank, a blank that needs a verb or adjective, an article, adjective, number, or possessive right before the blank, or wording so specific that few answers fit)." : ""}
+${fixA ? "- An ANSWER is broken if it reads awkwardly in most prompts (starts with a verb where a noun would flow better, is a full sentence, a lone adjective, or has odd punctuation)." : ""}
+Don't flag a combo just because it isn't funny; only flag grammar and flow problems.
+
+${GRAMMAR}
+
+For each broken card, write a fixed version that follows the rules and keeps the joke exactly as crude, dark, and specific as before: fix the grammar, never tone it down. Reply with JSON only: {"prompts":[{"id":number,"fix":"..."}],"answers":[{"id":number,"fix":"..."}]} (use empty arrays when nothing needs fixing).`;
+        try{ return await call(input, {maxTokens: 3000}); }catch{ return null; }
+      }));
+      results.forEach(res => {
+        if(!res) return;
+          (Array.isArray(res?.prompts) ? res.prompts : []).forEach(f => {
+            const id = Number(f?.id), fx = tidy("p", [f?.fix])[0];
+            if(Number.isInteger(id) && prompts[id] !== undefined && fx){ carry(prompts[id], fx); prompts[id] = fx; }
+          });
+          (Array.isArray(res?.answers) ? res.answers : []).forEach(f => {
+            const id = Number(f?.id), fx = tidy("a", [f?.fix])[0];
+            if(Number.isInteger(id) && answers[id] !== undefined && fx){ carry(answers[id], fx); answers[id] = fx; }
+          });
+      });
+      return [[...new Set(prompts)], [...new Set(answers)]];
+    }
+    // last pass: drop any card with a slur
+    async function screen(cards){
+      if(!cards.length) return cards;
+    const input = `Below is a numbered list of party game cards. Return the numbers of any cards that contain a slur (a derogatory term for a group of people based on race, ethnicity, religion, sexual orientation, gender identity, or disability). Crude, sexual, or dark humor without a slur is fine and should NOT be flagged.
+
+${cards.map((c,i) => `${i+1}. ${c}`).join("\n")}
+
+Reply with JSON only: {"flagged": [numbers]}`;
+      try{
+        const out = await call(input, {model: "fast", maxTokens: 800});
+        const bad = new Set((Array.isArray(out?.flagged) ? out.flagged : []).map(Number));
+        return cards.filter((_,i) => !bad.has(i+1));
+      }catch{ return cards; }
+    }
+    // deck code in the same format the Deck Maker uses
+    async function encode(d){
+      const tagged = x => { const ti = d.t.indexOf(TAG.get(x) || ""); return ti >= 0 ? [x, ti] : x; };
+      const bytes = new TextEncoder().encode(JSON.stringify({v:2, n:d.n, b:d.b, t:d.t, p:d.p.map(tagged), a:d.a.map(tagged)}));
+      const toB64 = u8 => { let s = ""; u8.forEach(b => s += String.fromCharCode(b)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); };
+      try{
+        const buf = await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer();
+        return "BLF1." + toB64(new Uint8Array(buf));
+      }catch{ return "BLF0." + toB64(bytes); }
+    }
+
+    async function make({name, size, topics, names, bobby, onStep}){
+      NAMES = names;
+      const sz = DECK_SIZES.find(z => z.id === size) || DECK_SIZES[1];
+      // small batches: each reply stays well under Claude's length limit, and they all write side by side
+      const split = (total, per) => { const n = Math.ceil(total / per), out = []; for(let i = 0; i < n; i++) out.push(Math.round(total * (i + 1) / n) - Math.round(total * i / n)); return out; };
+      const pSizes = split(sz.p, 20), aSizes = split(sz.a, 30);
+      const tick = (label, pct) => { lastStep = label; onStep(label, pct); };
+      tick(`Writing ${sz.p} prompts and ${sz.a} answers`, 4);
+      // if Claude won't write a batch, ask again a notch tamer and without the name roasts
+      let softened = false;
+      const askSafe = async (kind, n, avoid, stereo) => {
+        try{ return await ask(kind, n, topics, bobby, avoid, false, stereo); }
+        catch(e){
+          // reply ran too long: write it as two half-size batches instead
+          if(e.code === "cutoff" && n >= 8){ const h = Math.ceil(n / 2); const half = Math.ceil((stereo||[]).length / 2); const parts = await Promise.all([askSafe(kind, h, avoid, (stereo||[]).slice(0, half)), askSafe(kind, n - h, avoid, (stereo||[]).slice(half))]); return parts.flat(); }
+          if(!["refusal","invalid_json"].includes(e.code)) throw e; softened = true; return await ask(kind, n, topics, bobby, avoid, true, stereo);
+        }
+      };
+      let doneW = 0; const jobs = pSizes.length + aSizes.length;
+      const counted = p => p.then(v => { doneW++; tick(`Writing cards (${doneW} of ${jobs} batches done)`, 4 + Math.round(doneW / jobs * 46)); return v; });
+      const deal = dealStereo(pSizes.length + aSizes.length, pickMemes(Math.min(MEMES.length, Math.max(6, Math.ceil((sz.p + sz.a) / 12)))));
+      const all = await Promise.all([
+        ...pSizes.map((n, k) => counted(askSafe("p", n, undefined, deal[k]))),
+        ...aSizes.map((n, k) => counted(askSafe("a", n, undefined, deal[pSizes.length + k])))
+      ]);
+      const pb = all.slice(0, pSizes.length), batches = all.slice(pSizes.length);
+      const prompts = [];
+      pb.flat().forEach(x => { if(!prompts.includes(x) && !tooSimilar(x, prompts)) prompts.push(x); });
+      // batches were written at the same time, so drop near-duplicates between them
+      let answers = [];
+      batches.flat().forEach(x => { if(!answers.includes(x) && !tooSimilar(x, answers)) answers.push(x); });
+      tick("Fixing grammar so every answer fits", 55);
+      let [pg, ag] = await Promise.all([polish("p", prompts, bobby), polish("a", answers, bobby)]);
+      tick("Test-reading combos and fixing awkward ones", 72);
+      [pg, ag] = await flowCheck(pg, ag);
+      pg = keepGoodPrompts(pg);
+      tick("Checking every card", 90);
+      const [sp, sa] = await Promise.all([screen(pg), screen(ag)]);
+      const [s1, s2] = onePerStereo(shuffle(sp), shuffle(sa));
+      const p2 = capHouse(capPotty(s1, sz.p), sz.p).slice(0, sz.p);
+      const a2 = capHouse(capPotty(capCheems(s2, sz.a), sz.a), sz.a).slice(0, sz.a);
+      noteMemes([...p2, ...a2]);   // keep :3 and bathroom cards rare   // keep :3 cards a rare treat
+      if(p2.length < 5 || a2.length < 20) throw {code:"small", message:"Claude didn't write enough usable cards. Try again."};
+      remember("p", p2); remember("a", a2); saveHist();
+      onStep("Dealing it in", 100);
+      const deck = {name, bobby, topics, prompts: p2.map(t => ({t, s: TAG.get(t) || name})), answers: a2.map(t => ({t, s: TAG.get(t) || name}))};
+      const codeStr = await encode({n:name, b:bobby, t:topics, p:p2, a:a2});
+      return {deck, code: codeStr, softened};
+    }
+    return {make, check, diagnose};
+  })();
+
+  $("testServer").addEventListener("click", async () => {
+    const ul = $("serverChecks"); ul.innerHTML = ""; ul.hidden = false; $("testServer").disabled = true;
+    const report = (kind, text) => {
+      const last = ul.lastElementChild;
+      if(last && last.dataset.kind === "wait") last.remove();
+      const li = document.createElement("li"); li.dataset.kind = kind; li.className = kind;
+      li.textContent = (kind === "good" ? "✓ " : kind === "bad" ? "✗ " : "… ") + text; ul.appendChild(li);
+    };
+    try{ await Gen.diagnose(report); } finally { $("testServer").disabled = false; }
+  });
+  $("makeBtn").addEventListener("click", async () => {
+    if(!isHost || making || game.phase !== "lobby") return;
+    const topics = (game.topics||[]).map(t => t.text);
+    if(topics.length < 3){ toast("Add at least 3 deck topics first."); $("topicIn").focus(); return; }
+    if(!serverUrl()){ toast("Add your deck server link first."); $("serverIn").focus(); return; }
+    if(!$("passIn").value){ toast("Type the host passcode first."); $("passIn").focus(); return; }
+    // real players only (no bots), and only when the host leaves "Roast players by name" ticked
+    const names = $("useNames").checked ? sortedPlayers().filter(p => !p.bot).map(p => p.nick) : [];
+    const name = clean($("deckNameIn").value, 40) || "Bobby's Deck";
+    making = true; renderLobby();
+    try{
+      await Gen.check();
+      game.making = {label:"Getting started", pct:2}; broadcast();
+      const {deck, code: codeStr, softened} = await Gen.make({name, size: genSize, topics, names, bobby: !!game.settings.bobby,
+        onStep: (label, pct) => { if(game?.phase === "lobby"){ game.making = {label, pct}; broadcast(); } }});
+      if(!game || game.phase !== "lobby") return;
+      game.making = null;
+      store.set("lastDeckCode", codeStr);
+      loadDeck(deck, codeStr, true);
+      toast(`Bobby made "${name}": ${deck.prompts.length} prompts and ${deck.answers.length} answers.` +
+        (softened ? " Claude wouldn't write some of the most extreme cards, so part of the deck is a little tamer." : ""), softened ? 8000 : 2800);
+      burst(80);
+    }catch(e){
+      if(game){ game.making = null; broadcast(); }
+      let detail = ""; try{ detail = e?.message || [e?.code, e?.name].filter(Boolean).join(": ") || JSON.stringify(e) || String(e); }catch{ detail = String(e); }
+      let msg = e?.message || `Something went wrong while writing cards. Details: ${clean(detail, 220)}`;
+      if(e?.code === "refusal") msg += " Try again, or turn off Bobby Style or the name roasts for this deck.";
+      if(e?.code === "cutoff") msg += " Try a smaller deck size.";
+      if(e?.step) msg += ` (Step: ${e.step.toLowerCase()}.)`;
+      toast(msg, 9000); console.warn("Deck making failed:", e);
+    }finally{ making = false; if(game?.phase === "lobby") renderLobby(); }
+  });
+
+  // ---------- confetti ----------
+  const cv = $("confetti"), cx = cv.getContext("2d"); let bits = [], raf = 0;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function burst(n){
+    if(reduce) return;
+    cv.width = innerWidth; cv.height = innerHeight;
+    for(let i=0;i<n;i++) bits.push({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight*.35,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,
+      r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,c:COLORS[i%COLORS.length],w:6+Math.random()*6,h:10+Math.random()*8,life:0});
+    if(!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    bits = bits.filter(b => b.life < 140 && b.y < cv.height+40);
+    bits.forEach(b => { b.vy += .35; b.vx *= .99; b.x += b.vx; b.y += b.vy; b.r += b.vr; b.life++;
+      cx.save(); cx.translate(b.x,b.y); cx.rotate(b.r); cx.fillStyle=b.c; cx.fillRect(-b.w/2,-b.h/2,b.w,b.h); cx.restore(); });
+    raf = bits.length ? requestAnimationFrame(tick) : 0;
+    if(!raf) cx.clearRect(0,0,cv.width,cv.height);
+  }
+
+  // test hook (no effect in normal play)
+  window.__BLF = {act, startGame, newRound, hostTick, get game(){return game;}, get H(){return H;}, _setup(g,h,id){ game=g; H=h; isHost=true; myId=id; }};
+})();
+</script>
+</body>
+</html>
