@@ -507,6 +507,51 @@ body.hot-on{overflow:hidden}
 .acard .pair + .pair{margin-top:8px;padding-top:8px;border-top:2px dashed currentColor}
 .acard .pair b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--card);font-size:12px;margin-right:6px;vertical-align:2px}
 .q-ans{display:block;margin-top:10px}
+/* ---------- TV mode ---------- */
+.tvsw .txt b{font-size:16px}
+body.invited #code{display:none}
+body.invited .join-head span:not(.step-num){display:none}
+.tvlobby{display:grid;grid-template-columns:minmax(280px,1fr) minmax(0,1.6fr);gap:32px;align-items:start;padding:8px 0 32px}
+.tv-join{display:flex;flex-direction:column;align-items:center;gap:16px;border:4px solid var(--ink);border-radius:28px;background:var(--card);box-shadow:8px 8px 0 var(--ink);padding:28px}
+.tv-qr{width:100%;max-width:440px;aspect-ratio:1;border-radius:16px;overflow:hidden;background:#fff}
+.tv-qr svg{width:100%;height:100%;display:block}
+.tv-scan{margin:0;font-family:var(--f-display);font-size:clamp(22px,2.4vw,34px);text-align:center;line-height:1.1}
+.tv-pass{width:100%;font-size:14px;color:var(--muted)}
+.tv-pass summary{cursor:pointer;font-weight:700}
+.tv-pass input{width:100%;margin:8px 0 4px;font:inherit;padding:8px 10px;border:2px solid var(--ink);border-radius:10px;background:var(--bg);color:var(--ink)}
+.tv-room{display:flex;flex-direction:column;gap:20px;min-width:0}
+.tv-status{display:flex;flex-direction:column;gap:6px}
+.tv-status b{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,3.4vw,52px);line-height:1.05}
+.tv-status span{font-size:clamp(16px,1.5vw,22px);font-weight:700;color:var(--muted)}
+.tv-players{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tv-players li{display:flex;align-items:center;gap:12px;border:3px solid var(--ink);border-radius:18px;background:var(--card);padding:12px 14px;box-shadow:4px 4px 0 var(--ink);font-size:20px;min-width:0}
+.tv-players li b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:3ch;flex:0 1 auto}
+.tv-players li .tag{flex:none}
+.tv-players li .dot{width:54px;height:54px;flex:none;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;overflow:hidden}
+.tv-players li .st{margin-left:auto;font-size:15px;font-weight:800;color:var(--muted);white-space:nowrap}
+.tv-players li.ready .st{color:var(--teal)}
+.tv-players li.empty{border-style:dashed;color:var(--muted);justify-content:center;box-shadow:none;min-height:80px;font-size:16px}
+.tv-info{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tv-info h3{margin:0 0 8px;font-size:20px}
+.tv-topics,.tv-settings{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.tv-topics li,.tv-settings li{border:2px solid var(--ink);border-radius:999px;padding:6px 14px;background:var(--card);font-weight:700;font-size:17px}
+.tv-topics li.none{border-style:dashed;color:var(--muted)}
+/* the big screen reads from across the room */
+/* widescreen: prompt and status on the left, the answers on the right */
+body.tv .wrap{max-width:1760px;padding-inline:clamp(16px,3vw,48px)}
+body.tv .table{display:grid;grid-template-columns:minmax(380px,.85fr) minmax(0,1.5fr);gap:28px;align-items:start}
+body.tv .table > .scorebar{grid-column:1 / -1}
+body.tv .stage{grid-template-columns:1fr;gap:18px}
+body.tv #promptText{font-size:clamp(24px,2.1vw,38px);line-height:1.18}
+body.tv #stageTitle{font-size:clamp(26px,2.6vw,42px)}
+body.tv #stageNote{font-size:clamp(17px,1.5vw,24px)!important}
+body.tv .acard{font-size:clamp(18px,1.5vw,24px)}
+body.tv #refreshBtn,body.tv #playBtn,body.tv #pickBtn{display:none!important}
+body.tv .hot-screen .dd-main{grid-template-columns:minmax(0,2.4fr) minmax(220px,1fr)}
+body.tv .hot-wrap{max-width:1400px}
+@media (max-width:820px){.tvlobby{grid-template-columns:1fr}.tv-qr{width:min(80vw,380px)}.tv-info{grid-template-columns:1fr}}
+body.invited .hero{display:none}
+body.invited .join-wrap .sign{display:none}
 </style>
 </head>
 <body>
@@ -574,11 +619,15 @@ body.hot-on{overflow:hidden}
           <span class="txt"><b>Host in Bobby Style <span class="age">18+</span></b><span>Players must be 18 or older. You can change this in the lobby.</span></span>
           <span class="switch" aria-hidden="true"></span>
         </button>
+        <button type="button" class="bobby tvsw" id="homeTv" aria-pressed="false">
+          <span class="txt"><b>Host on a TV</b><span>This screen shows the game on the TV. Everyone plays on their phone, and the first phone in runs the game.</span></span>
+          <span class="switch" aria-hidden="true"></span>
+        </button>
         <button class="btn" id="hostBtn">Host a new game</button>
         <button class="btn sun big" id="soloBtn" hidden>Start a solo test game</button>
       </div>
       <p class="err" id="homeErr" role="alert"></p>
-      <p class="note version" id="versionTag">Version Oct 31, 10:25 PM</p>
+      <p class="note version" id="versionTag">Version Oct 31, 10:48 PM</p>
     </section>
 
     <ol class="steps" style="grid-column:1/-1">
@@ -725,6 +774,28 @@ body.hot-on{overflow:hidden}
   </main>
 
   <!-- CARD TABLE -->
+  <main id="tvView" class="tvlobby" hidden>
+    <section class="tv-join">
+      <div class="tv-qr" id="tvQr"></div>
+      <p class="tv-scan">Scan with your phone camera to join</p>
+      <details class="tv-pass" id="tvPassBox">
+        <summary>Deck maker passcode</summary>
+        <input type="password" id="tvPass" autocomplete="off" placeholder="Passcode" aria-label="Deck maker passcode">
+        <small>Only saved on this computer. The VIP's phone uses it to have Bobby make decks.</small>
+      </details>
+    </section>
+    <section class="tv-room">
+      <div class="tv-status"><b id="tvStatus"></b><span id="tvVip"></span></div>
+      <ul class="tv-players" id="tvPlayers"></ul>
+      <div class="cooking" id="tvCooking" hidden><span class="spin" aria-hidden="true"></span>
+        <div class="cook-txt"><b>Bobby is cooking up your deck…</b><span id="tvCookStep"></span></div><div class="cook-bar"><span id="tvCookBar"></span></div></div>
+      <div class="tv-info">
+        <div><h3>Topics <small id="tvTopicCount"></small></h3><ul class="tv-topics" id="tvTopics"></ul></div>
+        <div><h3>Game</h3><ul class="tv-settings" id="tvSettings"></ul></div>
+      </div>
+    </section>
+  </main>
+
   <main id="tableView" class="table" hidden>
     <ul class="scorebar" id="scorebar" aria-label="Scores"></ul>
     <section class="stage">
@@ -1359,6 +1430,95 @@ const BUILTIN_PACKS = {
     "rocket ship", "snail", "bowling", "hot air balloon", "porcupine", "lemonade stand", "beard", "mustache",
   ];
 
+  // ---------- QR codes (byte mode, error correction M, versions 1-10), drawn as SVG ----------
+  const QR = (() => {
+    // [ec codewords per block, blocks in group 1, data codewords each, blocks in group 2, data codewords each]
+    const M = [null, [10,1,16,0,0], [16,1,28,0,0], [26,1,44,0,0], [18,2,32,0,0], [24,2,43,0,0], [16,4,27,0,0],
+      [18,4,31,0,0], [22,2,38,2,39], [22,3,36,2,37], [26,4,43,1,44]];
+    const ALIGN = [null, [], [6,18], [6,22], [6,26], [6,30], [6,34], [6,22,38], [6,24,42], [6,26,46], [6,28,50]];
+    const EXP = new Array(512), LOG = new Array(256);
+    for(let i = 0, x = 1; i < 255; i++){ EXP[i] = x; LOG[x] = i; x <<= 1; if(x & 256) x ^= 0x11d; }
+    for(let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+    const mul = (a, b) => a && b ? EXP[LOG[a] + LOG[b]] : 0;
+    function rsRemainder(data, deg){
+      let gen = [1];
+      for(let i = 0; i < deg; i++){ const next = new Array(gen.length + 1).fill(0);
+        gen.forEach((g, j) => { next[j] ^= g; next[j + 1] ^= mul(g, EXP[i]); }); gen = next; }
+      const out = new Array(deg).fill(0);
+      data.forEach(b => { const f = b ^ out.shift(); out.push(0); for(let j = 0; j < deg; j++) out[j] ^= mul(gen[j + 1], f); });
+      return out;
+    }
+    function encode(text){
+      const bytes = [...new TextEncoder().encode(text)];
+      let ver = 1;
+      for(; ver <= 10; ver++){ const t = M[ver], cap = t[1] * t[2] + t[3] * t[4]; if(4 + (ver < 10 ? 8 : 16) + bytes.length * 8 <= cap * 8) break; }
+      if(ver > 10) throw new Error("Link too long for a QR code");
+      const [ec, n1, d1, n2, d2] = M[ver], cap = n1 * d1 + n2 * d2;
+      const bits = []; const put = (v, len) => { for(let i = len - 1; i >= 0; i--) bits.push((v >>> i) & 1); };
+      put(4, 4); put(bytes.length, ver < 10 ? 8 : 16); bytes.forEach(b => put(b, 8));
+      put(0, Math.min(4, cap * 8 - bits.length)); while(bits.length % 8) bits.push(0);
+      const data = []; for(let i = 0; i < bits.length; i += 8) data.push(parseInt(bits.slice(i, i + 8).join(""), 2));
+      for(let pad = 0xEC; data.length < cap; pad ^= 0xEC ^ 0x11) data.push(pad);
+      // split into blocks, add error correction, interleave
+      const blocks = []; let k = 0;
+      for(let i = 0; i < n1 + n2; i++){ const len = i < n1 ? d1 : d2; const blk = data.slice(k, k + len); k += len; blocks.push({d: blk, e: rsRemainder(blk, ec)}); }
+      const cw = [];
+      for(let i = 0; i < Math.max(d1, d2); i++) blocks.forEach(b => { if(i < b.d.length) cw.push(b.d[i]); });
+      for(let i = 0; i < ec; i++) blocks.forEach(b => cw.push(b.e[i]));
+      // lay out the grid
+      const size = ver * 4 + 17, mod = Array.from({length: size}, () => new Array(size).fill(false)), fn = Array.from({length: size}, () => new Array(size).fill(false));
+      const set = (x, y, v) => { mod[y][x] = v; fn[y][x] = true; };
+      for(let i = 0; i < size; i++){ set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+      [[3, 3], [size - 4, 3], [3, size - 4]].forEach(([cx, cy]) => { for(let dy = -4; dy <= 4; dy++) for(let dx = -4; dx <= 4; dx++){
+        const x = cx + dx, y = cy + dy; if(x < 0 || y < 0 || x >= size || y >= size) continue; const d = Math.max(Math.abs(dx), Math.abs(dy)); set(x, y, d !== 2 && d !== 4); } });
+      const al = ALIGN[ver];
+      al.forEach((ax, i) => al.forEach((ay, j) => { if((i === 0 && j === 0) || (i === 0 && j === al.length - 1) || (i === al.length - 1 && j === 0)) return;
+        for(let dy = -2; dy <= 2; dy++) for(let dx = -2; dx <= 2; dx++) set(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1); }));
+      const drawFormat = mask => {
+        const data5 = (0 << 3) | mask; let rem = data5; for(let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+        const f = ((data5 << 10) | rem) ^ 0x5412, bit = i => ((f >>> i) & 1) === 1;
+        for(let i = 0; i <= 5; i++) set(8, i, bit(i));
+        set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+        for(let i = 9; i < 15; i++) set(14 - i, 8, bit(i));
+        for(let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
+        for(let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
+        set(8, size - 8, true);
+      };
+      drawFormat(0);   // reserve the format areas
+      if(ver >= 7){ let rem = ver; for(let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+        const vb = (ver << 12) | rem; for(let i = 0; i < 18; i++){ const b = ((vb >>> i) & 1) === 1, a = size - 11 + i % 3, c = Math.floor(i / 3); set(a, c, b); set(c, a, b); } }
+      let i = 0;
+      for(let right = size - 1; right >= 1; right -= 2){
+        if(right === 6) right = 5;
+        for(let vert = 0; vert < size; vert++) for(let j = 0; j < 2; j++){
+          const x = right - j, up = ((right + 1) & 2) === 0, y = up ? size - 1 - vert : vert;
+          if(!fn[y][x] && i < cw.length * 8){ mod[y][x] = ((cw[i >>> 3] >>> (7 - (i & 7))) & 1) === 1; i++; }
+        }
+      }
+      const MASKS = [(x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, x => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+        (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => x * y % 2 + x * y % 3 === 0,
+        (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0];
+      const applyMask = m => { for(let y = 0; y < size; y++) for(let x = 0; x < size; x++) if(!fn[y][x] && MASKS[m](x, y)) mod[y][x] = !mod[y][x]; };
+      const penalty = () => { let p = 0;
+        for(let y = 0; y < size; y++){ let run = 1; for(let x = 1; x <= size; x++){ if(x < size && mod[y][x] === mod[y][x - 1]) run++; else { if(run >= 5) p += run - 2; run = 1; } } }
+        for(let x = 0; x < size; x++){ let run = 1; for(let y = 1; y <= size; y++){ if(y < size && mod[y][x] === mod[y - 1][x]) run++; else { if(run >= 5) p += run - 2; run = 1; } } }
+        for(let y = 0; y < size - 1; y++) for(let x = 0; x < size - 1; x++){ const c = mod[y][x]; if(c === mod[y][x + 1] && c === mod[y + 1][x] && c === mod[y + 1][x + 1]) p += 3; }
+        let dark = 0; mod.forEach(r => r.forEach(v => { if(v) dark++; })); p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+        return p; };
+      let best = 0, bestP = Infinity;
+      for(let m = 0; m < 8; m++){ applyMask(m); drawFormat(m); const pp = penalty(); if(pp < bestP){ bestP = pp; best = m; } applyMask(m); }
+      applyMask(best); drawFormat(best);
+      return mod;
+    }
+    // an SVG with a white quiet zone, for any text (a link)
+    function svg(text, dark = "#2A1540"){
+      const m = encode(text), n = m.length, q = 4, size = n + q * 2;
+      let path = ""; m.forEach((row, y) => row.forEach((v, x) => { if(v) path += `M${x + q} ${y + q}h1v1h-1z`; }));
+      return `<svg viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" role="img" aria-label="QR code to join"><rect width="${size}" height="${size}" fill="#fff"/><path d="${path}" fill="${dark}"/></svg>`;
+    }
+    return {encode, svg};
+  })();
+
   const POINTS = [5,7,10];
   const TIMERS = [{v:0,l:"No limit"},{v:60,l:"60 s"},{v:90,l:"90 s"}];
   const PACKS = [
@@ -1405,9 +1565,18 @@ const BUILTIN_PACKS = {
   $("nick").value = store.get("nick","");
   const params = new URLSearchParams(location.search);
   const inviteCode = (params.get("join")||"").toUpperCase().replace(/[^A-Z]/g,"").slice(0,4);
-  if(inviteCode){ $("code").value = inviteCode; }
+  if(inviteCode){ $("code").value = inviteCode;
+    // came from the TV's QR code: just pick a name and avatar, then join
+    document.body.classList.add("invited");
+    $("hostWrap").hidden = true; $("joinTitle").textContent = "You're joining a game!";
+    $("joinBtn").textContent = "Join the game";
+    setTimeout(() => { if(!$("nick").value) $("nick").focus(); }, 300);
+  }
   let hostBobby = !!store.get("hostBobby", false);
-  const syncHomeBobby = () => { $("homeBobby").setAttribute("aria-pressed", String(hostBobby)); $("hostBtn").textContent = hostBobby ? "Host a Bobby Style game" : "Host a new game"; };
+  let hostTv = !!store.get("hostTv", false);
+  const syncHomeBobby = () => { $("homeBobby").setAttribute("aria-pressed", String(hostBobby)); $("homeTv").setAttribute("aria-pressed", String(hostTv));
+    $("hostBtn").textContent = hostTv ? (hostBobby ? "Host a Bobby Style game on this TV" : "Host on this TV") : (hostBobby ? "Host a Bobby Style game" : "Host a new game"); };
+  $("homeTv").addEventListener("click", () => { hostTv = !hostTv; store.set("hostTv", hostTv); syncHomeBobby(); });
   $("homeBobby").addEventListener("click", () => { hostBobby = !hostBobby; store.set("hostBobby", hostBobby); syncHomeBobby(); });
   syncHomeBobby();
 
@@ -1545,7 +1714,8 @@ const BUILTIN_PACKS = {
   }
   function setupHost(p, id, c){
       peer = p; isHost = true; myId = id; code = c; ageOk = hostBobby;
-      game = {players:[{id, nick:clean(nick())||"Host", color:myColor, av:myAv, ready:false, adult:hostBobby, joinedAt:Date.now(), host:true}],
+      const tv = hostTv && !TEST_MODE_SOLO;
+      game = {tv, vip: null, players: tv ? [] : [{id, nick:clean(nick())||"Host", color:myColor, av:myAv, ready:false, adult:hostBobby, joinedAt:Date.now(), host:true}],
               settings:{...DEFAULT_SETTINGS, packs:[...DEFAULT_SETTINGS.packs], bobby:hostBobby},
               phase:"lobby", topics:[], scores:{}, round:null, now:Date.now()};
       H = {deck:null, promptPile:[], answerPile:[], hands:new Map(), subs:new Map(), keyMap:new Map(), revealTimer:0};
@@ -1559,6 +1729,7 @@ const BUILTIN_PACKS = {
   // ---------- solo test mode (private test copy only) ----------
   // Hosts with no network and adds two bots that ready up, play cards, and judge on their own.
   const BOTS = [{nick:"Bot Bea", color:"#38A7FF"}, {nick:"Bot Bo", color:"#3FB84A"}];
+  let TEST_MODE_SOLO = false;   // the solo test copy never hosts on a TV
   function startSoloTest(){
     setupHost({destroy(){}, destroyed:false}, "local-host", "TEST");
     net(true, "Solo test");
@@ -1658,6 +1829,18 @@ const BUILTIN_PACKS = {
     if(!existing && game.players.length >= MAX){ conn.send({t:"full"}); setTimeout(()=>conn.close(), 300); return; }
     conns.set(conn.peer, conn);
     if(existing){ existing.nick = clean(d.nick)||"Player"; existing.av = freeAv(safeAv(d.av), existing.id); existing.color = avatarById(existing.av).bg; }
+    else if(game.phase !== "lobby" && H.ghosts?.has((clean(d.nick)||"").toLowerCase()) && !game.players.some(p => p.nick.toLowerCase() === (clean(d.nick)||"").toLowerCase())){
+      // a dropped player came back: same seat, same hand, same score
+      const g = H.ghosts.get(clean(d.nick).toLowerCase()); H.ghosts.delete(clean(d.nick).toLowerCase());
+      const av = freeAv(g.av, conn.peer);
+      game.players.push({id:conn.peer, nick:g.nick || clean(d.nick), color:avatarById(av).bg, av, ready:true, adult:g.adult || d.adult===true, joinedAt:g.joinedAt, host:false});
+      game.scores[conn.peer] = g.score;
+      if(g.hand) H.hands.set(conn.peer, g.hand);
+      if(g.refresh) game.refreshUsed = {...(game.refreshUsed||{}), [conn.peer]: true};
+      if(g.vip && game.tv) game.vip = conn.peer;
+      toast(`${g.nick || clean(d.nick)} is back!`);
+      if(activeIds().length >= MIN){ H.rejoinWait = 0; clearTimeout(H.rejoinTimer); }
+    }
     else {
       const av = freeAv(safeAv(d.av), conn.peer);
       game.players.push({id:conn.peer, nick:clean(d.nick)||"Player", color:avatarById(av).bg, av, ready:false, adult:d.adult===true, joinedAt:Date.now(), host:false});
@@ -1775,6 +1958,48 @@ const BUILTIN_PACKS = {
   }
   function ddPrivate(id, msg){ if(id === myId) onDoodleMsg(msg); else { const c = conns.get(id); if(c?.open){ try{ c.send(msg); }catch{} } } }
 
+  // the first real phone to join runs a TV game; if they leave, the next one in takes over
+  function ensureVip(){
+    if(!game?.tv) return;
+    game.hasLastDeck = !!store.get("lastDeckCode", "");
+    if(!game.players.some(p => p.id === game.vip && !p.bot)) game.vip = sortedPlayers().find(p => !p.bot)?.id || null;
+  }
+  const canCtl = id => game && (game.tv ? id === game.vip : id === myId && isHost);
+  const iControl = () => !!game && (game.tv ? (!!game.vip && game.vip === myId) : isHost);
+  const isTvScreen = () => !!(isHost && game?.tv);
+  // every host control goes through here: run it on this device, or send it to the TV
+  function ctl(op, d = {}){ if(isHost && !game?.tv) ctlRun(myId, op, d); else send({t: "ctl", op, ...d}); }
+  function ctlRun(id, op, d){
+    if(!canCtl(id) || !game) return;
+    const s = game.settings;
+    switch(op){
+      case "set": {
+        const patch = {}, x = d.patch || {};
+        if(POINTS.includes(x.points)) patch.points = x.points;
+        if(TIMERS.some(t => t.v === x.timer)) patch.timer = x.timer;
+        if(WAIT_MODES.some(m => m.v === x.waitGame)) patch.waitGame = x.waitGame;
+        if(Array.isArray(x.packs)) patch.packs = x.packs.filter(k => PACKS.some(p => p.id === k));
+        if(game.phase === "lobby" && Object.keys(patch).length) hostUpdate({settings: {...s, ...patch}});
+        return;
+      }
+      case "bobby": if(game.phase === "lobby") setBobby(!!d.on); return;
+      case "addBot": addBot(); return;
+      case "kick": if(d.id !== id) kick(d.id); return;
+      case "rename": renameBot(d.id, d.name); return;
+      case "start": if(game.phase === "lobby" && canStartNow()) startGame(); return;
+      case "lobby": if(game.phase === "over") toLobby(""); return;
+      case "skipIntro": if(game.phase === "intro") endIntro(); return;
+      case "make": runMake({size: d.size, useNames: !!d.useNames, name: d.name}, id); return;
+      case "removeDeck": H.deck = null; H.deckCode = null; hostUpdate({settings: {...s, custom: null}}); return;
+      case "loadCode": loadCode(String(d.code || "").slice(0, 200000), id); return;
+      case "lastDeck": loadCode(store.get("lastDeckCode", ""), id); return;
+    }
+  }
+  function canStartNow(){
+    const ps = sortedPlayers(), s = game.settings;
+    return ps.length >= MIN && ps.every(p => p.ready) && !!(s.custom || (s.packs || []).length) && !game.making;
+  }
+
   // a message everyone sees
   function tellAll(text){ toast(text, 5000); conns.forEach(c => { if(c.open){ try{ c.send({t: "toast", text}); }catch{} } }); }
   // a message only one player sees
@@ -1845,7 +2070,7 @@ const BUILTIN_PACKS = {
         game.topics.push({id:rid(), by:id, text}); break;
       }
       case "untopic":
-        game.topics = game.topics.filter(t => !(t.id === d.id && (t.by === id || id === myId && isHost))); break;
+        game.topics = game.topics.filter(t => !(t.id === d.id && (t.by === id || canCtl(id)))); break;
       case "play": {
         if(game.phase !== "playing" || !r || r.stage !== "picking" || id === r.judge) return;
         const hand = H.hands.get(id); if(!hand || H.subs.has(id)) return;
@@ -1912,6 +2137,7 @@ const BUILTIN_PACKS = {
         }, REVEAL_MS);
         break;
       }
+      case "ctl": ctlRun(id, d.op, d); return;
       default: return;
     }
     broadcast();
@@ -1992,7 +2218,10 @@ const BUILTIN_PACKS = {
     // deal in anyone waiting (late joiners) who's allowed to play
     sortedPlayers().forEach(p => { if(s.bobby && !p.adult) return; if(game.scores[p.id] == null) game.scores[p.id] = 0; dealIn(p.id); });
     const ids = activeIds();
-    if(ids.length < MIN){ toLobby(`Not enough players to keep going (need ${MIN}). Back to the lobby.`); return; }
+    if(ids.length < MIN){
+      if(H.rejoinWait && Date.now() < H.rejoinWait){ clearTimeout(H.retryRound); H.retryRound = setTimeout(() => { if(game?.phase === "playing") newRound(first); }, 2000); return; }
+      toLobby(`Not enough players to keep going (need ${MIN}). Back to the lobby.`); return;
+    }
     let judge;
     if(first || !prev) judge = ids[rnd(ids.length)];
     else { const i = ids.indexOf(prev.judge); judge = ids[(i+1) % ids.length] ?? ids[0]; if(i === -1) judge = ids[0]; }
@@ -2063,6 +2292,7 @@ const BUILTIN_PACKS = {
   }
   function broadcast(){
     if(!isHost || !game) return;
+    ensureVip();
     conns.forEach((c, id) => { if(c.open){ try{ c.send(stateFor(id)); }catch{} } });
     applyState(stateFor(myId));
   }
@@ -2071,13 +2301,26 @@ const BUILTIN_PACKS = {
     if(!isHost || !game) return;
     conns.delete(id); lastSeen.delete(id);
     const pl = playerById(id); if(!pl) return;
+    // mid-game, keep their seat: rejoining with the same name brings back their hand, score and swap
+    if(game.phase !== "lobby" && !pl.bot){
+      H.ghosts = H.ghosts || new Map();
+      H.ghosts.set(pl.nick.toLowerCase(), {nick: pl.nick, score: game.scores?.[id] || 0, hand: H.hands.get(id) || null, av: pl.av, adult: pl.adult,
+        joinedAt: pl.joinedAt, refresh: !!game.refreshUsed?.[id], vip: game.vip === id});
+      if(H.hands.has(id)) H.hands.set(id, []);   // the cards wait for them instead of going back in the pile
+    }
     game.players = game.players.filter(p => p.id !== id);
     game.topics = game.topics.filter(t => t.by !== id);
     toast(`${pl.nick} left.`);
     if((game.phase === "playing" || game.phase === "intro") && H.hands.has(id)){
-      const hand = H.hands.get(id); H.unused.push(...hand); H.hands.delete(id);
+      const hand = H.hands.get(id); if(!H.ghosts?.has(pl.nick.toLowerCase())) H.unused.push(...hand); H.hands.delete(id);
       const r = game.round;
-      if(activeIds().length < MIN){ toLobby(`Not enough players to keep going (need ${MIN}). Back to the lobby.`); return; }
+      if(activeIds().length < MIN){
+        // a phone probably locked: hold the game for a minute so they can rejoin instead of ending it for everyone
+        H.rejoinWait = Date.now() + 60000;
+        toast(`Waiting up to a minute for ${pl.nick} to reconnect…`, 5000);
+        clearTimeout(H.rejoinTimer);
+        H.rejoinTimer = setTimeout(() => { if(game && game.phase === "playing" && H.rejoinWait && activeIds().length < MIN){ H.rejoinWait = 0; toLobby(`Not enough players to keep going (need ${MIN}). Back to the lobby.`); } }, 60500);
+      }
       if(r && r.judge === id && r.stage !== "reveal"){ toast("The judge left. Starting a new round."); H.subs.forEach(t => H.discard.push(t)); newRound(); return; }
       if(r && r.stage === "picking"){ H.subs.delete(id); r.submitted = r.submitted.filter(x => x !== id); if(allIn() && H.subs.size) toJudging(); }
     }
@@ -2092,14 +2335,27 @@ const BUILTIN_PACKS = {
     if(c){ try{ c.send({t:"kicked"}); }catch{} setTimeout(()=>{ try{c.close();}catch{} }, 300); }
     dropPlayer(id);
   }
-  function hostUpdate(patch){ Object.assign(game, patch); broadcast(); }
+  function hostUpdate(patch){ Object.assign(game, patch); if(game.tv) game.hasLastDeck = !!store.get("lastDeckCode", ""); broadcast(); }
 
   // ---------- joining ----------
+  // lost the host (screen lock, bad signal): go back in automatically with the same name
+  let rejoinTries = 0;
+  function reconnect(c){
+    const wasIn = game && game.phase !== "lobby";
+    backHome("");
+    if(rejoinTries >= 4){ rejoinTries = 0; $("homeErr").textContent = "Lost the connection to the host. Check your signal, then join again with the same name to get your cards back."; return; }
+    rejoinTries++;
+    $("code").value = c; net(false, "Reconnecting…");
+    $("homeErr").textContent = wasIn ? "Reconnecting… your cards and score are saved." : "Reconnecting…";
+    setTimeout(() => { if(!game) joinGame(c); }, 1200 + rejoinTries * 800);
+  }
   function joinGame(c){
     setBusy(true); $("homeErr").textContent = ""; net(false,"Finding the room…");
     const p = new Peer({debug:0});
     let gotState = false;
-    const fail = msg => { if(gotState) return; setBusy(false); try{ p.destroy(); }catch{} net(false,"Not connected"); $("homeErr").textContent = msg; };
+    const fail = msg => { if(gotState) return; setBusy(false); try{ p.destroy(); }catch{} net(false,"Not connected");
+      if(rejoinTries > 0 && rejoinTries < 4){ peer = null; reconnect(c); return; }   // still reconnecting: try again
+      rejoinTries = 0; $("homeErr").textContent = msg; };
     const giveUp = setTimeout(() => fail(`Couldn't reach a game with code ${c}. Double-check the letters with your host.`), 10000);
     p.on("open", id => {
       peer = p; myId = id;
@@ -2110,11 +2366,11 @@ const BUILTIN_PACKS = {
         lastHostMsg = Date.now();
         if(d.t === "state" && d.game && Array.isArray(d.game.players)){
           if(!gotState){
-            gotState = true; clearTimeout(giveUp); hostConn = conn; code = c; isHost = false;
+            gotState = true; clearTimeout(giveUp); hostConn = conn; code = c; isHost = false; rejoinTries = 0;
             net(true,"Connected"); setBusy(false);
             timers.push(setInterval(() => {
               if(conn.open) conn.send({t:"ping"});
-              if(Date.now() - lastHostMsg > TIMEOUT_MS) backHome("Lost the connection to the host.");
+              if(Date.now() - lastHostMsg > TIMEOUT_MS) reconnect(c);
             }, HEARTBEAT_MS));
           }
           applyState(d);
@@ -2173,6 +2429,7 @@ const BUILTIN_PACKS = {
 
   // ---------- leaving ----------
   function teardown(){
+    letSleep();
     timers.forEach(clearInterval); timers = [];
     if(H) clearTimeout(H.revealTimer);
     if(isHost){ conns.forEach(c => { try{ c.send({t:"closed"}); }catch{} }); }
@@ -2193,20 +2450,33 @@ const BUILTIN_PACKS = {
   }
   window.addEventListener("beforeunload", () => { if(isHost) conns.forEach(c => { try{ c.send({t:"closed"}); }catch{} }); });
 
+  // ---------- keep the screen awake while in a room (phones otherwise lock and drop out) ----------
+  let wakeLock = null;
+  async function keepAwake(){
+    if(!game || document.visibilityState !== "visible" || (wakeLock && !wakeLock.released)) return;
+    try{ wakeLock = await navigator.wakeLock?.request("screen"); }catch{ wakeLock = null; }
+  }
+  function letSleep(){ try{ wakeLock?.release(); }catch{} wakeLock = null; }
+  document.addEventListener("visibilitychange", keepAwake);
+
   // ---------- views ----------
   let shownView = "";
   function showView(){
     if(!game) return;
+    keepAwake();
     const v = game.phase === "lobby" ? "lobby" : "table";
+    const tvScreen = isTvScreen();
+    document.body.classList.toggle("tv", tvScreen);
     $("homeView").hidden = true;
-    $("lobbyView").hidden = v !== "lobby";
+    $("tvView").hidden = !(tvScreen && v === "lobby");
+    $("lobbyView").hidden = v !== "lobby" || tvScreen;
     $("tableView").hidden = v !== "table";
     $("overOverlay").hidden = game.phase !== "over";
     $("intro").hidden = game.phase !== "intro";
     if(v !== shownView){ shownView = v; window.scrollTo({top:0}); }
     $("roomCode").textContent = code;
     $("hostNote").hidden = !isHost;
-    if(v === "lobby") renderLobby(); else renderTable();
+    if(v === "lobby"){ renderLobby(); if(tvScreen) renderTvLobby(); } else renderTable();
     if(game.phase === "over") renderOver();
   }
 
@@ -2332,17 +2602,18 @@ const BUILTIN_PACKS = {
     const key = dd.n + dd.stage;
     if(key !== DD.key){ DD.key = key;
       ddEnd = Date.now() + (dd.ends - (game.now || Date.now())); ddLen = dd.stage === "choose" ? DD_CHOOSE : dd.stage === "draw" ? DD_DRAW : DD_REVEAL;
-      if(dd.stage === "draw" && dd.drawer !== myId) send({t: "ddsync"});   // catch up on anything already drawn
+      if(dd.stage === "draw" && dd.drawer !== myId && !isTvScreen()) send({t: "ddsync"});   // catch up on anything already drawn
       $("ddNear").hidden = true;
     }
-    const me = playerById(myId), blocked = dd.adult && !me?.adult, iDraw = dd.drawer === myId, drawer = playerById(dd.drawer), got = dd.got.includes(myId);
+    const tvs = isTvScreen(), me = playerById(myId), blocked = !tvs && dd.adult && !me?.adult, iDraw = dd.drawer === myId, drawer = playerById(dd.drawer), got = dd.got.includes(myId);
+    $("hotBack").hidden = tvs;
     $("ddAge").hidden = !blocked; $("ddMain").hidden = blocked; $("ddWord").hidden = blocked;
     $("ddWho").textContent = dd.stage === "reveal" ? `${dd.got.length} got it` : iDraw ? (dd.stage === "choose" ? "Pick a word to draw" : "You're drawing!") : `${drawer ? drawer.nick : "Someone"} is ${dd.stage === "choose" ? "picking a word…" : "drawing"}`;
     // the word: the drawer sees it, everyone else sees only its length
     const blanks = pat => pat.split(" ").map(w => `<span class="dd-blank">${[...w].map(ch => ch === "_" ? "<i></i>" : `<b>${esc(ch)}</b>`).join("")}</span>`).join("") +
       `<small>(${pat.split(" ").map(w => w.replace(/[^_]/g, "").length).join(", ")})</small>`;
     $("ddWord").innerHTML = dd.stage === "reveal" ? `The word was <b>${esc(dd.word || "")}</b>` :
-      dd.stage === "choose" ? (iDraw ? "Choose your word:" : "Waiting for a word…") :
+      dd.stage === "choose" ? (iDraw ? "Choose your word:" : tvs ? `${drawer ? drawer.nick : "Someone"} is picking a word on their phone…` : "Waiting for a word…") :
       iDraw ? `Draw: <b>${esc(myDD?.word || "")}</b>` : got ? "You got it! Waiting for the others…" : blanks(dd.pattern);
     const ch = $("ddChoices"), showCh = iDraw && dd.stage === "choose" && !!myDD?.choices;
     ch.hidden = !showCh;
@@ -2351,13 +2622,38 @@ const BUILTIN_PACKS = {
         b.addEventListener("click", () => send({t: "ddw", i})); ch.appendChild(b); }); }
     $("ddTools").hidden = !(iDraw && dd.stage === "draw");
     ddCv.classList.toggle("can-draw", iDraw && dd.stage === "draw");
-    const showGuess = !iDraw && dd.stage === "draw" && !blocked && !got;
+    const showGuess = !tvs && !iDraw && dd.stage === "draw" && !blocked && !got;
     const gf = $("ddGuessForm"); if(gf.hidden && showGuess){ gf.hidden = false; } else gf.hidden = !showGuess;
     $("ddFeed").innerHTML = dd.feed.slice(-8).map(f => { const p = playerById(f.id), nm = p ? (f.id === myId ? "You" : p.nick) : "Someone";
       return f.ok ? `<li class="ok">✓ ${esc(nm)} got it!</li>` : `<li><b>${esc(nm)}:</b> ${esc(f.text)}</li>`; }).join("");
     const sc = Object.entries(game.ddScores || {}).sort((a, b) => b[1] - a[1]).slice(0, 5);
     $("ddScores").innerHTML = sc.length ? sc.map(([id, pts]) => { const p = playerById(id); return p ? `<li>${avDot(p)}<span>${esc(p.nick)}</span><b>${pts}</b></li>` : ""; }).join("") : "";
   }
+
+  // ---------- TV mode: what the big screen shows in the lobby ----------
+  let tvQrFor = "";
+  function renderTvLobby(){
+    const link = `${location.origin}${location.pathname}?join=${code}`;
+    if(tvQrFor !== link){ tvQrFor = link; try{ $("tvQr").innerHTML = QR.svg(link); }catch{ $("tvQr").textContent = link; } }
+    const ps = sortedPlayers(), s = game.settings, vip = playerById(game.vip), notReady = ps.filter(p => !p.ready).length;
+    const needDeck = !s.custom && !(s.packs || []).length;
+    $("tvStatus").textContent = !ps.length ? "Scan the code to join" : ps.length < MIN ? `Need ${MIN - ps.length} more ${MIN - ps.length === 1 ? "player" : "players"}` :
+      game.making ? "Bobby is making your deck" : needDeck ? "Waiting for the VIP to pick the cards" : notReady ? `Waiting on ${notReady} to tap Ready` : "Everyone's ready!";
+    $("tvVip").textContent = vip ? `${vip.nick} is the VIP and starts the game from their phone.` : "";
+    $("tvPlayers").innerHTML = ps.map(p => `<li class="${p.ready ? "ready" : ""}">${avDot(p)}<b>${esc(p.nick)}</b>${p.id === game.vip ? '<span class="tag host">VIP</span>' : ""}${p.bot ? '<span class="tag you">Bot</span>' : ""}<span class="st">${p.ready ? "✓ Ready" : "…"}</span></li>`).join("") +
+      Array.from({length: Math.max(0, MIN - ps.length)}, () => '<li class="empty">Waiting for a friend</li>').join("");
+    const mk = game.making; $("tvCooking").hidden = !mk;
+    if(mk){ $("tvCookStep").textContent = mk.label || ""; $("tvCookBar").style.width = `${Math.max(3, Math.min(100, mk.pct || 0))}%`; }
+    const topics = game.topics || [];
+    $("tvTopicCount").textContent = topics.length ? `(${topics.length})` : "";
+    $("tvTopics").innerHTML = topics.length ? topics.map(t => `<li>${esc(t.text)}</li>`).join("") : '<li class="none">Add topics on your phone</li>';
+    const onPacks = (s.packs || []).map(id => PACKS.find(p => p.id === id)?.name).filter(Boolean);
+    $("tvSettings").innerHTML = [`First to ${s.points}`, s.timer ? `${s.timer}s to pick` : "No time limit", s.bobby ? '<span class="age">18+</span> Bobby Style' : "",
+      s.custom ? `Deck: ${esc(s.custom.name)}` : "", onPacks.length ? `Packs: ${onPacks.map(esc).join(", ")}` : ""].filter(Boolean).map(x => `<li>${x}</li>`).join("");
+    const pass = $("tvPass"); if(document.activeElement !== pass) pass.value = $("passIn").value;
+    $("tvPassBox").open = !$("passIn").value;
+  }
+  $("tvPass").addEventListener("input", () => { $("passIn").value = $("tvPass").value; store.set("genPass", $("tvPass").value); });
 
   function renderLobby(){
     const ps = sortedPlayers().slice(0,MAX);
@@ -2369,16 +2665,17 @@ const BUILTIN_PACKS = {
     if(!editing) ps.forEach(p => {
       const li = document.createElement("li"); li.className = "pcard" + (lobbySeen.has(p.id) ? "" : " deal") + (p.id === myId ? " mine" : ""); lobbySeen.add(p.id);
       li.innerHTML = `<div class="who">${avDot(p)}<span class="nm">${esc(p.nick)}</span></div>
-        <div class="tags">${p.host?'<span class="tag host">Host</span>':''}${p.id===myId?'<span class="tag you">You</span>':''}${p.bot?'<span class="tag you">Bot</span>':''}</div>
+        <div class="tags">${p.host?'<span class="tag host">Host</span>':''}${game.tv && p.id===game.vip?'<span class="tag host">VIP</span>':''}${p.id===myId?'<span class="tag you">You</span>':''}${p.bot?'<span class="tag you">Bot</span>':''}</div>
         <span class="state ${p.ready?'ready':'wait'}"><i></i>${p.ready?'Ready':'Picking a snack…'}</span>`;
-      if(isHost && p.bot){
+      if(iControl() && p.bot){
         const nm = li.querySelector(".nm");
         if(renamingId === p.id){
           const inp = document.createElement("input"); inp.type = "text"; inp.className = "bot-rename"; inp.maxLength = 16;
           inp.id = "rename-" + p.id; inp.value = renameDraft; inp.setAttribute("aria-label", `New name for ${p.nick}`);
           inp.addEventListener("input", () => { renameDraft = inp.value; });
-          inp.addEventListener("keydown", e => { if(e.key === "Enter") renameBot(p.id, inp.value); if(e.key === "Escape"){ renamingId = null; renderLobby(); } });
-          inp.addEventListener("blur", () => { if(renamingId === p.id) renameBot(p.id, inp.value); });
+          const done = v => { if(isHost && !game.tv) renameBot(p.id, v); else { renamingId = null; ctl("rename", {id: p.id, name: v}); renderLobby(); } };
+          inp.addEventListener("keydown", e => { if(e.key === "Enter") done(inp.value); if(e.key === "Escape"){ renamingId = null; renderLobby(); } });
+          inp.addEventListener("blur", () => { if(renamingId === p.id) done(inp.value); });
           nm.replaceWith(inp); setTimeout(() => { if(document.activeElement !== inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } }, 0);
         } else {
           const btn = document.createElement("button"); btn.type = "button"; btn.className = "nm bot-name";
@@ -2387,17 +2684,17 @@ const BUILTIN_PACKS = {
           nm.replaceWith(btn);
         }
       }
-      if(isHost && !p.host){
+      if(iControl() && !p.host && p.id !== myId){
         const k = document.createElement("button"); k.className="kick"; k.type="button"; k.textContent="×";
         k.setAttribute("aria-label", `Remove ${p.nick}`); k.title = `Remove ${p.nick}`;
-        k.addEventListener("click", () => kick(p.id)); li.appendChild(k);
+        k.addEventListener("click", () => ctl("kick", {id: p.id})); li.appendChild(k);
       }
       ul.appendChild(li);
     });
     const slots = editing ? 0 : Math.min(MAX, Math.max(MIN, ps.length + 1));
     for(let i=ps.length;i<slots;i++){ const li=document.createElement("li"); li.className="pcard empty"; li.textContent="Waiting for a friend"; ul.appendChild(li); }
     $("count").textContent = `${ps.length} / ${MAX} players`;
-    $("addBot").hidden = !isHost; $("addBot").disabled = ps.length >= MAX;
+    $("addBot").hidden = !iControl(); $("addBot").disabled = ps.length >= MAX;
 
     // topics
     const tl = $("topics"); tl.innerHTML = "";
@@ -2408,7 +2705,7 @@ const BUILTIN_PACKS = {
       const li = document.createElement("li"); li.className = "chip";
       li.innerHTML = `<span class="cdot" style="background:${safeColor(by?.color)}"></span><span class="t">${esc(t.text)}</span>`;
       li.title = by ? `Added by ${by.nick}` : "";
-      if(isHost || t.by === myId){
+      if(iControl() || t.by === myId){
         const x = document.createElement("button"); x.type="button"; x.textContent="×"; x.setAttribute("aria-label", `Remove topic ${t.text}`);
         x.addEventListener("click", () => send({t:"untopic", id:t.id})); li.appendChild(x);
       }
@@ -2419,23 +2716,24 @@ const BUILTIN_PACKS = {
     const canAdd = topics.length < MAX_TOPICS && mineCount < TOPICS_EACH;
     $("topicIn").disabled = !canAdd; $("topicAdd").disabled = !canAdd;
     $("topicIn").placeholder = canAdd ? "e.g. camping trips" : (topics.length >= MAX_TOPICS ? "Topic list is full" : `You've added your ${TOPICS_EACH} topics`);
-    $("copyTopics").hidden = !isHost || !topics.length;
+    $("copyTopics").hidden = !isHost || !!game.tv || !topics.length;
 
     // settings
     const s = game.settings || DEFAULT_SETTINGS, host = ps.find(p => p.host);
-    $("setNote").textContent = isHost ? "You're the host. Pick how this game plays." : `Set by ${host ? host.nick : "the host"}.`;
-    seg($("segPoints"), POINTS.map(v=>({v,l:String(v)})), s.points, v => hostUpdate({settings:{...s, points:v}}));
-    seg($("segTimer"), TIMERS, s.timer, v => hostUpdate({settings:{...s, timer:v}}));
-    seg($("segWait"), WAIT_MODES, s.waitGame || "mix", v => hostUpdate({settings:{...s, waitGame:v}}));
+    const boss = game.tv ? playerById(game.vip) : host;
+    $("setNote").textContent = iControl() ? (game.tv ? "You're the VIP. Pick how this game plays, then start it from here." : "You're the host. Pick how this game plays.") : `Set by ${boss ? boss.nick : "the host"}.`;
+    seg($("segPoints"), POINTS.map(v=>({v,l:String(v)})), s.points, v => ctl("set", {patch: {points: v}}));
+    seg($("segTimer"), TIMERS, s.timer, v => ctl("set", {patch: {timer: v}}));
+    seg($("segWait"), WAIT_MODES, s.waitGame || "mix", v => ctl("set", {patch: {waitGame: v}}));
     const pk = $("packs"); pk.innerHTML = "";
     PACKS.forEach(p => {
       const on = Array.isArray(s.packs) && s.packs.includes(p.id);
-      const b = document.createElement("button"); b.type="button"; b.className="pack"; b.disabled=!isHost;
+      const b = document.createElement("button"); b.type="button"; b.className="pack"; b.disabled=!iControl();
       b.setAttribute("aria-pressed", String(on));
       b.innerHTML = `<span class="sw" style="background:${p.c}"></span><span class="txt"><b>${p.name}</b><span>${p.desc}</span></span><span class="chk"></span>`;
       b.addEventListener("click", () => {
         const cur = new Set(s.packs||[]); on ? cur.delete(p.id) : cur.add(p.id);
-        hostUpdate({settings:{...s, packs:[...cur]}});
+        ctl("set", {patch: {packs: [...cur]}});
       });
       pk.appendChild(b);
     });
@@ -2445,36 +2743,37 @@ const BUILTIN_PACKS = {
     $("deckInfo").hidden = !cd;
     if(cd){ $("deckName").textContent = cd.name + (cd.bobby ? " (18+)" : "");
             $("deckMeta").textContent = `${cd.prompts} prompts · ${cd.answers} answers${cd.topics?.length ? " · " + cd.topics.join(", ") : ""}`; }
-    $("deckRemove").hidden = !isHost;
-    $("deckCopy").hidden = !isHost || !H?.deckCode;
-    $("deckLoad").hidden = !isHost || !!cd;
-    $("deckLast").hidden = !store.get("lastDeckCode", "");
-    // making a deck with Bobby
-    $("makeBox").hidden = !isHost || TEST_MODE;
-    if(isHost && !TEST_MODE){
-      $("serverRow").hidden = !!DECK_SERVER;
+    $("deckRemove").hidden = !iControl();
+    $("deckCopy").hidden = !isHost || !!game.tv || !H?.deckCode;
+    $("deckLoad").hidden = !iControl() || !!cd;
+    $("deckLast").hidden = game.tv ? !game.hasLastDeck : !store.get("lastDeckCode", "");
+    // making a deck with Bobby (in TV mode the VIP asks; the TV holds the passcode and does the work)
+    $("makeBox").hidden = !iControl() || TEST_MODE;
+    if(iControl() && !TEST_MODE){
+      $("serverRow").hidden = !!DECK_SERVER || !!game.tv;
+      $("passIn").closest("label").hidden = !!game.tv; $("testServer").hidden = !!game.tv;
       seg($("segSize"), DECK_SIZES.map(z => ({v:z.id, l:`${z.label} · ${z.p}/${z.a}`})), genSize, v => { genSize = v; store.set("genSize", v); renderLobby(); });
       const nt = (game.topics||[]).length, nn = ps.filter(p => !p.bot).length;
       const roast = nn && $("useNames").checked;
       $("makeNote").textContent = nt < 3 ? `Add at least 3 deck topics below, then Bobby writes a deck from them${roast ? " and roasts the players by name" : ""}.`
         : `Bobby writes a deck from the ${nt} topics${roast ? " and roasts the players by name" : ""}. Takes about 1 to 3 minutes.`;
       $("makeBtn").disabled = making || !!game.making;
-      $("makeBtn").textContent = making ? "Bobby is cooking…" : (cd ? "Make a new deck" : "Make deck");
+      $("makeBtn").textContent = (making || game.making) ? "Bobby is cooking…" : (cd ? "Make a new deck" : "Make deck");
     }
     // what each closed section says at a glance
     const onPacks = (s.packs||[]).map(id => PACKS.find(p => p.id === id)?.name).filter(Boolean);
     $("packsSum").textContent = onPacks.length ? `${onPacks.length} on · ${onPacks.join(", ")}` : "None on";
-    $("deckSum").textContent = game.making ? "Bobby is cooking…" : cd ? `${cd.name}${cd.bobby ? " (18+)" : ""} · ${cd.prompts + cd.answers} cards` : (isHost ? "None yet · make one here" : "None");
-    $("dropDeck").classList.toggle("needs", !!(!cd && !(s.packs||[]).length && isHost));
+    $("deckSum").textContent = game.making ? "Bobby is cooking…" : cd ? `${cd.name}${cd.bobby ? " (18+)" : ""} · ${cd.prompts + cd.answers} cards` : (iControl() ? "None yet · make one here" : "None");
+    $("dropDeck").classList.toggle("needs", !!(!cd && !(s.packs||[]).length && iControl()));
     const mk = game.making;
     $("cooking").hidden = !mk;
     renderHot();
     if(mk){ $("cookStep").textContent = mk.label || ""; $("cookBar").style.width = `${Math.max(3, Math.min(100, mk.pct||0))}%`; }
-    $("deckNone").hidden = isHost || !!cd;
-    $("ratingsBox").hidden = !isHost; if(isHost) renderRatingsBox();
+    $("deckNone").hidden = iControl() || !!cd;
+    $("ratingsBox").hidden = !isHost || !!game.tv; if(isHost && !game.tv) renderRatingsBox();
 
     const bobby = !!s.bobby;
-    const bb = $("bobbyBtn"); bb.disabled = !isHost; bb.setAttribute("aria-pressed", String(bobby));
+    const bb = $("bobbyBtn"); bb.disabled = !iControl(); bb.setAttribute("aria-pressed", String(bobby));
     $("adultBanner").hidden = !bobby;
     if(!bobby) $("ageBox").hidden = true;
 
@@ -2483,22 +2782,22 @@ const BUILTIN_PACKS = {
     rb.textContent = ready ? "Not ready yet" : "I'm ready!";
     rb.className = "btn big " + (ready ? "" : "sun");
     const notReady = ps.filter(p => !p.ready).length;
-    const sb = $("startBtn"); sb.hidden = !isHost;
+    const sb = $("startBtn"); sb.hidden = !iControl();
     // there must be some cards: at least one pack, or a custom deck
     const needDeck = !s.custom && !(s.packs||[]).length;
     sb.disabled = !(ps.length >= MIN && notReady === 0) || needDeck || !!game.making;
     $("startNote").textContent =
       game.making ? "Wait for Bobby to finish the deck." :
-      needDeck ? (isHost ? "Turn on a card pack, or make or load a custom deck, to start." : "Waiting for the host to pick the cards.") :
+      needDeck ? (iControl() ? "Turn on a card pack, or make or load a custom deck, to start." : `Waiting for ${game.tv ? "the VIP" : "the host"} to pick the cards.`) :
       ps.length < MIN ? `Need ${MIN - ps.length} more ${MIN-ps.length===1?"player":"players"} to start.` :
       notReady ? `Waiting on ${notReady} to tap Ready.` :
-      isHost ? "Everyone's ready. Start when you like!" : "Everyone's ready. Waiting for the host to start.";
+      iControl() ? "Everyone's ready. Start when you like!" : `Everyone's ready. Waiting for ${game.tv ? "the VIP" : "the host"} to start.`;
   }
 
   function seg(el, opts, cur, onPick){
     el.innerHTML = "";
     opts.forEach(o => { const b=document.createElement("button"); b.type="button"; b.textContent=o.l;
-      b.setAttribute("aria-pressed", String(o.v===cur)); b.disabled=!isHost;
+      b.setAttribute("aria-pressed", String(o.v===cur)); b.disabled=!iControl();
       b.addEventListener("click", () => onPick(o.v)); el.appendChild(b); });
   }
 
@@ -2548,7 +2847,8 @@ const BUILTIN_PACKS = {
     rb.disabled = !!(r && r.stage === "picking" && mySubmitted);
     if(rb.hidden || rb.disabled){ refreshArmed = false; }
     rb.textContent = refreshArmed ? "Tap again to swap all 7 cards" : "New hand (1 per game)";
-    $("tableAge").hidden = !(s.bobby && !myDealt && !playerById(myId)?.adult);
+    const tvs = isTvScreen();
+    $("tableAge").hidden = tvs || !(s.bobby && !myDealt && !playerById(myId)?.adult);
 
     if(!r){ $("promptText").textContent = ""; $("promptMeta").textContent = ""; $("promptSrc").textContent = ""; $("stageTitle").textContent = game.phase === "over" ? "Game over!" : "Shuffling…"; $("stageNote").textContent = ""; $("timer").hidden = true; return; }
 
@@ -2563,7 +2863,12 @@ const BUILTIN_PACKS = {
     if(r.stage === "picking"){
       const total = Math.max(0, (r.players||[]).length - 1);
       const missing = Math.max(0, total - r.submitted.length);
-      if(!myDealt){
+      if(tvs){
+        // the TV: everyone picks on their phone
+        $("stageTitle").textContent = pickN(r.prompt) === 2 ? "Pick 2! Play two cards on your phone" : "Play your funniest card on your phone";
+        $("stageNote").textContent = `${r.submitted.length} of ${total} answers are in. ${judge ? judge.nick : "The judge"} is judging this round.`;
+        $("handTitle").textContent = "";
+      } else if(!myDealt){
         $("stageTitle").textContent = "You'll be dealt in next round";
         $("stageNote").textContent = "Watch this round. Your cards are coming.";
         $("handTitle").textContent = "Your hand";
@@ -2599,7 +2904,7 @@ const BUILTIN_PACKS = {
         pickBtn.hidden = false; pickBtn.disabled = !selected;
       } else {
         $("stageTitle").textContent = `${judge ? judge.nick : "The judge"} is choosing…`;
-        $("stageNote").textContent = "Fingers crossed for yours.";
+        $("stageNote").textContent = tvs ? "The judge picks the winner on their phone." : "Fingers crossed for yours.";
         r.options.forEach(o => hand.appendChild(cardEl(o, {disabled:true, label: o.t === mySubmitted?.t ? "Yours" : ""})));
       }
     } else if(r.stage === "reveal"){
@@ -2614,10 +2919,10 @@ const BUILTIN_PACKS = {
       r.options.forEach(o => { const by = playerById(o.by), name = o.by === myId ? "You" : (by ? by.nick : "Someone who left");
         const li = cardEl(o, {disabled:true, win: o.k === r.winKey, dim: o.k !== r.winKey,
           label: o.k === r.winKey ? `Winner · ${name}` : `Played by ${name}`});
-        li.appendChild(voteRow(o.k, myVotes[o.k] || 0)); hand.appendChild(li); });
-      $("promptVote").replaceChildren(voteRow("p", myVotes.p || 0, "this prompt"));
+        if(!tvs) li.appendChild(voteRow(o.k, myVotes[o.k] || 0)); hand.appendChild(li); });
+      if(!tvs) $("promptVote").replaceChildren(voteRow("p", myVotes.p || 0, "this prompt"));
       const reacted = (r.reacts||[]).find(x => x.id === myId);
-      $("reactBar").hidden = false;
+      $("reactBar").hidden = tvs;
       $("clapBtn").disabled = $("booBtn").disabled = !!reacted;
       $("clapBtn").setAttribute("aria-pressed", String(reacted?.r === "clap"));
       $("booBtn").setAttribute("aria-pressed", String(reacted?.r === "boo"));
@@ -2661,10 +2966,10 @@ const BUILTIN_PACKS = {
     el.hidden = false; el.textContent = `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}`;
     el.classList.toggle("low", left <= 10);
     // countdown alerts only for players who still have to play a card
-    const needsToPlay = myDealt && !mySubmitted && r.judge !== myId;
+    const needsToPlay = isTvScreen() ? (r.players || []).some(id => id !== r.judge && !r.submitted.includes(id)) : (myDealt && !mySubmitted && r.judge !== myId);
     if(left <= 30 && left > 0 && !alerted.has(`${r.n}:30`)){ alerted.add(`${r.n}:30`); if(left > 15 && needsToPlay) sfx.alert30(r.v30, r.say30); }
     if(left <= 15 && left > 0 && !alerted.has(`${r.n}:15`)){ alerted.add(`${r.n}:15`); if(needsToPlay) sfx.alert15(r.v15, r.say15); }
-    $("hand").classList.toggle("hurry", needsToPlay && left <= 30 && left > 0);
+    $("hand").classList.toggle("hurry", !isTvScreen() && needsToPlay && left <= 30 && left > 0);
   }
   setInterval(() => { if(game?.phase === "playing"){ updateTimer(); judgeNag(); } }, 500);
   const NAG_AT = [15, 40, 65];
@@ -2688,8 +2993,8 @@ const BUILTIN_PACKS = {
     const top = ps[0];
     $("overTitle").textContent = top ? (top.id === myId ? "You win the Laugh Factory!" : `${top.nick} wins!`) : "Game over!";
     $("standings").innerHTML = ps.map(p => `<li>${avDot(p)}${esc(p.nick)}<span class="pts">${game.scores?.[p.id]||0}</span></li>`).join("");
-    $("overLobby").hidden = !isHost;
-    $("overNote").textContent = [game.endNote, isHost ? "" : "Waiting for the host to head back to the lobby."].filter(Boolean).join(" ");
+    $("overLobby").hidden = !iControl();
+    $("overNote").textContent = [game.endNote, iControl() ? "" : `Waiting for ${game.tv ? "the VIP" : "the host"} to head back to the lobby.`].filter(Boolean).join(" ");
   }
 
   // ---------- actions ----------
@@ -2698,9 +3003,9 @@ const BUILTIN_PACKS = {
     // the test copy can't reach the internet, so it only offers solo games
     $("soloBtn").hidden = false; $("hostBtn").hidden = true;
     $("joinWrap").hidden = true; document.querySelector("#hostWrap .or").hidden = true; $("homeBobby").hidden = false;
-    $("soloBtn").addEventListener("click", () => { if(needName()) return; startSoloTest(); });
+    $("soloBtn").addEventListener("click", () => { if(!hostTv && needName()) return; startSoloTest(); });
   }
-  $("hostBtn").addEventListener("click", () => { if(needName() || typeof Peer==="undefined") return; startHosting(); });
+  $("hostBtn").addEventListener("click", () => { if((!hostTv && needName()) || typeof Peer==="undefined") return; startHosting(); });
   $("joinBtn").addEventListener("click", () => {
     if(needName() || typeof Peer==="undefined") return;
     const c = $("code").value.trim();
@@ -2709,7 +3014,7 @@ const BUILTIN_PACKS = {
   });
   $("code").addEventListener("keydown", e => { if(e.key==="Enter") $("joinBtn").click(); });
   $("leaveBtn").addEventListener("click", () => backHome(""));
-  $("addBot").addEventListener("click", () => addBot(false));
+  $("addBot").addEventListener("click", () => ctl("addBot"));
   ["dropPacks", "dropDeck", "ratingsBox"].forEach(id => {
     const d = $(id), saved = store.get("open." + id, null);
     if(saved !== null) d.open = saved;
@@ -2744,13 +3049,13 @@ const BUILTIN_PACKS = {
     const s = game.settings;
     if(!on && s.custom?.bobby){ toast("Remove the 18+ custom deck first."); return; }
     if(on && !s.bobby){
-      game.players.forEach(p => { if(!p.host) p.ready = false; });
-      playerById(myId).adult = true; ageOk = true;
+      game.players.forEach(p => { if(!p.host && p.id !== game.vip) p.ready = false; });
+      const boss = playerById(game.tv ? game.vip : myId); if(boss) boss.adult = true; if(!game.tv) ageOk = true;
       toast("Bobby Style is on. Players must confirm they're 18+ to ready up.");
     }
     hostUpdate({settings:{...game.settings, bobby:on}});
   }
-  $("bobbyBtn").addEventListener("click", () => { if(isHost) setBobby(!game.settings.bobby); });
+  $("bobbyBtn").addEventListener("click", () => { if(iControl()) ctl("bobby", {on: !game.settings.bobby}); });
 
   $("copyBtn").addEventListener("click", async () => {
     const link = location.protocol.startsWith("http") ? `${location.origin}${location.pathname}?join=${code}` : code;
@@ -2782,25 +3087,21 @@ const BUILTIN_PACKS = {
     if(deck.bobby && !game.settings.bobby){ setBobby(true); } else broadcast();
     if(!quiet) toast(`Loaded "${deck.name}".`);
   }
-  async function loadCode(codeStr){
+  async function loadCode(codeStr, from = myId){
     if(!isHost) return;
-    try{ const deck = await decodeDeck(codeStr); $("deckCode").value = ""; loadDeck(deck, String(codeStr).replace(/\s+/g, "")); }
-    catch(e){ toast(e.message || "Couldn't load that deck."); }
+    try{ const deck = await decodeDeck(codeStr); $("deckCode").value = ""; loadDeck(deck, String(codeStr).replace(/\s+/g, "")); if(from !== myId) tellPlayer(from, `Loaded "${deck.name}".`); }
+    catch(e){ if(from === myId) toast(e.message || "Couldn't load that deck."); else tellPlayer(from, e.message || "Couldn't load that deck."); }
   }
-  $("deckBtn").addEventListener("click", () => loadCode($("deckCode").value));
-  $("deckLast").addEventListener("click", () => loadCode(store.get("lastDeckCode", "")));
+  $("deckBtn").addEventListener("click", () => { const v = $("deckCode").value; $("deckCode").value = ""; ctl("loadCode", {code: v}); });
+  $("deckLast").addEventListener("click", () => ctl("lastDeck"));
   $("deckCopy").addEventListener("click", async () => {
     if(!H?.deckCode) return;
     try{ await navigator.clipboard.writeText(H.deckCode); toast("Deck code copied. Save it to play this deck again."); }
     catch{ $("deckCode").value = H.deckCode; toast("Couldn't copy automatically. The code is in the box; select and copy it."); }
   });
-  $("deckRemove").addEventListener("click", () => {
-    if(!isHost) return;
-    H.deck = null; H.deckCode = null;
-    hostUpdate({settings:{...game.settings, custom:null}});
-  });
+  $("deckRemove").addEventListener("click", () => { if(iControl()) ctl("removeDeck"); });
 
-  $("startBtn").addEventListener("click", () => { if(isHost && game.phase === "lobby") startGame(); });
+  $("startBtn").addEventListener("click", () => { if(iControl() && game.phase === "lobby") ctl("start"); });
   $("playBtn").addEventListener("click", () => {
     const sel = Array.isArray(selected) ? selected : [], r = game?.round;
     if(!r || sel.length !== pickN(r.prompt)) return;
@@ -2815,7 +3116,7 @@ const BUILTIN_PACKS = {
     if(!refreshArmed){ refreshArmed = true; renderTable(); clearTimeout(refreshTimer); refreshTimer = setTimeout(() => { refreshArmed = false; if(game?.phase === "playing") renderTable(); }, 4000); return; }
     refreshArmed = false; selected = null; send({t:"refresh"});   // the host replies with how it went
   });
-  $("overLobby").addEventListener("click", () => { if(isHost) toLobby(""); });
+  $("overLobby").addEventListener("click", () => { if(iControl()) ctl("lobby"); });
 
   // ---------- sound ----------
   // Background music: a file named music.mp3 placed next to this page. Alerts are synthesized, no files needed.
@@ -2848,11 +3149,12 @@ const BUILTIN_PACKS = {
   }
   let unlocked = false;
   let musicAllowed = false;   // music only plays during a game, never over the Bobby Style intro
-  function playMusic(){ if(musicOk !== false && musicOn && unlocked && musicAllowed && music.paused) music.play().catch(() => {}); }
+  const muted = () => !!(game?.tv && !isHost);   // TV mode: only the TV makes sound
+  function playMusic(){ if(muted()){ if(!music.paused) music.pause(); return; } if(musicOk !== false && musicOn && unlocked && musicAllowed && music.paused) music.play().catch(() => {}); }
   function startGameMusic(at = 0){ musicAllowed = true; try{ music.currentTime = Math.max(0, at); }catch{} playMusic(); }
   function stopGameMusic(){ musicAllowed = false; music.pause(); stopIntroMusic(); }
   function stopIntroMusic(){ if(!introMusic.paused) introMusic.pause(); }
-  function playIntroMusic(at = 0){ if(!musicOn || !unlocked) return; try{ introMusic.currentTime = Math.max(0, at); }catch{} introMusic.play().catch(() => {}); }
+  function playIntroMusic(at = 0){ if(!musicOn || !unlocked || muted()) return; try{ introMusic.currentTime = Math.max(0, at); }catch{} introMusic.play().catch(() => {}); }
   // Browsers (especially Safari and iPhones) only allow sound that was first started by a tap or click.
   // On the first tap, silently start and stop each audio player so the game can use them later on its own.
   let blessed = false;
@@ -2946,6 +3248,7 @@ const BUILTIN_PACKS = {
   }
   try{ chooseVoice(); window.speechSynthesis?.addEventListener?.("voiceschanged", chooseVoice); }catch{}
   function say(text){
+    if(muted()) return false;
     try{
       const ss = window.speechSynthesis; if(!ss || !text) return false;
       ss.cancel();
@@ -2987,7 +3290,7 @@ const BUILTIN_PACKS = {
     a.addEventListener("error", fallback, {once:true});
   }
   const sfx = {
-    _ok(){ window.__sfxLog?.push?.(arguments[0]); return sfxOn && actx && actx.state !== "closed"; },
+    _ok(){ if(muted()) return false; window.__sfxLog?.push?.(arguments[0]); return sfxOn && actx && actx.state !== "closed"; },
     // spoken line first, then a voice file, then a chime
     alert30(v, line){ if(!this._ok(line ? "say:" + line : v ? "30-" + v : "30")) return;
       if(line && say(line)) return; playVoice(30, v, () => this.chime30()); },
@@ -3026,7 +3329,7 @@ const BUILTIN_PACKS = {
     clearTimeout(musicTimer);
     if(elapsed >= pre) playIntroMusic(elapsed - pre);
     else musicTimer = setTimeout(() => { if(game?.phase === "intro") playIntroMusic(0); }, (pre - elapsed) * 1000);
-    $("skipIntro").hidden = !isHost;
+    $("skipIntro").hidden = !iControl();
     cancelAnimationFrame(introRaf); introRaf = requestAnimationFrame(introFrame);
   }
   function endIntroView(){
@@ -3065,7 +3368,7 @@ const BUILTIN_PACKS = {
     } else { bob.style.setProperty("--sq", 1); bob.style.setProperty("--st", 1); bob.style.setProperty("--lift", "0px"); }
     introRaf = requestAnimationFrame(introFrame);
   }
-  $("skipIntro").addEventListener("click", () => send({t:"skipIntro"}));
+  $("skipIntro").addEventListener("click", () => ctl("skipIntro"));
 
   // ---------- make a deck with Bobby (Claude, through your deck server) ----------
   // Put your Cloudflare Worker link between the quotes once it's deployed. Until then hosts can paste it in the lobby.
@@ -3681,32 +3984,40 @@ Reply with JSON only: {"flagged": [numbers]}`;
     };
     try{ await Gen.diagnose(report); } finally { $("testServer").disabled = false; }
   });
-  $("makeBtn").addEventListener("click", async () => {
-    if(!isHost || making || game.phase !== "lobby") return;
+  $("makeBtn").addEventListener("click", () => {
+    if(!iControl() || making || game.phase !== "lobby" || game.making) return;
+    if((game.topics||[]).length < 3){ toast("Add at least 3 deck topics first."); $("topicIn").focus(); return; }
+    ctl("make", {size: genSize, useNames: $("useNames").checked, name: $("deckNameIn").value});
+  });
+  // runs on the host (the TV in TV mode); messages go to whoever pressed Make deck
+  async function runMake(opts, from){
+    if(!isHost || making || game.phase !== "lobby" || game.making) return;
+    const tell = (msg, ms) => { toast(msg, ms); if(from !== myId) tellPlayer(from, msg); };
     const topics = (game.topics||[]).map(t => t.text);
-    if(topics.length < 3){ toast("Add at least 3 deck topics first."); $("topicIn").focus(); return; }
-    if(!serverUrl()){ toast("Add your deck server link first."); $("serverIn").focus(); return; }
-    if(!$("passIn").value){ toast("Type the host passcode first."); $("passIn").focus(); return; }
-    // real players only (no bots), and only when the host leaves "Roast players by name" ticked
-    const names = $("useNames").checked ? sortedPlayers().filter(p => !p.bot).map(p => p.nick) : [];
-    const name = clean($("deckNameIn").value, 40) || "Bobby's Deck";
+    if(topics.length < 3){ tell("Add at least 3 deck topics first."); return; }
+    if(!serverUrl()){ tell("Add your deck server link first."); return; }
+    if(!$("passIn").value){ tell(game.tv ? "Type the deck passcode on the TV screen first." : "Type the host passcode first."); if(!game.tv) $("passIn").focus(); return; }
+    // real players only (no bots), and only when "Roast players by name" is ticked
+    const names = opts.useNames ? sortedPlayers().filter(p => !p.bot).map(p => p.nick) : [];
+    const name = clean(opts.name || "", 40) || "Bobby's Deck";
+    const size = DECK_SIZES.some(z => z.id === opts.size) ? opts.size : genSize;
     making = true; renderLobby();
     // phones pause background tabs and dim the screen, which can cut the deck off mid-write
     let wake = null; const grabWake = async () => { try{ wake = await navigator.wakeLock?.request("screen"); }catch{} };
     const onVis = () => { if(document.visibilityState === "visible" && making) grabWake(); };
     grabWake(); document.addEventListener("visibilitychange", onVis);
-    toast("Keep this screen open while Bobby cooks. Big decks can take a few minutes.", 4500);
+    tell(game.tv ? "Bobby is cooking. Keep the TV screen on; big decks can take a few minutes." : "Keep this screen open while Bobby cooks. Big decks can take a few minutes.", 4500);
     try{
       await Gen.check();
       game.making = {label:"Getting started", pct:2}; broadcast();
       waitSeq = 0; game.ddScores = {}; waitNext();
-      const {deck, code: codeStr, softened} = await Gen.make({name, size: genSize, topics, names, bobby: !!game.settings.bobby,
+      const {deck, code: codeStr, softened} = await Gen.make({name, size, topics, names, bobby: !!game.settings.bobby,
         onStep: (label, pct) => { if(game?.phase === "lobby"){ game.making = {label, pct}; broadcast(); } }});
       if(!game || game.phase !== "lobby") return;
       game.making = null;
       store.set("lastDeckCode", codeStr);
       loadDeck(deck, codeStr, true);
-      toast(`Bobby made "${name}": ${deck.prompts.length} prompts and ${deck.answers.length} answers.` +
+      tell(`Bobby made "${name}": ${deck.prompts.length} prompts and ${deck.answers.length} answers.` +
         (softened ? " Claude wouldn't write some of the most extreme cards, so part of the deck is a little tamer." : ""), softened ? 8000 : 2800);
       burst(80);
     }catch(e){
@@ -3716,9 +4027,9 @@ Reply with JSON only: {"flagged": [numbers]}`;
       if(e?.code === "refusal") msg += " Try again, or turn off Bobby Style or the name roasts for this deck.";
       if(e?.code === "cutoff") msg += " Try a smaller deck size.";
       if(e?.step) msg += ` (Step: ${e.step.toLowerCase()}.)`;
-      toast(msg, 9000); console.warn("Deck making failed:", e);
+      tell(msg, 9000); console.warn("Deck making failed:", e);
     }finally{ making = false; document.removeEventListener("visibilitychange", onVis); try{ await wake?.release(); }catch{} if(game?.phase === "lobby") renderLobby(); }
-  });
+  }
 
   // ---------- confetti ----------
   const cv = $("confetti"), cx = cv.getContext("2d"); let bits = [], raf = 0;
@@ -3740,7 +4051,7 @@ Reply with JSON only: {"flagged": [numbers]}`;
   }
 
   // test hook (no effect in normal play)
-  window.__BLF = {act, startGame, newRound, hostTick, hotNext, waitNext, broadcast, get game(){return game;}, get H(){return H;}, _setup(g,h,id){ game=g; H=h; isHost=true; myId=id; }};
+  window.__BLF = {act, startGame, newRound, hostTick, hotNext, waitNext, broadcast, dropPlayer, onHello, get game(){return game;}, get H(){return H;}, _setup(g,h,id){ game=g; H=h; isHost=true; myId=id; }, _viewAs(g, id){ game = g; isHost = false; myId = id; showView(); }};
 })();
 </script>
 </body>
