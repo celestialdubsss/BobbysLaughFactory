@@ -502,6 +502,11 @@ body.hot-on{overflow:hidden}
 .dd-scores .dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;flex:none}
 .hot-screen .dd .hot-head b{font-size:28px}
 @media (max-width:700px){.dd-main{grid-template-columns:1fr}.dd-feed{max-height:120px}}
+/* Pick 2 answers and question prompts */
+.acard .pair{display:block}
+.acard .pair + .pair{margin-top:8px;padding-top:8px;border-top:2px dashed currentColor}
+.acard .pair b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--card);font-size:12px;margin-right:6px;vertical-align:2px}
+.q-ans{display:block;margin-top:10px}
 </style>
 </head>
 <body>
@@ -573,7 +578,7 @@ body.hot-on{overflow:hidden}
         <button class="btn sun big" id="soloBtn" hidden>Start a solo test game</button>
       </div>
       <p class="err" id="homeErr" role="alert"></p>
-      <p class="note version" id="versionTag">Version Oct 24, 10:40 PM</p>
+      <p class="note version" id="versionTag">Version Oct 31, 10:25 PM</p>
     </section>
 
     <ol class="steps" style="grid-column:1/-1">
@@ -643,7 +648,7 @@ body.hot-on{overflow:hidden}
         <h3>Time to pick a card</h3>
         <div class="seg" id="segTimer"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;flex-direction:column;gap:8px" hidden>
         <h3>Game while the deck cooks</h3>
         <div class="seg" id="segWait"></div>
       </div>
@@ -1371,6 +1376,14 @@ const BUILTIN_PACKS = {
   const TOPICS_EACH = TEST_MODE ? 15 : 5, MAX_TOPICS = 50;   // the solo test copy lets one player add up to 15
   const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   const BLANK = "____";
+  // a prompt with no blank is a question (the answer goes underneath); two blanks is a Pick 2
+  const blanksIn = t => String(t).split(BLANK).length - 1;
+  const pickN = prompt => blanksIn(prompt?.t ?? prompt) >= 2 ? 2 : 1;
+  const PICK2_MAX_WORDS = 6;   // Pick 2 is for short, punchy answers
+  const wordCount = t => String(t).trim().split(/\s+/).filter(Boolean).length;
+  // cards a player may use for this prompt (long ones sit out a Pick 2, unless that leaves too few)
+  const playable = (hand, prompt) => { const all = hand.map((_, i) => i); if(pickN(prompt) < 2) return all;
+    const short = all.filter(i => wordCount(hand[i].t) <= PICK2_MAX_WORDS); return short.length >= 2 ? short : all; };
   const $ = id => document.getElementById(id);
 
   // ---------- local prefs ----------
@@ -1616,7 +1629,7 @@ const BUILTIN_PACKS = {
       const key = `${b.id}:${r.n}:${r.stage}`;
       if(r.stage === "picking" && r.judge !== b.id && !H.subs.has(b.id) && H.hands.get(b.id)?.length){
         if(!botWait.has(key)) botWait.set(key, now + 1500 + rnd(4000));
-        else if(now >= botWait.get(key)) act(b.id, {t:"play", i: rnd(H.hands.get(b.id).length)});
+        else if(now >= botWait.get(key)) act(b.id, {t:"play", i: shuffle(playable(H.hands.get(b.id), r.prompt)).slice(0, pickN(r.prompt))});
       }
       if(r.stage === "reveal" && !(r.reacts||[]).some(x => x.id === b.id)){
         if(!botWait.has(key)) botWait.set(key, rnd(10) < 4 ? now + 1000 + rnd(3500) : Infinity);
@@ -1651,7 +1664,7 @@ const BUILTIN_PACKS = {
       toast(`${clean(d.nick)||"Someone"} clocked in!`);
       if(game.phase !== "lobby") game.scores[conn.peer] = game.scores[conn.peer] || 0;
     }
-    broadcast();
+    broadcast(); waitKick();
   }
 
   // ---------- Bobby's Hot Takes (host runs it while the deck cooks) ----------
@@ -1680,20 +1693,30 @@ const BUILTIN_PACKS = {
   }
 
   // ---------- waiting games: Hot Takes and Doodle Dash take turns while the deck cooks ----------
+  const HOT_TAKES_ON = false;
   let waitSeq = 0;
+  // a second player showing up mid-cook can start Doodle Dash
+  const waitKick = () => { if(isHost && game?.phase === "lobby" && game.making && !game.hot && !game.doodle) waitNext(); };
   function waitNext(){
     clearTimeout(hotTimer); clearTimeout(ddTimer);
     if(!game || game.phase !== "lobby" || !game.making){
       if(game && (game.hot || game.doodle)){ game.hot = null; game.doodle = null; broadcast(); } return;
     }
-    const mode = game.settings.waitGame || "mix", canDraw = ddPlayers().length >= 2;   // drawing needs someone to guess
+    // Hot Takes is switched off for now (set HOT_TAKES_ON = true to bring it back); Doodle Dash needs someone to guess
+    const canDraw = ddPlayers().length >= 2;
+    if(!HOT_TAKES_ON){
+      if(canDraw) ddStart();
+      else if(game.hot || game.doodle){ game.hot = null; game.doodle = null; broadcast(); }
+      return;
+    }
+    const mode = game.settings.waitGame || "mix";
     const next = mode === "hot" || !canDraw ? "hot" : mode === "doodle" ? "doodle" : (waitSeq % 3 === 0 ? "doodle" : "hot");
     waitSeq++;
     next === "doodle" ? ddStart() : hotNext();
   }
 
   // ---------- Doodle Dash (host side) ----------
-  const DD_CHOOSE = 8000, DD_DRAW = 30000, DD_REVEAL = 5000;
+  const DD_CHOOSE = 8000, DD_DRAW = 60000, DD_REVEAL = 5000;   // guessers get a full minute
   let ddTimer = null, ddN = 0, ddDrawn = new Set(), ddLast = null;
   const ddPlayers = () => game.players.filter(p => !p.bot && (!game.settings.bobby || p.adult));
   // random drawer, but everyone draws once before anyone draws twice
@@ -1768,7 +1791,7 @@ const BUILTIN_PACKS = {
         if(d.ready && s.bobby && !pl.adult) return;
         pl.ready = !!d.ready; break;
       case "adult":
-        pl.adult = true; break;
+        pl.adult = true; setTimeout(waitKick, 0); break;
       case "ddw": ddChoose(id, d.i); return;
       case "ddp": case "ddu": case "ddc": {
         const dd = game.doodle; if(!dd || dd.stage !== "draw" || id !== dd.drawer || !H.dd) return;
@@ -1826,8 +1849,12 @@ const BUILTIN_PACKS = {
       case "play": {
         if(game.phase !== "playing" || !r || r.stage !== "picking" || id === r.judge) return;
         const hand = H.hands.get(id); if(!hand || H.subs.has(id)) return;
-        const i = d.i|0; if(i < 0 || i >= hand.length) return;
-        const [card] = hand.splice(i,1);
+        const need = pickN(r.prompt), ok = new Set(playable(hand, r.prompt));
+        const idx = [...new Set((Array.isArray(d.i) ? d.i : [d.i]).map(x => x | 0))];
+        if(idx.length !== need || idx.some(i => i < 0 || i >= hand.length || !ok.has(i))) return;
+        const cards = idx.map(i => hand[i]);
+        [...idx].sort((a, b) => b - a).forEach(i => hand.splice(i, 1));
+        const card = need === 1 ? cards[0] : {t: cards.map(c => c.t).join(" / "), parts: cards, s: cards[0].s};
         H.subs.set(id, card); r.submitted.push(id);
         if(allIn()) toJudging(); break;
       }
@@ -1862,7 +1889,7 @@ const BUILTIN_PACKS = {
         const mine = {...((r.votes||{})[id] || {})}, key = kind === "p" ? "p" : d.c, prev = mine[key] || 0;
         if(prev === d.v) return;
         mine[key] = d.v; r.votes = {...(r.votes||{}), [id]: mine};
-        rateCard(kind, card, prev, d.v);
+        (card.parts || [card]).forEach(c => rateCard(kind, c, prev, d.v));
         break;
       }
       case "skipIntro":
@@ -1876,7 +1903,7 @@ const BUILTIN_PACKS = {
         r.options = r.options.map(o => ({...o, by: H.keyMap.get(o.k)}));   // reveal who played what
         r.reacts = []; r.votes = {}; r.revealAt = Date.now();
         if(playerById(winner)) game.scores[winner] = (game.scores[winner]||0) + 1;
-        H.subs.forEach(t => H.discard.push(t));
+        H.subs.forEach(t => H.discard.push(...(t.parts || [t])));
         clearTimeout(H.revealTimer);
         H.revealTimer = setTimeout(() => {
           const champ = sortedPlayers().find(p => (game.scores[p.id]||0) >= s.points);
@@ -1992,7 +2019,7 @@ const BUILTIN_PACKS = {
     const r = game.round;
     if(!H.subs.size){ toast("Nobody played a card. Skipping to the next round."); newRound(); return; }
     const entries = shuffle([...H.subs.entries()]);
-    r.options = entries.map(([pid, card]) => { const k = rid(); H.keyMap.set(k, pid); return {k, t:card.t, s:card.s}; });
+    r.options = entries.map(([pid, card]) => { const k = rid(); H.keyMap.set(k, pid); return {k, t:card.t, s:card.s, ...(card.parts ? {parts: card.parts} : {})}; });
     r.stage = "judging"; r.deadline = null;
     r.judgeAt = Date.now();
     // with a pick timer on, the judge gets a countdown too; at zero a random card wins
@@ -2007,8 +2034,10 @@ const BUILTIN_PACKS = {
       // time's up: play a random card for anyone who didn't pick
       activeIds().filter(id => id !== r.judge && !H.subs.has(id)).forEach(id => {
         const hand = H.hands.get(id); if(!hand.length) return;
-        const [card] = hand.splice(rnd(hand.length),1);
-        H.subs.set(id, card); r.submitted.push(id);
+        const need = Math.min(pickN(r.prompt), hand.length), pool = shuffle(playable(hand, r.prompt)).slice(0, need);
+        if(pool.length < pickN(r.prompt)) return;
+        const cards = pool.map(i => hand[i]); [...pool].sort((a, b) => b - a).forEach(i => hand.splice(i, 1));
+        H.subs.set(id, need === 1 ? cards[0] : {t: cards.map(c => c.t).join(" / "), parts: cards, s: cards[0].s}); r.submitted.push(id);
       });
       toJudging(); broadcast();
     }
@@ -2476,21 +2505,24 @@ const BUILTIN_PACKS = {
   // Fit an answer card into a prompt's blank: drop its end punctuation, and lowercase
   // a leading article, number or "-ing" word when the blank sits mid-sentence.
   const LOWER_OK = /^(a|an|the|my|your|his|her|its|our|their|some|one|two|three|four|five|six|seven|eight|nine|ten|twelve|forty|fifty|several|every|no|that|this|these|those|another|being|getting|having|making)$/i;
-  function fitAnswer(prompt, answer){
+  function fitAnswer(prompt, answer, n = 0){
     let a = String(answer).trim().replace(/[.!]+$/,"");
-    const before = String(prompt).split(BLANK)[0];
+    if(!blanksIn(prompt)) return a;   // a question: the answer stands on its own
+    const segs = String(prompt).split(BLANK), before = segs.slice(0, n + 1).join(" x ");
     const atStart = !before.trim() || /[.?!]\s*$/.test(before);
     const first = (a.match(/^[A-Za-z]+/)||[""])[0];
     if(!atStart && first && (LOWER_OK.test(first) || (/ing$/i.test(first) && first.length > 4)) && first[0] === first[0].toUpperCase() && first.slice(1) === first.slice(1).toLowerCase())
       a = a[0].toLowerCase() + a.slice(1);
-    const after = String(prompt).split(BLANK)[1] || "";
+    const after = segs[n + 1] || "";
     if(/^[?!.]/.test(after.trim())) a = a.replace(/[?]+$/,"");
     return a;
   }
+  // fill: an answer's text, or an option whose parts fill a Pick 2's two blanks
   function promptHTML(text, fill){
-    const parts = String(text).split(BLANK).map(esc);
-    const blank = fill ? `<span class="fill">${esc(fitAnswer(text, fill))}</span>` : `<span class="bl"></span>`;
-    return parts.join(blank);
+    const answers = !fill ? [] : typeof fill === "string" ? [fill] : (fill.parts || [fill]).map(c => c.t ?? c);
+    const segs = String(text).split(BLANK).map(esc);
+    if(segs.length === 1) return segs[0] + (answers.length ? ` <span class="fill q-ans">${esc(fitAnswer(text, answers[0]))}</span>` : "");
+    return segs.map((seg, i) => i === 0 ? seg : (answers[i - 1] !== undefined ? `<span class="fill">${esc(fitAnswer(text, answers[i - 1], i - 1))}</span>` : `<span class="bl"></span>`) + seg).join("");
   }
 
   function renderTable(){
@@ -2522,7 +2554,9 @@ const BUILTIN_PACKS = {
 
     const judge = playerById(r.judge), iJudge = r.judge === myId;
     $("promptMeta").textContent = `Round ${r.n} · Judge: ${judge ? judge.nick : "?"} · First to ${s.points}`;
-    $("promptText").innerHTML = promptHTML(r.prompt.t, r.stage === "reveal" ? r.winCard?.t : (r.stage === "judging" && iJudge && selected ? r.options.find(o=>o.k===selected)?.t : null));
+    const pickSel = r.stage === "picking" && Array.isArray(selected) && selected.length ? {parts: selected.map(i => myHand[i]).filter(Boolean)} : null;
+    $("promptText").innerHTML = promptHTML(r.prompt.t, r.stage === "reveal" ? r.winCard : (r.stage === "judging" && iJudge && selected ? r.options.find(o=>o.k===selected) : pickSel));
+    $("promptMeta").textContent += pickN(r.prompt) === 2 ? " · Pick 2" : "";
     $("promptSrc").textContent = r.prompt.s || "";
     updateTimer();
 
@@ -2545,11 +2579,16 @@ const BUILTIN_PACKS = {
         hand.appendChild(cardEl(mySubmitted, {disabled:true, pressed:true, label:"Your answer"}));
         myHand.forEach(t => hand.appendChild(cardEl(t, {disabled:true, dim:true})));
       } else {
-        $("stageTitle").textContent = "Pick your funniest card";
-        $("stageNote").textContent = `${judge ? judge.nick : "The judge"} will choose the winner.`;
+        const need = pickN(r.prompt), ok = new Set(playable(myHand, r.prompt)), sel = Array.isArray(selected) ? selected : [];
+        $("stageTitle").textContent = need === 2 ? "Pick 2: choose two cards, in order" : "Pick your funniest card";
+        $("stageNote").textContent = need === 2 ? `Your first card fills the first blank. Short cards only. ${judge ? judge.nick : "The judge"} will choose the winner.` : `${judge ? judge.nick : "The judge"} will choose the winner.`;
         $("handTitle").textContent = "Your hand";
-        myHand.forEach((t,i) => hand.appendChild(cardEl(t, {pressed: selected===i, onClick: () => { selected = i; renderTable(); }})));
-        playBtn.hidden = false; playBtn.disabled = selected === null;
+        myHand.forEach((t,i) => { const at = sel.indexOf(i);
+          hand.appendChild(cardEl(t, {pressed: at >= 0, dim: !ok.has(i), disabled: !ok.has(i), label: need === 2 && at >= 0 ? (at === 0 ? "1st" : "2nd") : (need === 2 && !ok.has(i) ? "Too long for Pick 2" : ""),
+            onClick: () => { const cur = Array.isArray(selected) ? [...selected] : [], j = cur.indexOf(i);
+              if(j >= 0) cur.splice(j, 1); else { if(cur.length >= need) cur.shift(); cur.push(i); }
+              selected = cur; renderTable(); }})); });
+        playBtn.hidden = false; playBtn.disabled = sel.length !== need; playBtn.textContent = need === 2 ? "Play these 2" : "Play this card";
       }
     } else if(r.stage === "judging"){
       $("handTitle").textContent = "The answers";
@@ -2602,7 +2641,7 @@ const BUILTIN_PACKS = {
     const key = `${game.round?.n}|${game.round?.stage}|${card.t}`;
     const fresh = !animSeen.has(key); animSeen.add(key);
     b.className = "acard" + (o.win ? " win" : "") + (o.dim ? " dim" : "") + (fresh ? " deal" : "");
-    b.innerHTML = `<span>${esc(card.t)}</span><span class="foot">${o.label ? `<small class="who">${esc(o.label)}</small>` : ""}<small>${esc(card.s || "Answer")}</small></span>`;
+    b.innerHTML = `<span>${card.parts ? card.parts.map((c, i) => `<span class="pair"><b>${i + 1}</b>${esc(c.t)}</span>`).join("") : esc(card.t)}</span><span class="foot">${o.label ? `<small class="who">${esc(o.label)}</small>` : ""}<small>${esc(card.s || "Answer")}</small></span>`;
     if(o.pressed !== undefined) b.setAttribute("aria-pressed", String(!!o.pressed));
     b.disabled = !!o.disabled;
     if(o.onClick) b.addEventListener("click", o.onClick);
@@ -2632,7 +2671,7 @@ const BUILTIN_PACKS = {
   function judgeNag(){
     const r = game?.round; if(!r || r.stage !== "judging" || !r.judgeAt) return;
     const secs = (Date.now() + clockSkew - r.judgeAt) / 1000;
-    (r.judgeDeadline ? [15, 30] : NAG_AT).forEach((t, i) => {
+    (r.judgeDeadline ? [(JUDGE_MS / 1000) - 15, (JUDGE_MS / 1000) - 5] : NAG_AT).forEach((t, i) => {
       const key = `${r.n}:j${i}`;
       if(secs >= t && secs < t + 5 && !alerted.has(key)){
         alerted.add(key);
@@ -2763,10 +2802,12 @@ const BUILTIN_PACKS = {
 
   $("startBtn").addEventListener("click", () => { if(isHost && game.phase === "lobby") startGame(); });
   $("playBtn").addEventListener("click", () => {
-    if(selected === null) return;
-    const card = myHand[selected];
-    send({t:"play", i:selected});
-    if(!isHost){ mySubmitted = card; myHand = myHand.filter((_,i) => i !== selected); selected = null; renderTable(); }
+    const sel = Array.isArray(selected) ? selected : [], r = game?.round;
+    if(!r || sel.length !== pickN(r.prompt)) return;
+    const cards = sel.map(i => myHand[i]);
+    send({t:"play", i: sel});
+    if(!isHost){ mySubmitted = cards.length === 1 ? cards[0] : {t: cards.map(c => c.t).join(" / "), parts: cards, s: cards[0].s};
+      myHand = myHand.filter((_,i) => !sel.includes(i)); selected = null; renderTable(); }
   });
   $("pickBtn").addEventListener("click", () => { if(selected) send({t:"pick", k:selected}); });
   let refreshArmed = false, refreshTimer = 0;
@@ -3029,7 +3070,7 @@ const BUILTIN_PACKS = {
   // ---------- make a deck with Bobby (Claude, through your deck server) ----------
   // Put your Cloudflare Worker link between the quotes once it's deployed. Until then hosts can paste it in the lobby.
   const DECK_SERVER = /*DECK_SERVER*/"https://bobby-decks.celestialdubsss.workers.dev";
-  const DECK_SIZES = [{id:"s", label:"Small", p:20, a:60}, {id:"m", label:"Medium", p:35, a:120}, {id:"l", label:"Large", p:50, a:180}];
+  const DECK_SIZES = [{id:"s", label:"Small", p:20, a:60}, {id:"m", label:"Medium", p:35, a:120}, {id:"l", label:"Large", p:50, a:180}, {id:"xl", label:"XL", p:60, a:420}];   // XL: enough for 8 players to 7 points
   let genSize = store.get("genSize", "m"), making = false;
   const serverUrl = () => (DECK_SERVER || clean($("serverIn").value, 300)).replace(/\/+$/, "");
   $("serverIn").value = store.get("genServer", ""); $("passIn").value = store.get("genPass", "");
@@ -3049,8 +3090,20 @@ const BUILTIN_PACKS = {
   }
   // prompts like "now with 100% real ____" only fit a few answers, so they get fixed or dropped
   const BAD_BEFORE_BLANK = /(?:^|[\s(])(a|an|the|my|your|his|her|its|our|their|this|that|these|those|some|real|pure|fresh|new|old|big|little|tiny|giant|extra|secret|favorite|favourite|best|worst|own|true|actual|genuine|organic|authentic|premium|\d+%?)\s*$/i;
-  const badBlank = p => BAD_BEFORE_BLANK.test(String(p).split(BLANK)[0]);
-  const keepGoodPrompts = list => { const ok = list.filter(p => !badBlank(p)); return ok.length >= 5 ? ok : list; };
+  const badBlank = p => String(p).split(BLANK).slice(0, -1).some(seg => BAD_BEFORE_BLANK.test(seg));
+  // a lead-in label ("Fake product name:", "BREAKING:") at most twice per deck; Pick 2 at most 1 in 5 prompts, questions at most 3 in 10
+  const labelOf = p => { const m = String(p).match(/^([A-Za-z][A-Za-z' ]{1,30}):\s/); return m ? m[1].toLowerCase() : ""; };
+  function shapePrompts(list){
+    const seen = {}, out = []; let p2 = 0, q = 0;
+    const maxP2 = Math.max(1, Math.round(list.length * 0.2)), maxQ = Math.max(1, Math.round(list.length * 0.3));
+    list.forEach(p => { const l = labelOf(p), n = blanksIn(p);
+      if(l && (seen[l] = (seen[l] || 0) + 1) > 2) return;
+      if(n === 2 && ++p2 > maxP2) return;
+      if(n === 0 && ++q > maxQ) return;
+      out.push(p); });
+    return out.length >= 5 ? out : list;
+  }
+  const keepGoodPrompts = list => { const ok = shapePrompts(list.filter(p => !badBlank(p))); return ok.length >= 5 ? ok : list; };
   // ---------- house style: this group's favorite running jokes ----------
   const HOUSE = `HOUSE STYLE (this group's favorite running joke): about 1 in 30 of the shortest, simplest answers should be written "cheems" style: misspell exactly ONE word slightly in a cute, babyish way, and end the card with " :3" instead of a period. Examples: "Grilled cheems :3" / "Chimken nuggies :3" / "A big frogg :3" / "Spicy bwead :3". Only do this to short answers of about 2 to 4 words, never to long answers. Cheems cards are ONLY ever cute and wholesome (snacks, baby animals, cozy things, little treats): never gross, sexual, crude, dark, or about drugs or violence, even in an adults-only deck. Sweet baby-talk potty words are fine when the card stays adorable ("Stinky poopy :3", "Lil toot :3"), but never crude words like shit, piss, or cum.`;
   // gross-out humor and grandparents: this group's other favorite things
@@ -3119,13 +3172,13 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
   const cuteOk = x => !/:3$/.test(x) || !(CRUDE_POTTY.test(x) || NOT_CUTE.test(x));
   const capCheems = (list, size = list.length) => { list = list.filter(cuteOk); const max = Math.max(1, Math.round(size * 0.04)); let n = 0; return list.filter(x => !/:3$/.test(x) || ++n <= max); };
   const GRAMMAR = `GRAMMAR RULES (critical: any answer card must read naturally in any prompt's blank):
-- Every blank must be fillable by a NOUN PHRASE: a thing, a person, or a situation, such as "a suspicious amount of glitter", "Grandma's dentures", or "a public meltdown".
+- A prompt has one blank, two blanks (Pick 2), or none at all when it is a question ending in "?". Every blank must be fillable by a NOUN PHRASE: a thing, a person, or a situation, such as "a suspicious amount of glitter", "Grandma's dentures", or "a public meltdown".
 - Never put an article, adjective, number, or possessive directly before the blank (no "a ____", "the ____", "my ____", "100% real ____", "the majestic ____"). The word right before the blank should be a verb, a preposition, or punctuation, as in "made entirely of ____" or "Nothing ruins a date like ____." Never make the blank need a verb, an adjective, or a plural/singular match.
 - Answers are NOUN PHRASES: they start with a noun, "a", "an", "the", a number, or a name. At most 1 in 5 answers may be an -ing phrase (like "crying in the shower"), and no answer may start with any other kind of verb. Each answer starts with a capital letter and ends with a period. Never a full sentence, a lone verb, an adjective, or a question.
 - The noun rule is about word order, NOT about making cards safer or blander. Pack the action in after the noun: "A raccoon stealing your wallet", "The time Dad cried at Applebee's", "A wedding DJ having a breakdown". A vivid, specific, shocking answer always beats a plain object.
 - Cards ending in ":3" are a deliberate joke with an intentional misspelling. Never correct their spelling or remove the ":3".
 - Made-up gross descriptions (a body part paired with a food or object, standing in for a plain word) are deliberate. Never swap them back to the plain word.
-- Good prompt: "Nothing ruins a camping trip faster than ____." Good answers: "A raccoon with a grudge." / "Grandpa's emergency underwear." / "A mime getting arrested at a funeral."
+- Good prompts: "Nothing ruins a camping trip faster than ____." / "What's keeping Dad up at night?" / "Step one: ____. Step two: ____." Good answers, in different shapes and lengths: "Tax fraud." / "Grandpa's emergency underwear." / "A mime getting arrested at a funeral."
 - Bad prompts: "I love to ____ on weekends." (needs a verb) / "Now with 100% real ____." (adjective right before the blank). Bad answers: "So embarrassing." (adjective) / "Licks the dashboard." (starts with a verb)`;
   const ANGLES = ["worst-case scenarios", "embarrassing secrets", "terrible life advice", "overheard conversations", "fake product names", "things you'd never say at a funeral",
     "petty revenge", "awkward first dates", "bad decisions at 2 a.m.", "group chat drama", "conspiracy theories", "confessions", "family holiday disasters",
@@ -3196,7 +3249,7 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
     const words = stripFormat(t).replace(/[^A-Za-z'\- ]/g, " ").split(/\s+/).filter(Boolean), named = new Set(), common = new Set();
     words.forEach((w, i) => {
       const lw = w.toLowerCase().replace(/'s$/, "").replace(/'/g, ""), st = stemW(lw);
-      if(!lw || STOP.has(lw) || FILLER.has(lw) || SIM_NAMES.has(lw) || SIM_TOPIC.has(st) || HOUSE_WORDS.test(lw) || POTTY.test(lw)) return;
+      if(!lw || STOP.has(lw) || FILLER.has(lw) || FILLER.has(st) || SIM_NAMES.has(lw) || SIM_TOPIC.has(st) || HOUSE_WORDS.test(lw) || POTTY.test(lw)) return;
       // a capital mid-sentence, a possessive ("Gingy's"), or a word capitalized elsewhere in the deck marks a name
       if(/^[A-Z]/.test(w) && lw.length >= 3 && (i > 0 || /'s$/.test(w) || proper.has(st))) named.add(st);
       else if(lw.length >= 5) common.add(st);
@@ -3207,10 +3260,11 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
     const n = new Map(), c = new Map(), proper = new Set();
     [...prompts, ...answers].forEach(t => stripFormat(t).replace(/[^A-Za-z'\- ]/g, " ").split(/\s+/).filter(Boolean)
       .forEach((w, i) => { if(i > 0 && /^[A-Z]/.test(w)) proper.add(stemW(w.toLowerCase().replace(/'s$/, "").replace(/'/g, ""))); }));
-    const ok = t => { const {named, common} = subjectsOf(t, proper);
-      if([...named].some(x => (n.get(x) || 0) >= 1) || [...common].some(x => (c.get(x) || 0) >= 2)) return false;
-      named.forEach(x => n.set(x, 1)); common.forEach(x => c.set(x, (c.get(x) || 0) + 1)); return true; };
-    const p = prompts.filter(ok), a = answers.filter(ok);   // prompts get first pick
+    // prompts are setups and share everyday words on purpose, so for them only named characters and things count
+    const ok = (t, isPrompt) => { const {named, common} = subjectsOf(t, proper);
+      if([...named].some(x => (n.get(x) || 0) >= 1) || (!isPrompt && [...common].some(x => (c.get(x) || 0) >= 2))) return false;
+      named.forEach(x => n.set(x, 1)); if(!isPrompt) common.forEach(x => c.set(x, (c.get(x) || 0) + 1)); return true; };
+    const p = prompts.filter(t => ok(t, true)), a = answers.filter(t => ok(t, false));   // prompts get first pick
     return [p.length >= 5 ? p : prompts, a];
   }
 
@@ -3242,13 +3296,16 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
     }
     function tidyOne(kind, x){
       x = clean(x, kind === "p" ? 160 : 120); if(!x) return null;
-      if(kind === "p"){ x = x.replace(/_{2,}/g, BLANK); return x.split(BLANK).length === 2 ? x : null; }
+      if(kind === "p"){ x = x.replace(/_{2,}/g, BLANK); const n = blanksIn(x); return (n === 1 || n === 2 || (n === 0 && /\?$/.test(x))) ? x : null; }
+      if(wordCount(x) > 12) return null;   // answers stay short
       if(/:3\.?$/.test(x)) return x.replace(/\.$/, "");
     return /[.!?]$/.test(x) ? x : x + ".";
     }
     const tidy = (kind, list) => list.map(x => tidyOne(kind, x)).filter(Boolean);
     const carry = (from, to) => { if(from !== to && TAG.has(from) && !TAG.has(to)) TAG.set(to, TAG.get(from)); };
-    const filled = (p, a) => p.split(BLANK).join(`[${fitAnswer(p, a)}]`);
+    // a prompt filled with sample answers, for the combo test-read (a question gets its answer after it)
+    const filled = (p, a, b) => { const segs = p.split(BLANK); if(segs.length === 1) return `${p} [${fitAnswer(p, a)}]`;
+      return segs.map((seg, i) => i === 0 ? seg : `[${fitAnswer(p, i === 1 ? a : (b ?? a), i - 1)}]` + seg).join(""); };
 
     // one request to Claude through the deck server; retries once if Claude is busy
     function parseJSON(text){
@@ -3261,7 +3318,7 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
     async function post(body){
       const url = serverUrl();
       if(!url) throw {code:"setup", message:"Add your deck server link first."};
-      const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 180000);
+      const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 240000);
       let res, data;
       try{
         res = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({passcode: $("passIn").value, ...body}), signal: ac.signal});
@@ -3287,6 +3344,10 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
         fn().then(res, rej).finally(() => { active--; next(); }); };
       return fn => new Promise((res, rej) => { q.push({fn, res, rej}); next(); });
     })();
+    const RETRIES = {busy: 7, network: 5, claude: 2, invalid_json: 1};
+    // problems no amount of waiting fixes: stop right away and say so
+    const FATAL = ["credits", "passcode", "daily_limit", "setup", "origin", "bad_request"];
+    let retryNote = null;
     async function call(input, opts = {}){
       for(let attempt = 0; ; attempt++){
         let d;
@@ -3301,7 +3362,13 @@ Drinking, drugs, sex, threesomes, and getting caught pantsless are welcome all t
             throw {code:"invalid_json", message: said ? `Claude replied with words instead of cards: "${said}…"` : "Claude sent back an empty reply."};
           }
         }catch(e){
-          if(attempt < (e.code === "invalid_json" ? 1 : 3) && ["busy","invalid_json"].includes(e.code)){ await new Promise(r => setTimeout(r, 2500 * (attempt + 1))); continue; }
+          // busy or rate-limited: wait longer each time (3s, 6s, 12s … up to a minute), about 3-4 minutes in all
+          const max = RETRIES[e.code] || 0;
+          if(attempt < max){
+            const wait = Math.min(60000, 3000 * 2 ** attempt) + Math.floor(Math.random() * 1500);
+            if(retryNote && (e.code === "busy" || e.code === "network")) retryNote(Math.round(wait / 1000));
+            await new Promise(r => setTimeout(r, wait)); continue;
+          }
           e.step = lastStep; throw e;
         }
       }
@@ -3373,13 +3440,13 @@ Reply with JSON only: {"topics": {"<exact topic name>": ["premise", "premise", .
       const perTopic = Math.max(1, Math.ceil(count / topics.length));
       const want = Math.ceil(count * 1.25);
       const what = kind === "p"
-        ? `${count} PROMPT cards. Each prompt is a sentence or question with exactly one blank written as ____ (four underscores) for an answer card to fill. Keep each under 20 words. Keep prompts GENERAL and open-ended, so that dozens of different answer cards could be funny in the blank, rather than prompts that only one specific answer fits.${isBobby ? " Favor out-of-pocket setups that invite the most depraved answers." : ""}`
-        : `${count} ANSWER cards. Each answer is a short noun phrase (2 to 10 words) that could fill the blank of many different prompts. Favor broad, general responses (people, acts, body parts, things, situations) over niche specifics.`;
+        ? `${count} PROMPT cards, in three shapes: about 1 in 5 are QUESTIONS with no blank that ends in "?" (any answer card can reply to it); about 1 in 8 are PICK 2 prompts with exactly two blanks, each filled by its own short answer, so two answers collide into one combo (like a two-step plan, or one thing meeting another); every other prompt has exactly one blank. Write blanks as ____ (four underscores). Keep each prompt under 20 words. Prompts are SETUPS, not jokes: keep them set squarely in its topic's world (one of its characters, places, or situations) while staying open enough that many different answers fit, so the answer card gets the laugh; never put a punchline or a pun in the prompt itself, and never write a prompt that could belong to any deck. Spread across many formats: plain sentences, confessions, rules and bans, news headlines, slogans, titles, instructions, traditions, excuses, and questions. Most prompts should have no label at all; never use the same lead-in label (like "Fake product name:" or "BREAKING:") on more than one prompt in this batch.${isBobby ? " Favor out-of-pocket setups that invite the most depraved answers." : ""}`
+        : `${count} ANSWER cards. Answers are SHORT: about 3 in 10 are just 1 to 3 words, about 5 in 10 are 4 to 6 words, and only about 2 in 10 run 7 to 10 words. Short and blunt beats long and clever, but short must never mean generic: every answer, even a two-word one, is clearly tied to its topic through a named character, a specific object, or a concrete detail (like a character's specific possession or habit), never a bland phrase anyone could have written without knowing the topic. Mix the TYPES of answer: abstract concepts and grim life situations, people and characters, simple objects, vivid absurd images, sad-but-relatable states, and acts (at most 1 in 5 as -ing phrases). Never use the same sentence template (like "A [thing] with a [twist]") for more than two answers. Now and then use a register clash: something filthy described in formal, dignified words, or something wholesome made horrifying. Every answer must work in many different prompts.`;
     const input = `You write cards for a fill-in-the-blank party card game called Bobby's Laugh Factory, where players play the funniest answer card into a prompt card's blank.
 
 Write ${what.replace(String(count), String(want))}
 
-EVERY card must be about one of the players' topics below. Do not write any general cards that aren't tied to a topic. Spread the cards evenly, about ${perTopic} per topic, so every topic gets its share. Within each topic, keep the wording broad so anyone at the table gets the joke and there's room for creative ${isBobby ? "adult " : ""}humor, rather than niche references only a superfan would get.
+EVERY card must be about one of the players' topics below. Do not write any general cards that aren't tied to a topic. Spread the cards evenly, about ${perTopic} per topic, so every topic gets its share. Within each topic, every card should feel unmistakably like it came from that topic, so the player who suggested it recognizes their topic instantly: use the topic's real characters, places, objects, habits, and situations, never a generic joke with the topic's name pasted on. Stay with parts of the topic most people at the table would recognize rather than deep-cut trivia only a superfan knows, and leave room for creative ${isBobby ? "adult " : ""}humor.
 ${topics.map(t => "- " + t).join("\n")}
 
 ${rules(isBobby, soft)}
@@ -3419,19 +3486,19 @@ Reply with JSON only, in this shape: {"cards": [{"text": "...", "topic": "the ex
       const chunks = []; for(let i = 0; i < cards.length; i += 60) chunks.push(cards.slice(i, i + 60));
       const parts = await Promise.all(chunks.map(async chunk => {
         const out = [];
-      const input = `These are ${kind === "p" ? "PROMPT" : "ANSWER"} cards for a fill-in-the-blank party game. Check each one against the grammar rules below, keep good cards exactly as they are, and rewrite any card that breaks a rule so it follows them while staying just as funny, specific, and shocking: fix the word order, never soften the joke.${kind === "a" ? " Rewrite any answer that starts with a verb (other than the occasional -ing phrase) into a noun phrase." : " Rewrite any prompt where an article, adjective, number, or possessive sits right before the blank."}${isBobby ? " Replace polite euphemisms for bodily functions with blunt words (shit, piss, fart); keep any sexual innuendo as it is." : ""} Return every card, in the same order, one output per input.
+      const input = `These are ${kind === "p" ? "PROMPT" : "ANSWER"} cards for a fill-in-the-blank party game. Check each one against the grammar rules below, keep good cards exactly as they are, and rewrite any card that breaks a rule so it follows them while staying just as funny, specific, and shocking: fix the word order, never soften the joke.${kind === "a" ? " Rewrite any answer that starts with a verb (other than the occasional -ing phrase) into a noun phrase." : " Rewrite any prompt where an article, adjective, number, or possessive sits right before a blank. Keep question prompts (no blank) and Pick 2 prompts (two blanks) in that shape."}${isBobby ? " Replace polite euphemisms for bodily functions with blunt words (shit, piss, fart); keep any sexual innuendo as it is." : ""} Also check that each card is clearly about the topic shown in brackets after it: if a card could belong to any deck (only its topic's name pasted on, or no real tie to the topic at all), rewrite it around that topic's real characters, places, objects, or situations, keeping the same kind of joke. Return every card, in the same order, one output per input, without the bracketed topic.
 
 ${GRAMMAR}
 
 Cards:
-${chunk.map((c,j) => `${j+1}. ${c}`).join("\n")}
+${chunk.map((c,j) => `${j+1}. ${c}${TAG.get(c) ? `  [topic: ${TAG.get(c)}]` : ""}`).join("\n")}
 
 Reply with JSON only: {"cards": ["...", "..."]}`;
         try{
           const res = await call(input, {maxTokens: 8000});
           const got = Array.isArray(res?.cards) ? res.cards : [];
           if(got.length !== chunk.length) return chunk;
-          chunk.forEach((orig, j) => { const fx = tidyOne(kind, typeof got[j] === "string" ? got[j] : got[j]?.text) || orig; carry(orig, fx); out.push(fx); });
+          chunk.forEach((orig, j) => { const raw = String(typeof got[j] === "string" ? got[j] : got[j]?.text || "").replace(/\s*\[topic:[^\]]*\]\s*$/i, ""); const fx = tidyOne(kind, raw) || orig; carry(orig, fx); out.push(fx); });
           return out;
         }catch{ return chunk; }
       }));
@@ -3448,7 +3515,8 @@ Reply with JSON only: {"cards": ["...", "..."]}`;
       const tests = prompts.map((p, i) => ({i, js: Array.from({length:per}, nextA)}));
       const chunks = []; for(let c = 0; c < tests.length; c += 12) chunks.push(tests.slice(c, c + 12));
       const results = await Promise.all(chunks.map(async chunk => {
-        const lines = chunk.map(t => `P${t.i}: ${prompts[t.i]}\n` + t.js.map(j => `   A${j} -> ${filled(prompts[t.i], answers[j])}`).join("\n")).join("\n");
+        const lines = chunk.map(t => `P${t.i}: ${prompts[t.i]}\n` + t.js.map((j, q) => { const j2 = t.js[(q + 1) % t.js.length];
+          return blanksIn(prompts[t.i]) === 2 ? `   A${j} + A${j2} -> ${filled(prompts[t.i], answers[j], answers[j2])}` : `   A${j} -> ${filled(prompts[t.i], answers[j])}`; }).join("\n")).join("\n");
       const input = `You're proofreading a fill-in-the-blank party card game. Each prompt card (P#) is shown filled with several random answer cards (A#), with the answer in [brackets]. In the real game ANY answer can land in ANY prompt, so cards must read as natural, grammatical English with a wide range of answers.
 
 ${lines}
@@ -3478,6 +3546,8 @@ For each broken card, write a fixed version that follows the rules and keeps the
     }
     // last pass: drop any card with a slur
     async function screen(cards){
+      if(cards.length > 150){ const parts = []; for(let i = 0; i < cards.length; i += 150) parts.push(cards.slice(i, i + 150));
+        return (await Promise.all(parts.map(screen))).flat(); }
       if(!cards.length) return cards;
     const input = `Below is a numbered list of party game cards. Return the numbers of any cards that contain a slur (a derogatory term for a group of people based on race, ethnicity, religion, sexual orientation, gender identity, or disability). Crude, sexual, or dark humor without a slur is fine and should NOT be flagged.
 
@@ -3507,7 +3577,9 @@ Reply with JSON only: {"flagged": [numbers]}`;
       // small batches: each reply stays well under Claude's length limit, and they all write side by side
       const split = (total, per) => { const n = Math.ceil(total / per), out = []; for(let i = 0; i < n; i++) out.push(Math.round(total * (i + 1) / n) - Math.round(total * i / n)); return out; };
       const pSizes = split(sz.p, 20), aSizes = split(sz.a, 30);
-      const tick = (label, pct) => { lastStep = label; onStep(label, pct); };
+      let lastPct = 2;
+      const tick = (label, pct) => { lastStep = label; lastPct = pct; onStep(label, pct); };
+      retryNote = secs => onStep(`${lastStep} (Claude is busy, trying again in ${secs}s…)`, lastPct);
       tick("Getting started", 2);
       // if Claude won't write a batch, ask again a notch tamer and without the name roasts
       let softened = false;
@@ -3520,7 +3592,9 @@ Reply with JSON only: {"flagged": [numbers]}`;
         }
       };
       let doneW = 0; const jobs = pSizes.length + aSizes.length;
-      const counted = p => p.then(v => { doneW++; tick(`Writing cards (${doneW} of ${jobs} batches done)`, 4 + Math.round(doneW / jobs * 46)); return v; });
+      const bump = () => { doneW++; tick(`Writing cards (${doneW} of ${jobs} batches done)`, 4 + Math.round(doneW / jobs * 46)); };
+      // a batch that fails doesn't sink the deck: it's noted and written again afterwards
+      const counted = p => p.then(v => { bump(); return {ok: true, v}; }, e => { bump(); return {ok: false, e}; });
       const deal = dealStereo(pSizes.length + aSizes.length, pickMemes(Math.min(MEMES.length, Math.max(4, Math.ceil((sz.p + sz.a) / 24)))));
       tick("Brainstorming fresh ideas for every topic", 3);
       const per = Math.max(6, Math.min(25, Math.ceil((sz.p + sz.a) * 1.4 / topics.length)));
@@ -3530,7 +3604,20 @@ Reply with JSON only: {"flagged": [numbers]}`;
         ...pSizes.map((n, k) => counted(askSafe("p", n, undefined, deal[k]))),
         ...aSizes.map((n, k) => counted(askSafe("a", n, undefined, deal[pSizes.length + k])))
       ]);
-      const pb = all.slice(0, pSizes.length), batches = all.slice(pSizes.length);
+      const fatal = all.find(x => !x.ok && FATAL.includes(x.e?.code)); if(fatal) throw fatal.e;
+      // write any failed batches again, one at a time, so a rate limit has room to clear
+      const sizes = [...pSizes.map(n => ["p", n]), ...aSizes.map(n => ["a", n])];
+      for(let k = 0; k < all.length; k++){
+        for(let tries = 0; !all[k].ok && tries < 2; tries++){
+          tick(`Rewriting a batch that didn't come through (${sizes[k][0] === "p" ? "prompts" : "answers"})`, 50);
+          try{ all[k] = {ok: true, v: await askSafe(sizes[k][0], sizes[k][1], undefined, deal[k])}; }
+          catch(e){ if(FATAL.includes(e.code)) throw e; all[k] = {ok: false, e}; }
+        }
+      }
+      const pFailed = all.slice(0, pSizes.length).every(x => !x.ok), aFailed = all.slice(pSizes.length).every(x => !x.ok);
+      if(pFailed || aFailed) throw (all.find(x => !x.ok)?.e || {code: "small", message: "Claude didn't write enough usable cards. Try again."});
+      const vals = all.map(x => x.ok ? x.v : []);
+      const pb = vals.slice(0, pSizes.length), batches = vals.slice(pSizes.length);
       const prompts = [];
       pb.flat().forEach(x => { if(!prompts.includes(x) && !tooSimilar(x, prompts)) prompts.push(x); });
       // batches were written at the same time, so drop near-duplicates between them
@@ -3550,8 +3637,31 @@ Reply with JSON only: {"flagged": [numbers]}`;
       const [s1, s2] = onePerStereo(d1, d2);
       const p2 = capHouse(capPotty(s1, sz.p), sz.p).slice(0, sz.p);
       const a2 = capHouse(capPotty(capCheems(s2, sz.a), sz.a), sz.a).slice(0, sz.a);
+      // filters or failed batches left the deck short: write a few more cards (up to two tries) instead of coming up short
+      const topUp = async (kind, have, target) => {
+        for(let round = 0; round < 2 && have.length < target - Math.floor(target * 0.02); round++){
+          const need = target - have.length;
+          tick(`Topping up ${need} more ${kind === "p" ? "prompts" : "answers"}`, 93);
+          let extra = [];
+          try{ extra = (await Promise.all(split(Math.ceil(need * 1.4), kind === "p" ? 20 : 30).map(n => askSafe(kind, n, have)))).flat(); }
+          catch(e){ if(FATAL.includes(e.code)) break; continue; }
+          extra = await polish(kind, extra, bobby);
+          extra = await screen(extra);
+          const labels = {}; have.forEach(x => { const l = labelOf(x); if(l) labels[l] = (labels[l] || 0) + 1; });
+          for(const x of extra){
+            if(have.length >= target) break;
+            if(isHouse(x) || tooSimilar(x, [...p2, ...a2])) continue;   // top-ups are plain topic cards: house quotas stay as they were
+            if(kind === "p" && (badBlank(x) || blanksIn(x) !== 1 || (labelOf(x) && (labels[labelOf(x)] || 0) >= 2))) continue;
+            if(coinedOf(x).some(c => COINED.has(c) || coinSeen.has(c))) continue;
+            if(labelOf(x)) labels[labelOf(x)] = (labels[labelOf(x)] || 0) + 1;
+            coinedOf(x).forEach(c => coinSeen.add(c)); have.push(x);
+          }
+        }
+      };
+      await topUp("p", p2, sz.p); await topUp("a", a2, sz.a);
       noteMemes([...p2, ...a2]);   // keep :3 and bathroom cards rare   // keep :3 cards a rare treat
       if(p2.length < 5 || a2.length < 20) throw {code:"small", message:"Claude didn't write enough usable cards. Try again."};
+      retryNote = null;
       remember("p", p2); remember("a", a2); saveHist(); rememberCoined([...p2, ...a2]);
       onStep("Dealing it in", 100);
       const deck = {name, bobby, topics, prompts: p2.map(t => ({t, s: TAG.get(t) || name})), answers: a2.map(t => ({t, s: TAG.get(t) || name}))};
@@ -3581,6 +3691,11 @@ Reply with JSON only: {"flagged": [numbers]}`;
     const names = $("useNames").checked ? sortedPlayers().filter(p => !p.bot).map(p => p.nick) : [];
     const name = clean($("deckNameIn").value, 40) || "Bobby's Deck";
     making = true; renderLobby();
+    // phones pause background tabs and dim the screen, which can cut the deck off mid-write
+    let wake = null; const grabWake = async () => { try{ wake = await navigator.wakeLock?.request("screen"); }catch{} };
+    const onVis = () => { if(document.visibilityState === "visible" && making) grabWake(); };
+    grabWake(); document.addEventListener("visibilitychange", onVis);
+    toast("Keep this screen open while Bobby cooks. Big decks can take a few minutes.", 4500);
     try{
       await Gen.check();
       game.making = {label:"Getting started", pct:2}; broadcast();
@@ -3602,7 +3717,7 @@ Reply with JSON only: {"flagged": [numbers]}`;
       if(e?.code === "cutoff") msg += " Try a smaller deck size.";
       if(e?.step) msg += ` (Step: ${e.step.toLowerCase()}.)`;
       toast(msg, 9000); console.warn("Deck making failed:", e);
-    }finally{ making = false; if(game?.phase === "lobby") renderLobby(); }
+    }finally{ making = false; document.removeEventListener("visibilitychange", onVis); try{ await wake?.release(); }catch{} if(game?.phase === "lobby") renderLobby(); }
   });
 
   // ---------- confetti ----------
@@ -3625,7 +3740,7 @@ Reply with JSON only: {"flagged": [numbers]}`;
   }
 
   // test hook (no effect in normal play)
-  window.__BLF = {act, startGame, newRound, hostTick, hotNext, waitNext, get game(){return game;}, get H(){return H;}, _setup(g,h,id){ game=g; H=h; isHost=true; myId=id; }};
+  window.__BLF = {act, startGame, newRound, hostTick, hotNext, waitNext, broadcast, get game(){return game;}, get H(){return H;}, _setup(g,h,id){ game=g; H=h; isHost=true; myId=id; }};
 })();
 </script>
 </body>
